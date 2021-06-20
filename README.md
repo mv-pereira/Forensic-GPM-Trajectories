@@ -403,17 +403,28 @@ Figura 14: Valores da velocidade do vento em Recife em 31/03/2020 as 15:00.
 Fonte: https://pt.windfinder.com/#16/-8.0570/-34.9108/report
 
 Argumentos no Gnuplot:
+
 set xrange [0:900]  
+
 set yrange [900:0]
+
 set zrange [0:100] 
+
 set parametric 
+
 set urange [0:1000]
+
 set vrange [0:50]
+
 set style line 1 lw 3
+
 splot "data" u 2:4:3 with lines ls 1, u,0,v with lines
 
-[mario@g7 2.2]$ gcc Trajetoria_Balistica.c -o teste -lm 
+
+[mario@g7 2.2]$ gcc Trajetoria_Balistica.c -o teste -lm
+
 [mario@g7 2.2]$ ./teste  
+
 Digite a altura (em metros) da impactação em relação ao disparo: 36 
 A impactação ocorreu em trajetória descendente? 
 1 - SIM 2 - NÃO. 
