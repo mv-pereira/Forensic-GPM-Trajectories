@@ -372,9 +372,9 @@ Robert L. McCoy. Modern Exterior Ballistics. Schiffer publishing 1999.
 
 Fontes de informação dos Ventos:
 
-http://pt.windfinder.com
+https://earth.nullschool.net/ (Possui histórico)
 
-https://earth.nullschool.net/
+http://pt.windfinder.com
 
 http://www.windy.com
 
