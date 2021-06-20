@@ -371,9 +371,14 @@ Sobre Trajetória de Massa Pontual:
 Robert L. McCoy. Modern Exterior Ballistics. Schiffer publishing 1999.
 
 Fontes de informação dos Ventos:
-pt.windfinder.com
+
+http://pt.windfinder.com
+
 https://earth.nullschool.net/
-www.climatempo.com.br
+
+http://www.windy.com
+
+http://www.climatempo.com.br
 
 
 Exemplo:
