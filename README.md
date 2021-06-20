@@ -2,7 +2,7 @@
 Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas Pontuais Generalizadas a partir de Projéteis Dinamicamente estáveis em toda a trajetória utilizando a linguagem de programação C.
 
 
-# Lançamento Horizontal Sem Arrasto
+## Lançamento Horizontal Sem Arrasto
 
 <img src="https://user-images.githubusercontent.com/86118560/122644198-6c21a100-d0ea-11eb-82ff-6556f6ccde0f.png" alt="1" width="650" height="300">
 Qual a distância d para que um projétil de velocidade inicial v0 colida a uma altura y0 do solo, formando um ângulo ϕ com a horizontal?
@@ -99,7 +99,7 @@ Onde x+ e x- representam as distâncias à origem do ponto cujo módulo do ângu
 
 ![image](https://user-images.githubusercontent.com/86118560/122674432-88d1dd80-d1ab-11eb-955a-2cda235eefcf.png)
 
-# Lançamento Horizontal com Arrasto
+## Lançamento Horizontal com Arrasto
 
 Com o intuito de resolver o mesmo tipo de problema, ou seja, encontrar a distância d para que um projétil de velocidade inicial v0 colida a uma altura H do solo, formando um ângulo ϕ com a horizontal, vamos introduzir, na segunda Lei de Newton, o termo conhecido como Equação do Arrasto ou, simplesmente, Arrasto (Fd): ![image](https://user-images.githubusercontent.com/86118560/122674456-b4ed5e80-d1ab-11eb-8b7c-b3f8c38bb451.png)
 
@@ -240,7 +240,7 @@ Cálculo de coeficientes de arrasto:
 https://www.jbmballistics.com/cgi-bin/jbmdrag-5.1.cgi
 
 
-# Trajetória de Massa Pontual
+## Trajetória de Massa Pontual
 
 Para respondermos ao questionamento incial, mas com três dimensões, é necessário medir mais um parâmetro na região do impacto. Nesse caso, precisamos medir não somente o ângulo ϕ, inclinação com o plano horizontal, como também a inclinação com o plano vertical, tomando como ângulo zero, o Norte (Azimute). Chamaremos tal ângulo γ. Em uma vista superior:
 
