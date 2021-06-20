@@ -4,35 +4,40 @@ Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas P
 
 Lançamento Horizontal Sem Arrasto
 
-<img src="https://user-images.githubusercontent.com/86118560/122644198-6c21a100-d0ea-11eb-82ff-6556f6ccde0f.png" alt="1" width="600" height="300">
-	Qual a distância d para que um projétil de velocidade inicial v0 colida a uma altura y0 do solo, formando um ângulo ϕ com a horizontal?
-![image](https://user-images.githubusercontent.com/86118560/122644206-780d6300-d0ea-11eb-9d2b-eb716dfabf8e.png)
-
-	Através da segunda Lei de Newton, podemos escrever a equação das forças atuantes na partícula:
+<img src="https://user-images.githubusercontent.com/86118560/122644198-6c21a100-d0ea-11eb-82ff-6556f6ccde0f.png" alt="1" width="650" height="300">
+Qual a distância d para que um projétil de velocidade inicial v0 colida a uma altura y0 do solo, formando um ângulo ϕ com a horizontal?
+	
+Através da segunda Lei de Newton, podemos escrever a equação das forças atuantes na partícula:
 ![image](https://user-images.githubusercontent.com/86118560/122644182-57dda400-d0ea-11eb-9083-3f68faf2da6a.png)
 
-	Escrevendo a força atuante em cada eixo (existe apenas a força Peso):
+Escrevendo a força atuante em cada eixo (existe apenas a força Peso):
   ![image](https://user-images.githubusercontent.com/86118560/122644188-61ffa280-d0ea-11eb-8c55-c23276f647e7.png)
 , considerando a aceleração da gravidade no sentido.![image](https://user-images.githubusercontent.com/86118560/122644193-662bc000-d0ea-11eb-976e-d1c0994ba691.png)
 
 
-	Considerando as seguintes condições iniciais:
+Considerando as seguintes condições iniciais:
 ![image](https://user-images.githubusercontent.com/86118560/122644219-80fe3480-d0ea-11eb-8cee-6062bbb4f746.png)
  e , ![image](https://user-images.githubusercontent.com/86118560/122644222-82c7f800-d0ea-11eb-88dc-98ba4cc771b6.png)
 onde ![image](https://user-images.githubusercontent.com/86118560/122644224-852a5200-d0ea-11eb-9aa2-683a41e55142.png)
 .
 
-	A integração e devida aplicação dessas condições iniciais, leva às seguintes equações de movimento, na qual a trajetória dependente do tempo t pode ser descrita em termos das equações paramétricas:
+A integração e devida aplicação dessas condições iniciais, leva às seguintes equações de movimento, na qual a trajetória dependente do tempo t pode ser descrita em termos das equações paramétricas:
 ![image](https://user-images.githubusercontent.com/86118560/122644333-126da680-d0eb-11eb-935f-378368d151e3.png)
 , onde vo é a velocidade inicial, g, aceleração da gravidade no local e θ, o ângulo inicial do disparo em relação à horizontal.
 
-	A tangente do ângulo em relação à horizontal (ϕ) ao longo da trajetória pode ser dado por: ![image](https://user-images.githubusercontent.com/86118560/122644336-15689700-d0eb-11eb-81d0-d4ebdfb65dd8.png)
+A tangente do ângulo em relação à horizontal (ϕ) ao longo da trajetória pode ser dado por:
+![image](https://user-images.githubusercontent.com/86118560/122673789-7f934180-d1a8-11eb-834c-4b649071b91b.png)
+
+
+![image](https://user-images.githubusercontent.com/86118560/122673819-92a61180-d1a8-11eb-831b-abb5bb95a49d.png)
+
 
 Como ϕ varia no tempo, podemos escolher o tempo t0 tal que y0 seja a altura de interesse conhecida.
 
-	Seja y(t0) = y0 em [II]:![image](https://user-images.githubusercontent.com/86118560/122644342-1bf70e80-d0eb-11eb-8973-d703ce558588.png)
- ![image](https://user-images.githubusercontent.com/86118560/122644344-1f8a9580-d0eb-11eb-9ca0-372839d045f1.png)
-
+Seja y(t0) = y0 em [II]:
+![image](https://user-images.githubusercontent.com/86118560/122644342-1bf70e80-d0eb-11eb-8973-d703ce558588.png)	
+ 
+<img src="https://user-images.githubusercontent.com/86118560/122644344-1f8a9580-d0eb-11eb-9ca0-372839d045f1.png" alt="2" width="600" height="300">
 
 
 É possível identificar os termos a = (-1/2)g, b = v0sin(θ) e c = -y0. Com isso, a equação [IV] possui duas raízes dadas por :
@@ -44,48 +49,53 @@ Como ϕ varia no tempo, podemos escolher o tempo t0 tal que y0 seja a altura de 
 
 
 
-	Substituindo [V] em [III] obteremos o ângulo ϕ na altura y0:
+Substituindo [V] em [III] obteremos o ângulo ϕ na altura y0:
 ![image](https://user-images.githubusercontent.com/86118560/122644359-2fa27500-d0eb-11eb-97c1-dff93bd538ab.png)
 
 ![image](https://user-images.githubusercontent.com/86118560/122644363-30d3a200-d0eb-11eb-9882-291471498bba.png)
 
 
-	Precisamos, então, isolar θ, de modo que outras equações em x, fiquem em função de ϕ e outras constantes conhecidas. De [VI] e![image](https://user-images.githubusercontent.com/86118560/122644370-3af5a080-d0eb-11eb-980c-f5b42a0dcb5a.png)
-:
+Precisamos, então, isolar θ, de modo que outras equações em x, fiquem em função de ϕ e outras constantes conhecidas. De [VI] e:
+![image](https://user-images.githubusercontent.com/86118560/122644370-3af5a080-d0eb-11eb-980c-f5b42a0dcb5a.png)
+
 ![image](https://user-images.githubusercontent.com/86118560/122644371-3df09100-d0eb-11eb-8b2c-8d25a2a48bb8.png)
+
 ![image](https://user-images.githubusercontent.com/86118560/122644373-3f21be00-d0eb-11eb-96f2-3c9f1fb6d9c0.png)
 
 
 ![image](https://user-images.githubusercontent.com/86118560/122644374-41841800-d0eb-11eb-9caa-81a58ad5ed0c.png)
 , no entanto, qual o significado dos sinais do argumento do arc sec (x)?
 
-![image](https://user-images.githubusercontent.com/86118560/122644399-5f517d00-d0eb-11eb-9ca8-a8edcfee33fc.png)
-	Pela interpretação física do problema, podemos escolher apenas o argumento positivo da função arcsec para futuras substituições nas equações.
+<img src="https://user-images.githubusercontent.com/86118560/122644399-5f517d00-d0eb-11eb-9ca8-a8edcfee33fc.png" alt="1" width="400" height="150">
+
+Pela interpretação física do problema, podemos escolher apenas o argumento positivo da função arcsec para futuras substituições nas equações.
 
 
 
-	Podemos, agora, manipular [I] para isolar t e substituir em [II] tendo em vista obter y(x).
+Podemos, agora, manipular [I] para isolar t e substituir em [II] tendo em vista obter y(x).
+
   ![image](https://user-images.githubusercontent.com/86118560/122644405-64aec780-d0eb-11eb-9d0e-fb4fc2df31ed.png)
-    [VIII] em [II]:	
+[VIII] em [II]:	
+
 ![image](https://user-images.githubusercontent.com/86118560/122644409-65dff480-d0eb-11eb-9e21-d0c4bb7678ce.png)
 
 ![image](https://user-images.githubusercontent.com/86118560/122644411-67112180-d0eb-11eb-8afe-75c6905c4c62.png)
 
 
-	Calculando as raízes de x em [IX] obtemos:
+Calculando as raízes de x em [IX] obtemos:
 ![image](https://user-images.githubusercontent.com/86118560/122644415-6aa4a880-d0eb-11eb-9baf-a5806600766e.png)
 
 
-	Podemos, por fim, substituir [VII] em [X], utilizando [XI] para obter x em função das variáveis conhecidas v0, ϕ, y0, g.
-	Utilizando as identidades:
+Podemos, por fim, substituir [VII] em [X], utilizando [XI] para obter x em função das variáveis conhecidas v0, ϕ, y0, g.
+Utilizando as identidades:
 ![image](https://user-images.githubusercontent.com/86118560/122644417-6bd5d580-d0eb-11eb-865b-507be14a533f.png)
 
 
-	Obtemos de maneira trivial:
+Obtemos:
 ![image](https://user-images.githubusercontent.com/86118560/122644419-6e382f80-d0eb-11eb-9851-a8c476a602a1.png)
 , assumindo que g, v0, y0 e ϕ são reais.
 
-	Onde x+ e x- representam as distâncias à origem do ponto cujo módulo do ângulo vale ϕ. Em outras palavras, o projétil, em sua trajetória parabólica, inicia o lançamento com ângulo θ, que decresce até atingir ϕ no trecho ascendente da trajetória a uma distância x- da origem, chegando a 0 no ponto mais alto (vy = 0 [III]), que decresce a -ϕ no trecho descendente a uma distância x+ da origem.
+Onde x+ e x- representam as distâncias à origem do ponto cujo módulo do ângulo vale ϕ. Em outras palavras, o projétil, em sua trajetória parabólica, inicia o lançamento com ângulo θ, que decresce até atingir ϕ no trecho ascendente da trajetória a uma distância x- da origem, chegando a 0 no ponto mais alto (vy = 0 [III]), que decresce a -ϕ no trecho descendente a uma distância x+ da origem.
 
 ![image](https://user-images.githubusercontent.com/86118560/122644433-7db77880-d0eb-11eb-8dc7-17ae0e3e6b70.png)
 
