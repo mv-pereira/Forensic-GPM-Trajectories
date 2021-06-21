@@ -114,7 +114,7 @@ Possuía velocidade final de 125.22 m/s e energia cinética de 62.72 J.
 Energia cinética de alguns projéteis para comparação: 
 ![image](https://user-images.githubusercontent.com/86118560/122675812-7f4b7400-d1b1-11eb-9e46-b584f982daf7.png)
 
-Argumentos no Gnuplot:
+Argumentos no **Gnuplot** para visualização da trajetória:
 
 set xrange [0:900]  
 
