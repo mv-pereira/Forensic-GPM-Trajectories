@@ -161,59 +161,70 @@ Onde h é um passo arbitrariamente escolhido e kα é a média ponderada das inc
 com: ![image](https://user-images.githubusercontent.com/86118560/122674571-1f9e9a00-d1ac-11eb-991b-af7518d72ef1.png)
 
 	
-Resumindo: Os próximos valores (x(n+1), vx (n+1), ... ) são determinados pelos valores atuais (x(n), vx (n), ... ) somados com o produto do tamanho do intervalo (h) e uma inclinação estimada. A inclinação é uma média ponderada de inclinações: 
-    • k1 é a inclinação no início do intervalo; 
-    • k2 é a inclinação no ponto médio do intervalo, usando a inclinação k1 para determinar o valor de y no ponto tn + h/2 através do método de Euler; 
-    • k3 é novamente a inclinação no ponto médio do intervalo, mas agora usando a inclinação k2 para determinar o valor de y; 
-    • k4 é a inclinação no final do intervalo, com seu valor y determinado usando k3.
+Resumindo: Os próximos valores **(x(n+1), vx (n+1), ... )** são determinados pelos valores atuais **(x(n), vx (n), ... )** somados com o produto do **tamanho do intervalo (h)** e uma **inclinação estimada**. A inclinação é uma média ponderada de inclinações: 
+- k1 é a inclinação no início do intervalo; 
+- k2 é a inclinação no ponto médio do intervalo, usando a inclinação k1 para determinar o valor de y no ponto tn + h/2 através do método de Euler; 
+- k3 é novamente a inclinação no ponto médio do intervalo, mas agora usando a inclinação k2 para determinar o valor de y; 
+- k4 é a inclinação no final do intervalo, com seu valor y determinado usando k3.
 
 Vamos realizar um exemplo para as variáveis x e vx, calculando x(1) e vx(1) a partir de [V]:	
+
+
 kx1 = wx(0,0,V0cosθ0,V0sinθ0), mas como wx = vx (de [VII]), teremos:
+
 kx1 = V0cosθ0
 
 
-kx2 = wx(h/2, V0cosθ0* h/2, V0cosθ0 + V0cosθ0*h/2, V0sinθ0 + V0cosθ0*h/2);
-kx2 = V0cosθ0 + V0cosθ0*h/2 = V0cosθ0(1+ h/2), pois wx = vx;
+kx2 = wx(h/2, V0cosθ0\*h/2, V0cosθ0 + V0cosθ0*\h/2, V0sinθ0 + V0cosθ0*\h/2);
+
+kx2 = V0cosθ0 + V0cosθ0*\h/2 = V0cosθ0(1+ h/2), pois wx = vx;
 
 
-kx3 = wx(t0 + h/2, x0 + kx2* h/2, vx0+ kx2*h/2, vy0+ kx2*h/2);
+kx3 = wx(t0 + h/2, x0 + kx2\*h/2, vx0+ kx2\*h/2, vy0+ kx2\*h/2);
+
 kx3 = wx(h/2 , 0 + V0cosθ0(1+ h/2) , V0cosθ0 + V0cosθ0(1+ h/2)(h/2), V0sinθ0 + V0cosθ0(1+ h/2));
+
 kx3 = V0cosθ0 + V0cosθ0(1+ h/2)(h/2) = V0cosθ0( 1 + h/2 + h²/4);
  
  
-kx4 = wx(t0 + h, x0 + kx3* h, vx0 + kx3*h, vy0 + kx3*h);
-kx4 = wx( h , h* V0cosθ0( 1 + h/2 + h²/4) ,  V0cosθ0 + h* V0cosθ0( 1 + h/2 + h²/4),  V0sinθ0 + h* V0cosθ0( 1 + h/2 + h²/4));
-kx4 = V0cosθ0 + h* V0cosθ0( 1 + h/2 + h²/4) = V0cosθ0(1+h+h²/2+h³/4);
+kx4 = wx(t0 + h, x0 + kx3\*h, vx0 + kx3\*h, vy0 + kx3\*h);
+
+kx4 = wx( h , h\*V0cosθ0( 1 + h/2 + h²/4) ,  V0cosθ0 + h\*V0cosθ0( 1 + h/2 + h²/4),  V0sinθ0 + h\*V0cosθ0( 1 + h/2 + h²/4));
+
+kx4 = V0cosθ0 + h\*V0cosθ0( 1 + h/2 + h²/4) = V0cosθ0(1+h+h²/2+h³/4);
 
 
 Substituindo todos os valores em kx a partir de [IX]:
-kx = (1/6)(kx1 + 2*kx2 + 2*kx3 + kx4)
-kx = (1/6)V0cosθ0h(6+3h+h²+h³/4), logo, como x(n+1) = xn + kx*h;
+
+kx = (1/6)(kx1 + 2*\kx2 + 2*\kx3 + kx4)
+
+kx = (1/6)V0cosθ0h(6+3h+h²+h³/4), logo, como x(n+1) = xn + kx*\h;
 
 
-x1 = 0 + h*(1/6)V0cosθ0h(6+3h+h²+h³/4).
+x1 = 0 + h\*(1/6)V0cosθ0h(6+3h+h²+h³/4).
 
 
 Vamos calcular somente o primeiro termo de vx para exemplificação, pois o cálculo segue da mesma forma:
-	kvx1 = wvx(t0,x0,vx0,vy0);
-	kvx1 = wvx(0,0,V0cosθ0,V0sinθ0); de [VII]:
-	kvx1 = -(k/m)(V0cosθ0)² sqrt ((V0cosθ0)² + (V0sinθ0)²) = -(k/m)(V0³cos²θ0)
+
+kvx1 = wvx(t0,x0,vx0,vy0);
+
+kvx1 = wvx(0,0,V0cosθ0,V0sinθ0); de [VII]:
+
+kvx1 = -(k/m)(V0cosθ0)² sqrt ((V0cosθ0)² + (V0sinθ0)²) = -(k/m)(V0³cos²θ0)
 
 
 kvx2 = wvx(t0 + h/2, x0 + kvx1* h/2, vx0 + kvx1* h/2, vy0 + kvx1* h/2);
+
 kvx2 = wvx( h/2, -(kh/2m)(V0³cos²θ), V0cosθ0 - (kh/2m)(V0³cos²θ), V0sinθ0 - (kh/2m)(V0³cos²θ));
+
 kvx2 = -(k/m)(V0cosθ0 – (kh/2m)(V0³cos²θ0))² sqrt [(V0cosθ0 – (kh/2m)(V0³cos²θ0))² + (V0sinθ0 - (kh/2m)(V0³cos²θ0))² ] = …
 kvx2 = …
 
-
 kvx3 = …
-
 
 kvx4 = …
 
-
-kvx = (1/6)(kvx1 + 2*kvx2 + 2*kvx3 + kvx4), e então: vx(1) = vx(0) + kvx*h;
-
+kvx = (1/6)(kvx1 + 2\*kvx2 + 2\*kvx3 + kvx4), e então: vx(1) = vx(0) + kvx\*h;
 
 
 Portanto, a medida que o tempo t aumenta com o passo h, não somente as equações em vx(n+1) e vy(n+1) modificam-se, como também as de x(n+1) e y(n+1), visto que o valor (n+1) de x e y vão depender dos valores anteriores de vx e vy, que vão se modificando.
@@ -382,9 +393,9 @@ http://www.climatempo.com.br
 
 
 Exemplo:
-	Vamos supor que um disparo atingiu o 11o andar de um edifício no final da Avenida Caxangá, bairro da Madalena, Recife/PE.
+	Vamos supor que um disparo atingiu o 11° andar de um edifício no final da Avenida Caxangá, bairro da Madalena, Recife/PE.
 	Ao medir as informações, a equipe obteve os seguintes valores:
-y0 = 36 m; ϕ = 8º; γ = 20º;
+y0 = 36 m; ϕ = 8°; γ = 20°;
 
 Velocidade do Projétil .38 = 305 m/s;
 
