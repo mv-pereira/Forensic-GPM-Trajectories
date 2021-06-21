@@ -299,7 +299,7 @@ Com o termo:![image](https://user-images.githubusercontent.com/86118560/12267511
 
 Assim, wx, wy e wz são as componentes da velocidade do vento no nosso referencial de interesse e não em relação ao Norte. Podemos fazer essa transformação através da aplicação de uma matriz mudança de base Norte-Leste para x-z.
 
-Além disso, as direções do vento são dadas pelo lugar de onde o vento vem, não para onde sopram. No nosso caso então, é necessário adicionar 180o (ver Exemplo).
+Além disso, as direções do vento são dadas pelo lugar de onde o vento vem, não para onde sopram. No nosso caso então, é necessário adicionar 180º (ver Exemplo no *README.md*).
 
 
 Vamos definir que a direção na qual o disparo foi realizado será chamada de Azimute inicial (AZ0). Com isso, nosso eixo x está rotacionado com AZ0 em relação ao Norte.
