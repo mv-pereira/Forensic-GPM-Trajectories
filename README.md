@@ -50,26 +50,8 @@ Velocidade do vento, direção e Latitude são dadas pela carta dos ventos.
 
 <img src="https://user-images.githubusercontent.com/86118560/122675558-5676af00-d1b0-11eb-9eeb-a7482cd5cb26.png" alt="1" width="711" height="400">
 
-Figura 14: Valores da velocidade do vento em Recife em 31/03/2020 as 15:00.
+Valores da velocidade do vento em Recife em 31/03/2020 as 15:00.
 Fonte: https://pt.windfinder.com/#16/-8.0570/-34.9108/report
-
-Argumentos no Gnuplot:
-
-set xrange [0:900]  
-
-set yrange [900:0]
-
-set zrange [0:100] 
-
-set parametric 
-
-set urange [0:1000]
-
-set vrange [0:50]
-
-set style line 1 lw 3
-
-splot "data" u 2:4:3 with lines ls 1, u,0,v with lines
 
 
 [mario@g7 2.2]$ gcc Trajetoria_Balistica.c -o teste -lm
@@ -132,7 +114,23 @@ Possuía velocidade final de 125.22 m/s e energia cinética de 62.72 J.
 Energia cinética de alguns projéteis para comparação: 
 ![image](https://user-images.githubusercontent.com/86118560/122675812-7f4b7400-d1b1-11eb-9e46-b584f982daf7.png)
 
+Argumentos no Gnuplot:
 
+set xrange [0:900]  
+
+set yrange [900:0]
+
+set zrange [0:100] 
+
+set parametric 
+
+set urange [0:1000]
+
+set vrange [0:50]
+
+set style line 1 lw 3
+
+splot "data" u 2:4:3 with lines ls 1, u,0,v with lines
 
 <img src="https://user-images.githubusercontent.com/86118560/122675566-6098ad80-d1b0-11eb-9cd1-c935540e481e.png" alt="1" width="711" height="400">
 
