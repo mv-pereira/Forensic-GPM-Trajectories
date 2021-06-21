@@ -6,7 +6,7 @@ Para uma revisão breve do conteúdo proposto, ver: **GPMT.md**
 O programa requisita as seguintes informações para funcionamento:
 - Ângulo **ϕ** (em °) com a horizontal no que o projétil impactou;
 - Ângulo **γ** (em °) com o Norte (azimute) no que o projétil impactou;
-- Velocidade inicial (em m/s) do projétil;
+- **Velocidade inicial** (em m/s) do projétil;
   - Estimada com base nas características do projétil ou outras considerações;
 - **Massa** do projétil (em g);
   - Se o projétil perdeu massa na impactação é necessário conhecer a massa original;
