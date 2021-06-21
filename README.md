@@ -22,7 +22,7 @@ O programa requisita as seguintes informações para funcionamento:
     - https://www.windy.com/
     - http://pt.windfinder.com
     - http://www.climatempo.com.br
-- **Latitude** e ****Longitude decimal do disparo (em °);
+- **Latitude** e **Longitude** decimal do disparo (em °);
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
 
