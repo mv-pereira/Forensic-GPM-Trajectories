@@ -1,13 +1,17 @@
  /* Calculador de Trajetórias para projéteis subsônicos.
+  
     Copyright (C) 2021  Mario Pereira (mv-pereira).
+    
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+    
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
     */
@@ -35,7 +39,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 //Estrutura do Projétil
 
@@ -71,7 +75,7 @@ double arcsec(double x){
 /****************************************************************************
  *                        Spindrift aproximado                              *
  * Valores estimados para projéteis subsônicos a partir de                  *
- * https://theoverwatch.wixsite.com/theoverwatch/post/spin-drift.           *
+ * https://theoverwatch.wixsite.com/theoverwatch/post/spin-drift            *
  * sg = 2.42563 para projétil subsônico (300 Blackout using subsonic ammo)  *
  * sg = 1.52551 para projétil supersônico .308                              *
  ****************************************************************************/
@@ -221,7 +225,7 @@ vento = 7.56/3.6;
 ang = (200+180.0)*M_PI/180.0;
 latitude = -8.108258*M_PI/180.0;
 longitude = -34.892634;
-azimute = 73*M_PI/180.0;
+azimute = gamma;
 g = 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude)); //Açeleração da gravidade na latitude. (em m/s^2)
 printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da função DEBUG, mudar a definição de DEBUG para 0 no cabeçalho do programa e recompilar.\n\n");
 
@@ -280,9 +284,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     printf("\nDigite a longitude decimal do disparo (em °): ");
     scanf("%lf", &longitude);
     
-    printf("\nDigite o azimute estimado do disparo (em °), medido em sentido horário em relação ao Norte: ");
-    scanf("%lf", &azimute);
-    azimute = azimute*M_PI/180.0; //grau para radianos
+    /* A melhor estimativa para o Azimute inicial é o próprio gamma. Em condições normais de vento, não tem como divergir muito do γ */
+    azimute = gamma;
 
 
 #endif    
