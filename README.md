@@ -114,7 +114,16 @@ O projétil levou cerca de 5.1 segundos do momento do disparo à impactação.
 Possuía velocidade final de 125.22 m/s e energia cinética de 62.72 J.
 
 Energia cinética de alguns projéteis para comparação: 
-![image](https://user-images.githubusercontent.com/86118560/122675812-7f4b7400-d1b1-11eb-9e46-b584f982daf7.png)
+| Calibre        | Energia (J) |
+|----------------|-------------|
+| .25 AUTO       | 87          |
+| .32 AUTO       | 175         |
+| .380 AUTO EXPO | 259         |
+| .38 SPL CHOG   | 271         |
+| 9x19mm (124gr) | 459         |
+| .40 EXPO Gold  | 568         |
+| . 357 Mag      | 724         |
+| .454 Casull    | 2531        |
 
 Argumentos no **Gnuplot** para visualização da trajetória:
 
