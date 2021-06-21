@@ -13,6 +13,10 @@ O programa requisita as seguintes informações para funcionamento:
 - **Diâmetro** do projétil (em mm);
   - Este diâmetro se refere ao diâmetro do projétil após passagem pelo cano da arma, pode ser medido diretamente do projétil ou de um outro de referência;
 
+O programa inicia o cálculo com um Cd estimado de **0.2** e velocidade inicial fornecida.
+Após **x** m, se o projétil terminar com mais velocidade que o fornecido pelo fabricante, o programa incrementa Cd (aumenta o arrasto) e recalcula.
+Se após **x** m o projétil o terminar com menor velocidade, o programa diminui Cd (diminui o arrasto) e recalcula.
+O cálculo é repetido até que o **Δv < ε** (velocidade final estimada pelo programa e a velocidade final fornecida pelo fabricante).
 
 ## Exemplo
 
