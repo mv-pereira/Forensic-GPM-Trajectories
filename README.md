@@ -91,6 +91,8 @@ misfério Sul: -8.0570
 
 Digite a longitude decimal do disparo (em °): -34.9106 
 
+### RESULTADO
+
 O ângulo θ do início do disparo com a horizontal considerado a partir do solo e em um sistema se
 m arrasto ou outras correcoes vale: 9.42° 
 
