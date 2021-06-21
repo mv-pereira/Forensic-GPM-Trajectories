@@ -177,7 +177,7 @@ int main(){
     }
     
     int n;                              //Contador.
-    int descendente = 1, destrogiro;    //variável "booleana" para critério do laço, e se o projétil é destrogiro ou levogiro.
+    int descendente = 1, dextrogiro;    //variável "booleana" para critério do laço, e se o projétil é dextrogiro ou levogiro.
     double altura, phi, v;              //Valores de entrada.
     double xs[2];                       //x+ e x- Raízes do sistema sem arrasto ("s" sem arrasto).
     double theta;                       //Angulo de disparo.
@@ -201,7 +201,7 @@ gamma = 73*M_PI/180;
 v = 271;
 m=(10.24)/1000.0;
 a=M_PI*powl((8.82/1000.0),2)/4; // A divisão por quatro leva em conta o raio.
-destrogiro=1;
+dextrogiro=1;
 c = 0.23;
 vento = 7.56/3.6;
 ang = (200+180.0)*M_PI/180.0;
@@ -247,9 +247,9 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     printf("\nDigite o Coeficiente de Arrasto Cd (aproximadamente 0.2 em casos subsônicos) do projétil: ");
     scanf("%lf", &c);
     
-    printf("\nO projetil é destrogiro ou levogiro? 1 - Destrogiro.\t2 - Levogiro.\n");
-    scanf("%d", &destrogiro);
-    (destrogiro != 1) ? destrogiro = 0 : 1;
+    printf("\nO projetil é dextrogiro ou levogiro? 1 - Dextrogiro.\t2 - Levogiro.\n");
+    scanf("%d", &dextrogiro);
+    (dextrogiro != 1) ? dextrogiro = 0 : 1;
  
     printf("\nDigite o módulo da velocidade do vento (em km/h): ");
     scanf("%lf", &vento);
@@ -502,7 +502,7 @@ fprintf(debug,"%f\n",projetil.vx);
            //"\nÂngulo ϕ de impactação = %.2lfº."
            "\nÂngulo θ (inicial) do disparo = %.2lfº."
            "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*theta/M_PI, 180*projetil.azimute/M_PI);
-    printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), destrogiro ? "direta" : "esquerda");
+    printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
 
 /****************************************************************
  * Cálculo para imprimir na tela as coordenadas geográficas do  *
