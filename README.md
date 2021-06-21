@@ -97,12 +97,19 @@ m arrasto ou outras correcoes vale: 9.42°
 Considerando um sistema sem arrasto: x- = 234.937 m e x+ = 2836.528 m 
 
 Considerando um sistema com arrasto, os cálculos terminaram com os seguintes valores: 
-Foram efetuados 261 cálculos de trajetória. 
+
+Foram efetuados 261 cálculos de trajetória.
+
 Downrange Total = 957.355 m. 
+
 Altura de impactação = 36.000 m. 
+
 Desvios para esquerda = 8.644 m. 
+
 Ângulo θ (inicial) do disparo = 7.93º. 
+
 Azimute inicial do disparo = 21.11º. 
+
 
 A trajetória teve outro desvio devido ao spindrift de, aproximadamente, 226 cm para direta, não 
 incluidos nos cálculos. 
