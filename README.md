@@ -14,7 +14,7 @@ O programa requisita as seguintes informações para funcionamento:
   - Este diâmetro se refere ao diâmetro do projétil após passagem pelo cano da arma, pode ser medido diretamente do projétil ou de um outro de referência;
 - Coeficiente de Arrasto (**Cd**);
   - Aproximadamente 0.2 para projéteis subsônicos ou pode-se utilizar o programa **Forensic-GPM-Trajectories/Coeficiente de Arrasto/Cd_projeteis.c**;
-- Se o projetil é **destrogiro** ou **levogiro**;
+- Se o projetil é **dextrogiro** ou **levogiro**;
   - Essa informação permitirá estimar o *wind drift* do projétil com base na fórmula de Bryan Litz e The Overwatch (https://theoverwatch.wixsite.com/theoverwatch/post/spin-drift);
 - Módulo da **velocidade do vento** (em km/h) e sua **direção** com relação ao Norte (em °);
   - Essas informações podem ser obtidas de diversas fontes, com atenção para estimativa da época do disparo;
@@ -79,7 +79,7 @@ Digite o diâmetro do projétil já disparado (em mm): 8.82
 
 Digite o Coeficiente de Arrasto Cd (aproximadamente 0.2 em casos subsônicos) do projétil: 0.2 
 
-O projetil é destrogiro ou levogiro? 1 - Destrogiro.    2 - Levogiro. 
+O projetil é dextrogiro ou levogiro? 1 - Dextrogiro.    2 - Levogiro. 
 1 
 
 Digite o módulo da velocidade do vento (em km/h): 17 
