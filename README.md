@@ -26,11 +26,11 @@ O programa requisita as seguintes informações para funcionamento:
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
 
-O programa utilizarmos as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo θ0.
+O programa utiliza as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo **θ0**.
 
-Caso o projétil com arrasto chegue no ponto final com uma angulação menor que ϕ, ou seja, ϕf < ϕ, incrementamos o ângulo incial de disparo θ0 com um fator e recalculamos toda a trajetória. Por outro lado, se ao fim ϕf > ϕ, reduzimos θ0 com um fato e recalculamos toda a trajetória.
+Caso o projétil com arrasto chegue no ponto final com uma angulação menor que **ϕ**, ou seja, **ϕf < ϕ**, incrementamos o ângulo incial de disparo **θ0** com um fator e recalculamos toda a trajetória. Por outro lado, se ao fim **ϕf > ϕ**, reduzimos **θ0** com um fator e recalculamos toda a trajetória.
 
-O critério de parada do cálculo é que ![image](https://user-images.githubusercontent.com/86118560/122674610-4e1c7500-d1ac-11eb-90d4-e1afafdb3a1f.png), sendo um δϕ um valor arbitrário aceitável. 
+O critério de parada do cálculo é que ![image](https://user-images.githubusercontent.com/86118560/122674610-4e1c7500-d1ac-11eb-90d4-e1afafdb3a1f.png), sendo um **δϕ** um valor arbitrário aceitável. 
 
 O mesmo cálculo é realizado para o Azimute.
 
