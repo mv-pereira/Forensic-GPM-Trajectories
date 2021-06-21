@@ -23,7 +23,7 @@ onde ![image](https://user-images.githubusercontent.com/86118560/122644224-852a5
 
 A integração e devida aplicação dessas condições iniciais, leva às seguintes equações de movimento, na qual a trajetória dependente do tempo t pode ser descrita em termos das equações paramétricas:
 ![image](https://user-images.githubusercontent.com/86118560/122644333-126da680-d0eb-11eb-935f-378368d151e3.png)
-, onde vo é a velocidade inicial, g, aceleração da gravidade no local e θ, o ângulo inicial do disparo em relação à horizontal.
+, onde v0 é a velocidade inicial, g, aceleração da gravidade no local e θ, o ângulo inicial do disparo em relação à horizontal.
 
 A tangente do ângulo em relação à horizontal (ϕ) ao longo da trajetória pode ser dado por:
 ![image](https://user-images.githubusercontent.com/86118560/122673789-7f934180-d1a8-11eb-834c-4b649071b91b.png)
