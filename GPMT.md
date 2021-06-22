@@ -253,7 +253,7 @@ https://www.jbmballistics.com/cgi-bin/jbmdrag-5.1.cgi
 
 ## Trajetória de Massa Pontual
 
-Para respondermos ao questionamento incial, mas com três dimensões, é necessário medir mais um parâmetro na região do impacto. Nesse caso, precisamos medir não somente o ângulo ϕ, inclinação com o plano horizontal, como também a inclinação com o plano vertical, tomando como ângulo zero, o Norte (Azimute). Chamaremos tal ângulo γ. Em uma vista superior:
+Para respondermos ao questionamento incial, mas com três dimensões, é necessário medir mais um parâmetro na região do impacto. Nesse caso, precisamos medir não somente o ângulo **ϕ**, inclinação com o plano horizontal, como também a inclinação com o plano vertical, tomando como ângulo zero, o Norte (**Azimute**). Chamaremos tal ângulo **γ**. Em uma vista superior:
 
 
 ![image](https://user-images.githubusercontent.com/86118560/122674995-e7985680-d1ad-11eb-906c-9bb1c2311b55.png)
@@ -294,27 +294,27 @@ Com isso, a expresão [I], em um sistema sem o efeito Coriolis, se torna: ![imag
 Com o termo:![image](https://user-images.githubusercontent.com/86118560/122675118-5fff1780-d1ae-11eb-95be-5a79f57a0bed.png).
 
 
-É importante entender o significado de de wx, wy e wz. Nas diversas cartas ou mapas de vento, sua direção é dada em graus, medido em sentido horário em relação ao Norte. No nosso caso, desde o problema sem arrasto, denominamos x o eixo responsável pelo alcance, ou seja, vx, vy e vz estão no  sistema de referencial no qual o eixo x é o eixo de deslocamento principal do projétil.
+É importante entender o significado de **w.x**, **w.y** e **w.z**. Nas diversas cartas ou mapas de vento, sua direção é dada em graus, medido em sentido horário em relação ao Norte. No nosso caso, desde o problema sem arrasto, denominamos **x** o eixo responsável pelo **alcance**, ou seja, **vx**, **vy** e **vz** estão no  sistema de referencial no qual o eixo **x** é o eixo de deslocamento principal do projétil.
 
 
-Assim, wx, wy e wz são as componentes da velocidade do vento no nosso referencial de interesse e não em relação ao Norte. Podemos fazer essa transformação através da aplicação de uma matriz mudança de base Norte-Leste para x-z.
+Assim, **w.x**, **w.y** e **w.z** são as componentes da velocidade do vento no nosso referencial de interesse e não em relação ao Norte. Podemos fazer essa transformação através da aplicação de uma matriz mudança de base Norte-Leste para x-z.
 
 Além disso, as direções do vento são dadas pelo lugar de onde o vento vem, não para onde sopram. No nosso caso então, é necessário adicionar 180º (ver Exemplo no *README.md*).
 
 
-Vamos definir que a direção na qual o disparo foi realizado será chamada de Azimute inicial (AZ0). Com isso, nosso eixo x está rotacionado com AZ0 em relação ao Norte.
+Vamos definir que a direção na qual o disparo foi realizado será chamada de Azimute inicial (**AZ0**). Com isso, nosso eixo x está rotacionado com **AZ0** em relação ao Norte.
 
 
 ![image](https://user-images.githubusercontent.com/86118560/122675177-a05e9580-d1ae-11eb-8aca-9305e6ca7e47.png)
 
 
-A mudança de base de vN e vE do eixo N-E para os eixos x e z, em termos de AZ0, pode ser definida por: ![image](https://user-images.githubusercontent.com/86118560/122675181-a5234980-d1ae-11eb-8543-c5436bb0e271.png)
+A mudança de base de **vN** e **vE** do eixo N-E para os eixos x e z, em termos de **Z0**, pode ser definida por: ![image](https://user-images.githubusercontent.com/86118560/122675181-a5234980-d1ae-11eb-8543-c5436bb0e271.png)
 
 
 O vetor aceleração de Coriolis, sem componentes da velocidade do vento, pode ser escrito como:
 
 
-![image](https://user-images.githubusercontent.com/86118560/122675186-ac4a5780-d1ae-11eb-8576-0c8628b46288.png), onde L é a latitude do local do disparo (positivo para hemisfério Norte e negativo para Sul e AZ é o azimute do disparo, medido em sentido horário em relação ao Norte.
+![image](https://user-images.githubusercontent.com/86118560/122675186-ac4a5780-d1ae-11eb-8576-0c8628b46288.png), onde **L** é a latitude do local do disparo (positivo para hemisfério Norte e negativo para Sul e **AZ** é o azimute do disparo, medido em sentido horário em relação ao Norte.
 
 ![image](https://user-images.githubusercontent.com/86118560/122675471-f7b13580-d1af-11eb-983f-03c5e5538b65.png)
 
@@ -327,7 +327,7 @@ Unindo o resultado obtido em [II] com a aceleração de Coriolis [IV] obtemos, e
 ![image](https://user-images.githubusercontent.com/86118560/122675478-fe3fad00-d1af-11eb-9658-3f08530d8d79.png)
 
 
-Definindo as variáveis auxiliares ζ para o cálculo do método RK 4:
+Definindo as variáveis auxiliares **ζ** para o cálculo do método RK 4:
 
 ![image](https://user-images.githubusercontent.com/86118560/122675484-05ff5180-d1b0-11eb-847d-b60650862899.png)
 
@@ -337,33 +337,39 @@ Com as condições iniciais:
 ![image](https://user-images.githubusercontent.com/86118560/122675491-0a2b6f00-d1b0-11eb-850a-dc121c88fbb6.png)
 
 
+Onde **vN** e **vE** são as componentes do vetor velocidade do vento nos eixos Norte-Leste, para poder realizar a mudança de base. É importante observar que as condições iniciais podem possuir quaisquer outros valores.
 
-Onde vN e vE são as componentes do vetor velocidade do vento nos eixos Norte-Leste, para poder realizar a mudança de base. É importante observar que as condições iniciais podem possuir quaisquer outros valores.
+Como **vN** e **vE** são fixos, mas o projétil pode mudar de direção, é necessário calcular a direção relativa do vento em relação ao projétil. Essa operação pode ser realizada mediante uma mudança, considerando que **projetil.azimute** varia:
 
+| Vento w - Estrutura | Componentes                                           |
+|---------------------|-------------------------------------------------------|
+|        w.x          | vN\*cos(projetil.azimute) + vE\*sin(projetil.azimute) |
+|        w.y          | 0                                                     |
+|        w.z          | -vN\*sin(projetil.azimute) + vE\*cos(projetil.azimute)|
 
-É importante lembrar que o disparo, convencionalmente, ocorre paralelamente a x, e, nesse caso, a variação do eixo z indicará a deriva que ocorrerá por efeito do vento ou pelo efeito Coriolis, considerando que esses efeitos podem inserir variações também nos valores de x e ou y.
+É importante lembrar que o disparo, convencionalmente, ocorre paralelamente a **x**, e, nesse caso, a variação do eixo **z** indicará a deriva que ocorrerá por efeito do vento ou pelo efeito Coriolis, considerando que esses efeitos podem inserir variações também nos valores de **x** e ou **y**.
 
 
 Considerações sobre o método empregado no programa
 
 
-O critério adotado para correção do AZ0 compara a inclinação lateral do projétil na impactação (em relação ao eixo x) com o ângulo medido γ. Como o ângulo γ é medido em relação ao Norte, para comparação precisamos somar o valor da inclinação lateral com AZ0 e asism, essa inclinação lateral da impactação estará medida em relação ao Norte.
+O critério adotado para correção do **AZ0** compara a inclinação lateral do projétil na impactação (em relação ao eixo x) com o ângulo medido **γ**. Como o ângulo **γ** é medido em relação ao Norte, para comparação precisamos somar o valor da **inclinação lateral** com **AZ0** e asism, essa inclinação lateral da impactação estará medida em relação ao Norte.
 
 
 
-O critério de parada fica: ![image](https://user-images.githubusercontent.com/86118560/122675500-16afc780-d1b0-11eb-9d71-5066dcf6b383.png) , onde δγ é um valor arbritariamente pequeno. Que é um critério semelhante a ![image](https://user-images.githubusercontent.com/86118560/122675503-1a434e80-d1b0-11eb-91f1-eecd80900d62.png), utilizado na inclinação do cálculo do arrasto.
+O critério de parada fica: ![image](https://user-images.githubusercontent.com/86118560/122675500-16afc780-d1b0-11eb-9d71-5066dcf6b383.png) , onde **δγ** é um valor arbritariamente pequeno. Que é um critério semelhante a ![image](https://user-images.githubusercontent.com/86118560/122675503-1a434e80-d1b0-11eb-91f1-eecd80900d62.png), utilizado na inclinação do cálculo do arrasto.
 
 
 ![image](https://user-images.githubusercontent.com/86118560/122675514-27603d80-d1b0-11eb-8e6b-5b77ae8fc50e.png)
 
 
-O foco do programa é variar AZ0 até que o valor final da simulação (IL+AZ0) seja próximo ao valor medido γ.
+O foco do programa é variar **AZ0** até que o valor final da simulação (**IL+AZ0**) seja próximo ao valor medido **γ**.
 
 
-Podemos aplicar a matriz inversa de mudança de base para obter os pontos em termos do Norte e Leste, e não do eixo x: ![image](https://user-images.githubusercontent.com/86118560/122675519-321ad280-d1b0-11eb-9444-418e0bc70a58.png), que pode ser entendida como a mesma mudança de base anterior através de um ângulo -AZ0.
+Podemos aplicar a matriz inversa de mudança de base para obter os pontos em termos do Norte e Leste, e não do eixo **x**: ![image](https://user-images.githubusercontent.com/86118560/122675519-321ad280-d1b0-11eb-9444-418e0bc70a58.png), que pode ser entendida como a mesma mudança de base anterior através de um ângulo **-AZ0**.
 
 
-O foco do programa, no entanto, são os resultados finais. A partir da última mudança de base, trajetória gravada será a baseada nas coordenadas geográficas Norte e Leste, mas o valor de x exibido na tela ao final do programa significa o alcance máximo do projétil (Downrange); já o valor de y significa a altura da impactação; z, o desvio lateral provocado pelo vento e efeito Coriolis (se z<0 significa que o projétil desviou para a esquerda em relação ao eixo x, se z>0, o oposto); θ, o ângulo de disparo em relação ao solo; Azimute: Ângulo azimute inicial do disparo.
+O foco do programa, no entanto, são os resultados finais. A partir da última mudança de base, trajetória gravada será a baseada nas coordenadas geográficas Norte e Leste, mas o valor de **x** exibido na tela ao final do programa significa o alcance máximo do projétil (**Downrange**); já o valor de **y** significa a altura da impactação; **z**, o desvio lateral provocado pelo vento e efeito Coriolis (se z<0 significa que o projétil desviou para a esquerda em relação ao eixo x, se z>0, o oposto); **θ**, o ângulo de disparo em relação ao solo; **Azimute**: Ângulo azimute inicial do disparo.
 
 
 ![image](https://user-images.githubusercontent.com/86118560/122675536-44950c00-d1b0-11eb-9608-1c12ad443489.png)
