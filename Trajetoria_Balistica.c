@@ -277,11 +277,11 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     scanf("%lf", &ang);
     ang = (ang+180.0)*M_PI/180.0; // A direção dos ventos é dada de onde ele vem, não para onde sopra.
     
-    printf("\nDigite a latitude decimal do disparo (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: ");
+    printf("\nDigite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: ");
     scanf("%lf", &latitude);
     latitude = latitude*M_PI/180.0; //grau para radianos
 
-    printf("\nDigite a longitude decimal do disparo (em °): ");
+    printf("\nDigite a longitude decimal da impactacao (em °): ");
     scanf("%lf", &longitude);
     
     /* A melhor estimativa para o Azimute inicial é o próprio gamma. Em condições normais de vento, não tem como divergir muito do γ */
@@ -298,12 +298,6 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
 
     vN = vento*cos(ang);
     vE = vento*sin(ang);
-
-    /* TIRAR ESSE PEDAÇO
-    w.x = vN*cos(azimute) + vE*sin(azimute); //mudança de base de Norte-Leste para X e Z
-    w.y = 0.0;
-    w.z = -vN*sin(azimute) + vE*cos(azimute); //mudança de base de Norte-Leste para X e Z    
-    */
 
     g = 9.780327*(1+0.0053024*pow(sin(latitude),2) - 0.0000058*pow (sin(2*latitude),2)); //Açeleração da gravidade na latitude. (em m/s^2) nvl do mar
 
@@ -517,7 +511,6 @@ fprintf(debug,"%f\n",projetil.vx);
            "\nDownrange Total = %.3lf m."
            "\nAltura de impactação = %.3lf m."
            "\nDesvios para %s = %.3lf m."
-           //"\nÂngulo ϕ de impactação = %.2lfº."
            "\nÂngulo θ (inicial) do disparo = %.2lfº."
            "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*theta/M_PI, 180*projetil.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
