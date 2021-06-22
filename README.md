@@ -86,8 +86,7 @@ Digite o módulo da velocidade do vento (em km/h): 17
 
 Digite a direção do vento em relação ao Norte (em °): 131 
 
-Digite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer He
-misfério Sul: -8.0570 
+Digite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: -8.0570 
 
 Digite a longitude decimal da impactacao (em °): -34.9106 
 
