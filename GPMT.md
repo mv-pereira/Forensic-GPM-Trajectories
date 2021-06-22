@@ -324,6 +324,7 @@ Vamos, agora, adicionar as componentes da velocidade do vento em [III]:![image](
 
 	
 Unindo o resultado obtido em [II] com a aceleração de Coriolis [IV] obtemos, em notação vetorial:![image](https://user-images.githubusercontent.com/86118560/122675475-fc75e980-d1af-11eb-9cc2-240be176c255.png)
+
 ![image](https://user-images.githubusercontent.com/86118560/122675478-fe3fad00-d1af-11eb-9658-3f08530d8d79.png)
 
 
