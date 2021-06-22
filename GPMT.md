@@ -234,13 +234,13 @@ Em outras palavras, na equação para x: x(n+1) = xn + kx * h mesmo o primeiro t
 Esse cálculo utilizando RK4 iniciou-se de um problema de valor inicial, ou seja, de antemão, temos os valores [V], o que não representa a realidade. A altura H e o ângulo medido ϕ durante a atividade pericial representam o estado final do problema, não o inicial. Na prática, tampouco utilizaremos RK4 para um problema de valor final, pois não sabemos a velocidade final do projétil.
 
 
-Sugiro, então, utilizarmos as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo θ0. Como a distância encontrada para o caso sem arrasto será maior que para o caso com arrasto, é possível transladarmos toda a curva até que o valor de y no ponto (xi,yi) coincida com a altura H do prédio, durante a trajetória descendente do projétil.
+Sugiro, então, utilizarmos as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo **θ0**. Como a distância encontrada para o caso sem arrasto será maior que para o caso com arrasto, é possível transladarmos toda a curva até que o valor de y no ponto (xi,yi) coincida com a altura H do prédio, durante a trajetória descendente do projétil.
 
 
-Transladando ou não a curva, caso o projétil com arrasto chegue no ponto final com uma angulação menor que ϕ, ou seja, ϕf < ϕ (lembrando que, em trajetória descendente, ϕf e ϕ < 0), incrementamos o ângulo incial de disparo θ0 com um fator e recalculamos toda a trajetória. Por outro lado, se ao fim ϕf > ϕ, reduzimos  θ0 com um fato e recalculamos toda a trajetória.
+Transladando ou não a curva, caso o projétil com arrasto chegue no ponto final com uma angulação menor que **ϕ**, ou seja, **ϕf < ϕ** (lembrando que, em trajetória descendente, **ϕf** e **ϕ < 0**), incrementamos o ângulo incial de disparo **θ0** com um fator e recalculamos toda a trajetória. Por outro lado, se ao fim **ϕf > ϕ**, reduzimos  **θ0** com um fato e recalculamos toda a trajetória.
 
 
-O critério de parada do cálculo é que ![image](https://user-images.githubusercontent.com/86118560/122674610-4e1c7500-d1ac-11eb-90d4-e1afafdb3a1f.png), sendo um δϕ um valor arbitrário aceitável.
+O critério de parada do cálculo é que ![image](https://user-images.githubusercontent.com/86118560/122674610-4e1c7500-d1ac-11eb-90d4-e1afafdb3a1f.png), sendo um **δϕ** um valor arbitrário aceitável.
 ![image](https://user-images.githubusercontent.com/86118560/122674757-f3374d80-d1ac-11eb-987e-2abdd020d8b8.png)
 
 
@@ -279,7 +279,7 @@ Vamos adicionar as componentes da velocidade do ventona trajetória da massa pon
 ![image](https://user-images.githubusercontent.com/86118560/122675061-2e864c00-d1ae-11eb-812f-40d65680daba.png)
 
 
-A adição da aceleração Coriolis será realizada a adição do vetor ![image](https://user-images.githubusercontent.com/86118560/122675066-334b0000-d1ae-11eb-86a1-5013661ff99a.png).
+A adição da aceleração Coriolis será realizada após a adição do vetor **Fd**, proporcional a ![image](https://user-images.githubusercontent.com/86118560/122675066-334b0000-d1ae-11eb-86a1-5013661ff99a.png).
 
 
 Para uma massa pontual, o vetor velocidade  na expressão do arrasto precisa ser	substituído por ![image](https://user-images.githubusercontent.com/86118560/122675076-3e059500-d1ae-11eb-8bb5-df2188cf5fa6.png), pois o arrasto aerodinâmico depende da velocidade relativa ao fluxo de ar e não ao solo.
