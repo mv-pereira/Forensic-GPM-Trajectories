@@ -19,7 +19,7 @@ O programa requisita as seguintes informações para funcionamento:
 - Módulo da **velocidade do vento** (em km/h) e sua **direção** com relação ao Norte (em °);
   - Essas informações podem ser obtidas de diversas fontes, com atenção para estimativa da época do disparo;
     - https://earth.nullschool.net/
-    - google-earth-pro.gosur.com
+    - https://google-earth-pro.gosur.com
     - https://www.windy.com/
     - http://pt.windfinder.com
     - http://www.climatempo.com.br
