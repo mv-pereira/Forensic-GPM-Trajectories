@@ -531,7 +531,9 @@ fprintf(debug,"%f\n",projetil.vx);
     distLongGraus = 0.000008983152098*cos(latitude)*(projetil_1.x*sin(projetil_1.azimute) + projetil_1.z*cos(projetil_1.azimute) );
     
     printf("\nConsiderando um disparo a partir do solo, o projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O.\n",(180/M_PI)*latitude- distLatGraus, longitude - distLongGraus);
-    printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,projetil.vx,0.5*m*pow(projetil.vx,2));
+     double velocidade_final;
+    velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
+    printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*m*pow(velocidade_final,2));
     
 /************************************************
  * Dados para comparação da energia cinética    *
