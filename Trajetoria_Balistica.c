@@ -39,7 +39,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 //Estrutura do Projétil
 
