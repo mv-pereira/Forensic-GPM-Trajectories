@@ -247,18 +247,18 @@ int main(){
     double inclinacao_lateral, delta_inclinacao_lateral, gamma;     //parâmetro para ajuste da inclinação lateral.
     double origemNMM[2];    //Vetor Origem (latitude e Longitude ao Nível Médio do Mar (NMM) do disparo (se ele fosse disparado ao NMM). Será gravado após o primeiro conjunto de iterações.
     
-/****************
- * Declaração das variaveis da possivel edf no meio do caminho.
- * haviaEdf == 0 -> Não havia
- * haviaEdf == 1 -> Havia.
- *************************************/
+/*****************************************************************
+ * Declaração das variaveis da possivel Edificação no meio do    *
+ * caminho. Inicia-se o valor sem edificação e depois corrige    *
+ * haviaEdf == 0 -> Não havia                                    *
+ * haviaEdf == 1 -> Havia.                                       *
+ *****************************************************************/
     double latitudeEdf,longitudeEdf,alturaEdf;
     int haviaEdf = 0;
     double d[2];        //Distâcia entre o projétil e a edificação -> [0] e o projetil_1 e edificacao -> [1].
     double altura_disparo = 0; //Altura do disparo inicia como sendo 0, ao NMM, depois corrige caso haja edificações na trajetória do projétil.
     double delta_y; //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco; //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
-    double px, pz; //Ponto de latitude do projétil durante as iterações, apenas para calcular se passa por cima da edificação, caso exista.
     
     struct prjt projetil, projetil_1; //projetil_1 é o projétil para n+1 | Definição dessa struct no começo do programa.
     struct vento w;                     //Definição da struct do vento.
