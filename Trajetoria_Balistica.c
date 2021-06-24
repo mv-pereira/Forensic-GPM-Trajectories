@@ -39,7 +39,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 //Estrutura do Projétil
 
@@ -72,8 +72,19 @@ double arcsec(double x){
     return acos(1/x); //arcsec t = arccos(1/t).
 }
 
+/********************************************************************
+ * Cáluclo da distância percorrida pelo projétil convertida         *
+ * para graus latitude/longitude tendo em vista sua localização     *
+ * relativa às edificações e impactações.                           *
+ *                                                                  *
+ * "distLatGraus" é a "distância" em graus entre a latitude do      *
+ * disparo e a latitude do ponto solicitado.                        *
+ * "distLongGraus" é a "distância" em graus entre a longitude do    *
+ * disparo e a longitude do ponto solicitado.                       *
+ *                                                                  *
+ * Constante "0.000008983152098" tem unidades de º/m.               *
+ ********************************************************************/
 
-//INSERIR EXPLICACAOOOOOOOOOOOOOO //Distância em graus para latitude e para longitude.
 double distLatGraus (struct prjt *projetil){
     return 0.000008983152098*(projetil->x*cos(projetil->azimute) - projetil->z*sin(projetil->azimute));
 }
@@ -81,8 +92,6 @@ double distLatGraus (struct prjt *projetil){
 double distLongGraus (struct prjt *projetil, double latitude){
     return 0.000008983152098*cos(latitude)*(projetil->x*sin(projetil->azimute) + projetil->z*cos(projetil->azimute) );
 }
-
-
 
 /****************************************************************************
  *                        Spindrift aproximado                              *
@@ -478,18 +487,6 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * do solo.                         *
  ************************************/
 
-
-
-
-
-
-
-
-
-
-
-
-
     /* Questionamento se havia edificações no caminho do projétil */
     printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo?\n");
     printf("\t\tLatitude\tLongitude\nImpacto\t\t%f,\t%f\nOrigem (NMM)\t%f,\t%f\n",(180/M_PI)*latitude,longitude,origemNMM[0], origemNMM[1]);
@@ -548,9 +545,8 @@ alturaEdf=100;
     inclinacao_lateral = 1.0; // Qualquer valor positivo para entrar no laço.
 
     
-//    while (descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)){  ************ ANTERIORRRRRRRRRR **********
     while ( haviaEdf ? (descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)) : projetil_1.x < downrangeMax){
-        //A única coisa que importa após o edf. é a distância percorrida ser menor que a distância entre os dois prédios.
+        //A única coisa que importa após o edf. é a distância percorrida ser menor que a distância entre a edificação e a impactação.
         
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
@@ -583,10 +579,8 @@ alturaEdf=100;
                     projetil.vy=v*sin(theta);
                     projetil.vz=0.0; // Seria possível já iniciar projetil.vz com a inclinacao_lateral, mas deixa recalcular... menos trabalho.
                     projetil_1=projetil;
-                    haviaEdf = 0; // Para de testar todos esses cálculos.
-                    /*Gravação da distância entre a edificação e a impactação*/
-                    //distanciaPredio_Impacataco = (sqrt ( pow(px - 180*latitude/M_PI,2) + pow (pz - longitude,2)))/0.000008983152098; //dist em metro divide pelo fator do grau
-                    printf("\n\n\n%lf\n\n\n",downrangeMax);
+                    haviaEdf = 0; // == 0 Interrompe os testes para esses cálculos.
+
                 } else {
                     printf ("O projétil passou por cima da edificação.");
                     altura_disparo=0;
@@ -682,26 +676,6 @@ alturaEdf=100;
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 /************************************
  * Recalculo a partir da última     *
  * correção apenas para gravar      *
@@ -731,7 +705,6 @@ alturaEdf=100;
                     " na ordem:\ntempo    L/O      Altura    N/S      V(L/O)      V(y)      V(N/S)   Downrange:\n");
     fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t,projetil.x,projetil.y,projetil.z,projetil.vx,projetil.vy,projetil.vz, projetil.x);
 
-//    while ( descendente ? ( (inclinacao > 0) || (projetil_1.y>altura) ) : (projetil_1.y<altura)){
     while ( haviaEdf ? (descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)) : projetil_1.x < downrangeMax){
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
@@ -743,12 +716,12 @@ alturaEdf=100;
         kappa = kappaSdensidade*densidade_ar(projetil.y);
  
 
-#if DEBUG
 /********************************
  * Imprimir alguma informação   *
  * relevante para análise.      *
  *                              *
  ********************************/
+#if DEBUG
 fprintf(debug,"%f\t%lf\n",downrangeMax,projetil.x);
 #endif
 
@@ -783,21 +756,6 @@ fprintf(debug,"%f\t%lf\n",downrangeMax,projetil.x);
            "\nÂngulo θ (inicial) do disparo = %.2lfº."
            "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), altura_disparo, 180*theta/M_PI, 180*projetil.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
-
-/****************************************************************
- * Cálculo para imprimir na tela as coordenadas geográficas do  *
- * disparo considerando um tiro efetuado a partir do solo!      *
- * "distLatGraus" é a "distância" em graus entre a latitude do  *
- * disparo e a latitude da impactação.                          *
- * "distLongGraus" é a "distância" em graus entre a latitude do *
- * disparo e a latitude da impactação.                          *
- *                                                              *
- * Constante "0.000008983152098" tem unidades de º/m.           *
- ****************************************************************/
-
- //   double distLatGraus, distLongGraus;
-  //  distLatGraus = 0.000008983152098*(projetil_1.x*cos(projetil_1.azimute) - projetil_1.z*sin(projetil_1.azimute));
-  //  distLongGraus = 0.000008983152098*cos(latitude)*(projetil_1.x*sin(projetil_1.azimute) + projetil_1.z*cos(projetil_1.azimute) );
     
     printf("\nConsiderando um disparo a partir do solo, o projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O.\n",(180/M_PI)*latitude- distLatGraus (&projetil_1), longitude - distLongGraus(&projetil_1,latitude));
     double velocidade_final;
