@@ -769,12 +769,11 @@ fprintf(debug,"%f\t%lf\n",(180/M_PI)*latitude- distLatGraus (&projetil_1),longit
            "\nDownrange Total = %.3lf m."
            "\nAltura de impactação = %.3lf m."
            "\nDesvios para %s = %.3lf m."
-           "\nAltura inicial do disparo = %.2lf m."
            "\nÂngulo θ (inicial) do disparo = %.2lfº."
-           "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), altura_disparo, 180*theta/M_PI, 180*projetil.azimute/M_PI);
+           "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*theta/M_PI, 180*projetil.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
     
-    printf("\nConsiderando um disparo a partir do solo, o projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O.\n",(180/M_PI)*latitude- distLatGraus (&projetil_1), longitude - distLongGraus(&projetil_1,latitude));
+    printf("\nO projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O, a uma altura de %.2lf m.\n",(180/M_PI)*latitude- distLatGraus (&projetil_1), longitude - distLongGraus(&projetil_1,latitude),altura_disparo);
     double velocidade_final;
     velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
     printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*m*pow(velocidade_final,2));
