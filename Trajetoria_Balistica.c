@@ -110,12 +110,6 @@ double distLongGraus (struct prjt *projetil, double latitude){
     return 0.000008983152098*cos(latitude)*(projetil->x*sin(projetil->azimute) + projetil->z*cos(projetil->azimute) );
 }
 
-/****************************************
- * Cálculo da norma do vetor posição    *
- ****************************************/
-double norma (struct prjt *projetil){
-    return sqrt (pow(projetil->x,2) + pow(projetil->z,2) + pow(projetil->y,2));
-}
 
 /****************************************************************************
  *                        Spindrift aproximado                              *
@@ -501,8 +495,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * A primeira simulação terminada forneceu as distâncias máximas possíveis para origem do disparo,  *
  * pois foi considerado que o disparo ocorreu ao nível médio do mar NMM (projetil.y "inicial" = 0)  *
  * Com isso, tem-se um novo limitante para futuras iterações (distância máxima percorrida).         *
- * Essa distância máxima percorrida será uma função dada pela norma do vetor posição resultante     *
- * (projetil.x,projetil.y,projetil.z).                                                              *
+ * Essa distância máxima percorrida é aproximadamente o donwrange máximo alcançado pelo projétil.   *
  ****************************************************************************************************/
 
     origemNMM[0] = (180/M_PI)*latitude - distLatGraus (&projetil);
@@ -728,6 +721,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
                     " na ordem:\ntempo    L/O      Altura    N/S      V(L/O)      V(y)      V(N/S)   Downrange:\n");
     fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t,projetil.x,projetil.y,projetil.z,projetil.vx,projetil.vy,projetil.vz, projetil.x);
 
+    /* O último laço para gravar os resultados precisa apenas obedecer o downrangeMax com as devidas condições iniciais. */
     while ( projetil_1.x < downrangeMax){
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
