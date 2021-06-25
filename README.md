@@ -126,4 +126,4 @@ O programa fornece, por fim, a estimativa de duração do tempo de deslocamento 
 | Velocidade Final              | 151.45 m/s     |
 | Energia Cinética              | 117.44 J       |
 
-> É importante destacar que, caso haja ainda outras edificações ainda mais próximas da impactação é necessário rodar novamente o programa com essas novas coordenadas e altura.
+> É importante destacar que, caso haja ainda outras edificações ainda mais próximas da impactação é necessário rodar novamente o programa com essas novas coordenadas e altura até não sobrar dúvidas.
