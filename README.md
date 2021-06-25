@@ -36,9 +36,9 @@ O critério de parada do cálculo é que ![image](https://user-images.githubuser
 O mesmo cálculo é realizado para o Azimute.
 
 ## Exemplo:
-Vamos supor que um disparo atingiu o 11° andar de um edifício no final da Avenida Caxangá, bairro da Madalena, Recife/PE.
+Vamos supor que um disparo atingiu o 11° andar de um edifício no final da Avenida Caxangá, bairro da Madalena, Recife/PE e não havia outras edificações entre a região do disparo e o impactação.
 
-Ao medir as informações, a equipe obteve os seguintes valores:
+Ao medir os parâmetros, a equipe obteve os seguintes valores:
 
 y0 = 36 m; ϕ = 8°; γ = 20°;
 
@@ -156,3 +156,21 @@ splot "data" u 2:4:3 with lines ls 1, u,0,v with lines
 
 
 <img src="https://user-images.githubusercontent.com/86118560/122675568-62fb0780-d1b0-11eb-942b-951683c8bb39.png" alt="1" width="711" height="400">
+
+
+## Exemplo 2:
+Vamos supor que um projétil de arma de fogo atingiu um Edifício ao final da Rua Padre Carapuceiro, Boa Viagem, Recife/PE. O projétil entrou pela janela localizada em um dos últimos pavimentos.
+
+Ao medir os parâmetros, a equipe obteve os seguintes valores:
+
+Coordenadas da impactação:
+Latitude da -8.116395, longitude -34.902492
+y0 = 94 m; ϕ = 8°; γ = 20°;
+
+Velocidade do Projétil .38 = 270 m/s;
+
+Cd (.38) = 0.2;
+
+Massa (.38) = 10.24 g;
+
+Diâmetro (.38) = 8.82 mm;
