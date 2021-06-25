@@ -63,6 +63,8 @@ Após recuperação do projétil, localizado no interior da residência, ficou c
 
 > O Coeficiente de Arrasto do projétil pode ser calculado utilizando o programa Forensic-GPM-Trajectories/Coeficiente de Arrasto/Cd_projeteis.c
 
+> É possível rodar online, copiando o código para: https://www.onlinegdb.com/online_c_compiler
+
 Após informações sobre a época do fato (o disparo hipotético ocorreu no dia 01/01/21 as 03h da madrugada), foram registradas as condições do vento no local. Nesse exemplo foi utilizado o https://earth.nullschool.net/pt/
 
 ![02](https://user-images.githubusercontent.com/86118560/123483006-7c4eea00-d5dc-11eb-8635-68d998fc2b81.jpg)
