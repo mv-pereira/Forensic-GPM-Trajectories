@@ -36,123 +36,94 @@ O critério de parada do cálculo é que ![image](https://user-images.githubuser
 O mesmo cálculo é realizado para o Azimute.
 
 ## Exemplo:
-Vamos supor que um disparo atingiu o 11° andar de um edifício no final da Avenida Caxangá, bairro da Madalena, Recife/PE.
+Vamos supor que um projétil de arma de fogo atingiu o Edifício Maria Juliana, localizado na Av. Boa Viagem, 4398, a 89 m do solo, no último pavimento.
 
-Ao medir as informações, a equipe obteve os seguintes valores:
+Para Localização e imagens vamos utilizar o https://earth.google.com/web/.
 
-y0 = 36 m; ϕ = 8°; γ = 20°;
+![01](https://user-images.githubusercontent.com/86118560/123481188-c1255180-d5d9-11eb-9a16-ed9b1921209c.jpg)
 
-Velocidade do Projétil .38 = 305 m/s;
+Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os seguintes parâmetros:
+| Parâmetros da Impactação        | Medidas      |
+|---------------------------------|--------------|
+| Altura da Impactação            | 89 m         |
+| Ângulo ϕ com a Horizontal       | 4 °          |
+| Trajetória Era Descendente?     | Não          |
+| Ângulo γ com o Norte (azimute)  | 183 °        |
+| Latitude Decimal da Impactação  | -8.127727 °  |
+| Longitude Decimal da Impactação | -34.898383 ° |
 
-Cd (.38) = 0.2;
+Após recuperação do projétil, localizado no interior da residência, ficou constatado tratar-se de um projétil CBC, NTA .38 SPL EOPP 158gr.
+|  Parametros do Projétil           | Medidas    |
+|-----------------------------------|------------|
+| Massa do projétil                 | 10.240 g   |
+| Velocidade inicial do projétil    | 230 m/s    |
+| Diâmetro do projétil já disparado | 8.82 mm    |
+| Coeficiente de Arrasto Cd         | 0.235800   |
+| Dextrogiro ou Levogiro            | Dextrogiro |
 
-Massa (.38) = 8 g;
+> O Coeficiente de Arrasto do projétil pode ser calculado utilizando o programa Forensic-GPM-Trajectories/Coeficiente de Arrasto/Cd_projeteis.c
 
-Diâmetro (.38) = 8.82 mm;
+Após informações sobre a época do fato (o disparo hipotético ocorreu no dia 01/01/21 as 03h da madrugada), foram registradas as condições do vento no local. Nesse exemplo foi utilizado o https://earth.nullschool.net/pt/
 
-Velocidade do vento, direção e Latitude são dadas pela carta dos ventos.
+![02](https://user-images.githubusercontent.com/86118560/123483006-7c4eea00-d5dc-11eb-8635-68d998fc2b81.jpg)
 
+![03](https://user-images.githubusercontent.com/86118560/123483012-7eb14400-d5dc-11eb-8f80-4463bfac3b76.jpg)
 
-<img src="https://user-images.githubusercontent.com/86118560/122675558-5676af00-d1b0-11eb-9eeb-a7482cd5cb26.png" alt="1" width="711" height="400">
+![04](https://user-images.githubusercontent.com/86118560/123483016-807b0780-d5dc-11eb-863f-d4a5ec3bcf2f.jpg)
 
-Valores da velocidade do vento em Recife em 31/03/2020 as 15:00.
-Fonte: https://pt.windfinder.com/#16/-8.0570/-34.9108/report
+| Parametros do Vento | Medidas   |
+|---------------------|-----------|
+| Velocidade do Vento | 10 km/h   |
+| Direção do Vento    | 100 °     |
 
+O programa foi aberto, alimentado com os parâmetros fornecendo o seguinte resultado parcial:
+>O ângulo θ do início do disparo com a horizontal considerado a partir do solo e em um sistema sem arrasto ou outras correcoes vale: 12.04°
+>
+>Considerando um sistema sem arrasto: x- = 559.208 m e x+ = 1646.637 m
+>Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?
+>|              | Latitude  | Longitude  |
+>|--------------|-----------|------------|
+>| Impacto      | -8.127727 | -34.898383 |
+>| Origem (NMM) | -8.122955 | -34.898146 |
 
-[mario@g7 2.2]$ gcc Trajetoria_Balistica.c -o teste -lm
+Ao examinar as coordenadas de possível origem observou-se que havia uma edificação próxima.
 
-[mario@g7 2.2]$ ./teste  
+![05](https://user-images.githubusercontent.com/86118560/123485984-9939ec00-d5e1-11eb-9b85-d6e80a7a91b7.jpg)
 
-Digite a altura (em metros) da impactação em relação ao disparo: 36 
-A impactação ocorreu em trajetória descendente? 
-1 - SIM 2 - NÃO. 
-1 
+![06](https://user-images.githubusercontent.com/86118560/123486256-0d748f80-d5e2-11eb-88e7-65ce055537c6.jpg)
 
-Digite o ângulo ϕ com a horizontal (em °): 8 
+Após responder Sim (1) ao programa, foi inserido as coordenadas e altura dessa edificação:
+| Edificacao | Características |
+|------------|-----------------|
+| Latitude   | -8.123596 °     |
+| Longitude  | -34.898176 °    |
+| Altura     | 60 m            |
 
-Digite o ângulo γ com o Norte (em °) (azimute): 20 
+O programa conclui que, ao invés da origem estimada, partiu, de fato, da edificação indicada, com o segunite resultado:
 
-Digite a velocidade inicial (em m/s) do projétil: 305 
+| Resultado                     | Valores        |
+|-------------------------------|----------------|
+| Downrange Total               | 458.996 m      |
+| Altura de impactação          | 88.974 m       |
+| Desvios para direita          | 1.292 m        |
+| Ângulo θ (inicial) do disparo | 11.71º         |
+| Azimute inicial do disparo    | 182.75º        |
+| Latitude do disparo           | -8.123609 N/S  |
+| Longitude do disparo          | -34.898176 L/O |
+| Altura do Disparo             | 20.87 m        |
 
-Digite a massa do projétil (em g): 8 
+Assim, procurou-se as coordenadas e altura fornecida pelo programa:
 
-Digite o diâmetro do projétil já disparado (em mm): 8.82 
+![07](https://user-images.githubusercontent.com/86118560/123486950-63960280-d5e3-11eb-8d8f-ac8c8d8aece2.jpg)
 
-Digite o Coeficiente de Arrasto Cd (aproximadamente 0.2 em casos subsônicos) do projétil: 0.2 
+A região que ocorreu o disparo é dada na posição do mouse.
 
-O projetil é dextrogiro ou levogiro? 1 - Dextrogiro.    2 - Levogiro. 
-1 
+O programa fornece, por fim, a estimativa de duração do tempo de deslocamento do projétil, Velocidade Final e Energia Cinética para comparação com valores nominais de outros calibres.
 
-Digite o módulo da velocidade do vento (em km/h): 17 
+| Resultado                     | Valores        |
+|-------------------------------|----------------|
+| Tempo de Trajetória           | 2.5 segundos   |
+| Velocidade Final              | 151.45 m/s     |
+| Energia Cinética              | 117.44 J       |
 
-Digite a direção do vento em relação ao Norte (em °): 131 
-
-Digite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: -8.0570 
-
-Digite a longitude decimal da impactacao (em °): -34.9106 
-
-### RESULTADO
-
-O ângulo θ do início do disparo com a horizontal considerado a partir do solo e em um sistema se
-m arrasto ou outras correcoes vale: 9.42° 
-
-Considerando um sistema sem arrasto: x- = 234.937 m e x+ = 2836.528 m 
-
-Considerando um sistema com arrasto, os cálculos terminaram com os seguintes valores: 
-
-Foram efetuados 261 cálculos de trajetória.
-
-Downrange Total = 957.355 m. 
-
-Altura de impactação = 36.000 m. 
-
-Desvios para esquerda = 8.644 m. 
-
-Ângulo θ (inicial) do disparo = 7.93º. 
-
-Azimute inicial do disparo = 21.11º. 
-
-
-A trajetória teve outro desvio devido ao spindrift de, aproximadamente, 226 cm para direta, não 
-incluidos nos cálculos. 
-
-Considerando um disparo a partir do solo, o projétil partiu, aproximadamente, das coordenadas: -
-8.065051 N/S, -34.913595 L/O. 
-
-O projétil levou cerca de 5.1 segundos do momento do disparo à impactação. 
-Possuía velocidade final de 125.22 m/s e energia cinética de 62.72 J.
-
-Energia cinética de alguns projéteis para comparação: 
-| Calibre        | Energia (J) |
-|----------------|-------------|
-| .25 AUTO       | 87          |
-| .32 AUTO       | 175         |
-| .380 AUTO EXPO | 259         |
-| .38 SPL CHOG   | 271         |
-| 9x19mm (124gr) | 459         |
-| .40 EXPO Gold  | 568         |
-| . 357 Mag      | 724         |
-| .454 Casull    | 2531        |
-
-Argumentos no **Gnuplot** para visualização da trajetória:
-
-set xrange [0:900]  
-
-set yrange [900:0]
-
-set zrange [0:100] 
-
-set parametric 
-
-set urange [0:1000]
-
-set vrange [0:50]
-
-set style line 1 lw 3
-
-splot "data" u 2:4:3 with lines ls 1, u,0,v with lines
-
-<img src="https://user-images.githubusercontent.com/86118560/122675566-6098ad80-d1b0-11eb-9cd1-c935540e481e.png" alt="1" width="711" height="400">
-
-
-<img src="https://user-images.githubusercontent.com/86118560/122675568-62fb0780-d1b0-11eb-942b-951683c8bb39.png" alt="1" width="711" height="400">
+> É importante destacar que, caso haja ainda outras edificações ainda mais próximas da impactação é necessário rodar novamente o programa com essas novas coordenadas e altura até não sobrar dúvidas.
