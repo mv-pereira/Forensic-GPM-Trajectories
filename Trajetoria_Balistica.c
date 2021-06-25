@@ -274,20 +274,20 @@ int main(){
 
 #if DEBUG //Valores padrão apenas para comparação
 
-altura = 94;
+altura = 89;
 descendente = 0;
-phi = 0*M_PI/180;
-gamma = 290*M_PI/180;
-v = 270;
-m=8.1/1000.0;
+phi = 4*M_PI/180;
+gamma = 183*M_PI/180;
+v = 230;
+m=10.240/1000.0;
 a=M_PI*powl((8.82/1000.0),2)/4; // A divisão por quatro leva em conta o raio.
 //a=log(M_PI/4)+2*log(8.82/1000);
 dextrogiro=1;
-c = 0.302060;
-vento = 22/3.6;
-ang = (0+180.0)*M_PI/180.0;
-latitude = -8.116395*M_PI/180.0;
-longitude = -34.902492;
+c = 0.235800;
+vento = 10/3.6;
+ang = (100+180.0)*M_PI/180.0;
+latitude = -8.127727*M_PI/180.0;
+longitude = -34.898383;
 azimute = gamma;
 g = 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude)); //Açeleração da gravidade na latitude. (em m/s^2)
 printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da função DEBUG, mudar a definição de DEBUG para 0 no cabeçalho do programa e recompilar.\n\n");
@@ -530,7 +530,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     origemNMM[0] = (180/M_PI)*latitude - distLatGraus (&projetil);
     origemNMM[1] = longitude - distLongGraus (&projetil,latitude);
     double downrangeMax = projetil.x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao.
-   
+
+printf("\nDownrange = %lf m\n",projetil.y);   
     
 /************************************
  * Fim das primeiras simulações     *
@@ -545,10 +546,10 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
 
     if (getchar() == '1'){ /* Em ASCII: 49 */
             haviaEdf = 1;
-    #if DEBUG //Primeiro prédio: -8.118161,-34.897764, 232m |||||| Segundo prédio: -8.117618 -34.899144, 64m
-    latitudeEdf=-8.117876 ;
-    longitudeEdf=-34.898576;
-    alturaEdf=35;
+    #if DEBUG //, Holiday -8.123596, -34.898176 60m
+    latitudeEdf=-8.123596 ;
+    longitudeEdf=-34.898176;
+    alturaEdf=60;
     distanciaPredio_Impacataco = haversine (180*latitude/M_PI,longitude,latitudeEdf, longitudeEdf);
 
 
