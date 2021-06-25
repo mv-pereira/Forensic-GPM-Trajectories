@@ -99,7 +99,7 @@ Após responder Sim (1) ao programa, foi inserido as coordenadas e altura dessa 
 | Longitude  | -34.898176 °    |
 | Altura     | 60 m            |
 
-O programa conclui que, ao invés da origem estimada, partiu, de fato, da edificação, com o segunite resultado:
+O programa conclui que, ao invés da origem estimada, partiu, de fato, da edificação indicada, com o segunite resultado:
 
 | Resultado                     | Valores        |
 |-------------------------------|----------------|
