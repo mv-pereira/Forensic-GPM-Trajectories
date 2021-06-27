@@ -34,6 +34,7 @@
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <stdlib.h> //Para função exit() na condicional da abertura do arquivo;
 #include <stdbool.h>
+#include <time.h>   //Para velocidade de funções - DEBUG
 
 
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
@@ -79,8 +80,16 @@ double arcsec(double x){
  * precisa converter para RADIANOS).                        *
  * https://pt.wikipedia.org/wiki/F%C3%B3rmula_de_haversine  *
  ************************************************************/
+double raioTerraLatitude (double latitude){ //https://en.wikipedia.org/wiki/Earth_radius#Geocentric_radius
+    double a, b;
+    a = 6378137.0; //Raio Equatorial em m.
+    b = 6356752.3; //Raio Polar em m.
+    return sqrt( (pow(a*a*cos(latitude),2) + pow(b*b*sin(latitude),2) ) / (pow(a*cos(latitude),2) + pow(b*sin(latitude),2) ) );
+}
+
 double haversine(double lat1, double long1, double lat2, double long2){
-    double raio = 1000*6335.439; //Raio da terra no equador em metros.
+    double raio;
+    raio = raioTerraLatitude ((lat1+lat2)/2); //Raio da terra.
     lat1= M_PI*lat1/180;
     lat2= M_PI*lat2/180;
     long1= M_PI*long1/180;
@@ -223,9 +232,12 @@ int main(){
     FILE *arquivo;
     arquivo = fopen("data","w");
     
-#if DEBUG //DEBUG para geração de arquivos com informações pertinentes.
+#if DEBUG
+    /*DEBUG para geração de arquivos com informações pertinentes.*/
         FILE *debug;
-        debug = fopen("debug","w"); 
+        debug = fopen("debug","w");
+    /*Cálculo de duração de funções*/
+    clock_t ciclos_cpu;
 #endif
 
     if (arquivo == NULL) {
@@ -259,6 +271,7 @@ int main(){
     double altura_disparo = 0; //Altura do disparo inicia como sendo 0, ao NMM, depois corrige caso haja edificações na trajetória do projétil.
     double delta_y; //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco; //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
+    double px, pz; //Ponto de latitude do projétil durante as iterações, apenas para calcular se passa por cima da edificação, caso exista.
     
     struct prjt projetil, projetil_1; //projetil_1 é o projétil para n+1 | Definição dessa struct no começo do programa.
     struct vento w;                     //Definição da struct do vento.
@@ -267,17 +280,18 @@ int main(){
 
 altura = 89;
 descendente = 0;
-phi = 16*M_PI/180;
-gamma = 73*M_PI/180;
+phi = 4*M_PI/180;
+gamma = 183*M_PI/180;
 v = 230;
-m=(10.24)/1000.0;
+m=10.240/1000.0;
 a=M_PI*powl((8.82/1000.0),2)/4; // A divisão por quatro leva em conta o raio.
+//a=log(M_PI/4)+2*log(8.82/1000);
 dextrogiro=1;
-c = 0.23;
-vento = 7.56/3.6;
-ang = (200+180.0)*M_PI/180.0;
-latitude = -8.108074*M_PI/180.0;
-longitude = -34.892729;
+c = 0.235800;
+vento = 10/3.6;
+ang = (100+180.0)*M_PI/180.0;
+latitude = -8.127727*M_PI/180.0;
+longitude = -34.898383;
 azimute = gamma;
 g = 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude)); //Açeleração da gravidade na latitude. (em m/s^2)
 printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da função DEBUG, mudar a definição de DEBUG para 0 no cabeçalho do programa e recompilar.\n\n");
@@ -292,7 +306,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     
     printf("Digite a altura (em metros) da impactação em relação ao disparo: ");
     scanf("%lf", &altura);
-    
+
     printf("A impactação ocorreu em trajetória descendente?\n1 - SIM\t2 - NÃO.\n");
     scanf("%d", &descendente);
     (descendente != 1) ? descendente = 0 : 1;
@@ -354,7 +368,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     vN = vento*cos(ang);
     vE = vento*sin(ang);
 
-    g = 9.780327*(1+0.0053024*pow(sin(latitude),2) - 0.0000058*pow (sin(2*latitude),2)); //Açeleração da gravidade na latitude. (em m/s^2) nvl do mar
+    g = 9.780327*(1+0.0053024*pow(sin(latitude),2) - 0.0000058*pow (sin(2*latitude),2)); //Aceleração da gravidade na latitude. (em m/s^2) nvl do mar
 
 /************************************
  * Início do cálculo SEM arrasto    *
@@ -375,12 +389,18 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * Fim do cálculo sem Arrasto   *
  * onde foi obtido um θ inicial *
  ********************************/
-    
-    kappaSdensidade = c*a/(2.0*m); //Constante de arrasto/ro. Note que a massa já entra na constante. Densidade do ar será calculado nas funcoes de vx,vy,vz...
+
+    //Constante de arrasto/ro. Note que a massa já entra na constante. Densidade do ar será calculado nas funcoes de vx,vy,vz...
+    kappaSdensidade = (c/m)*(a/2); //Ordem alterada de c*a/(2.0*m) para evitar Underflow.
+
     projetil.latitude=latitude;
     projetil.azimute =azimute;
     n = 0;                          //Contador para registrar quantas vezes toda a trajetória foi calculada.
-    
+
+#if DEBUG   /*Cálculo de duração de funções*/
+ciclos_cpu = clock();
+#endif
+
 /********************************************************
  * Condições Iniciais: Dados dispostos considerando um  *
  *                     disparo a 0 metros de altura     *
@@ -401,14 +421,14 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     projetil.vz=0.0;   //Downrange continua sendo no eixo x;
     //projetil.azimute será atualizado nos laços.
     projetil_1 = projetil;
-    
+   
     //Recálculo do vento pela variação do azimute inicial.
     //Mudança de base de Norte-Leste para X e Z
     w.x = vN*cos(projetil.azimute) + vE*sin(projetil.azimute);
     w.y = 0.0;
     w.z = -vN*sin(projetil.azimute) + vE*cos(projetil.azimute);
 
-    
+
 /****************************************************************************
  * Início do laço para cálculo RK4 Para um disparo ocorrido a partir do NMM *
  *                                                                          *
@@ -418,15 +438,16 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     inclinacao_lateral = 1.0; // Qualquer valor positivo para entrar no laço.
     
         //Segundo teste do while: se o disparo for descendente, o laço só para quando o projétil cair abaixo da altura medida, caso contrário, para qunaodo o projétil estiver acima da altura medida
-    
-    while ( descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)){
+
+        
+    while ( descendente ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
         projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
         projetil_1.z = projetil.z + pos(projetil.vz,H)*H;
 
         inclinacao_lateral = atan (projetil.vz/projetil.vx);
-        
+
         kappa = kappaSdensidade*densidade_ar(projetil.y);
 
         projetil_1.vx = projetil.vx + kvx(&projetil, &w, inclinacao_lateral, H, kappa)*H;   //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
@@ -439,9 +460,22 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
         t = t1;
         projetil = projetil_1;
 
+        //Se com arrasto, o projétil caiu antes de atingir a "altura" é porque para o dado theta, ele não subirá muito. Então deve-se incrementar "theta".
+        if (projetil.y<0 ) {
+        //    printf("\n%lf\t%lf",theta,projetil.x);
+            theta = theta + PARADA/10;
+
+            if (theta>0.785) { //Se theta estiver a 45 graus e ainda sim o projétil não atingir a altura, não há solução para o problema com os parâmetros fornecidos. O programa encerra-se.
+                printf ("\nCom os parâmetros fornecidos, o projétil não atingiria a altura de impactação.");
+                fclose(arquivo);
+                goto FATALERROR;
+            }
+        goto A;
+        }
 
         }
         n++;
+
         inclinacao_lateral = atan (projetil_1.vz/projetil_1.vx);
         //inclinacao lateral final (como não é critério de parada para o laço, só precisa ser calculado ao final do processo).
         t_total = t; //Guarda o tempo total para colocar na ordem inversa na gravação do arquivo.
@@ -451,21 +485,26 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * de atrito inicial.               *
  *                                  *
  ************************************/
-    delta_phi = fabs (inclinacao) - phi;
-    
-    if ( fabs (delta_phi) > PARADA/10){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-    
 
+//usa-se o fabs na inclinação porque phi é sempre positivo. (O critério para phi negativo é se a impactacao é descendente ou ascendente.
+    delta_phi = fabs (inclinacao) - phi;
+
+    if ( fabs (delta_phi) > (fabs (phi) < 0.01745 ? PARADA : PARADA/10)){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
+        
+        /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
+         Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
+       
     if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-PARADA/100;         //Diminue θ inicial.
+        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
         goto A;
         }
     else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+PARADA/100;         //Aumenta θ inicial.
+        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
         goto A;
         }
-    } 
+    }
 
+    
 /********************************************************************************************************
  * Etapa de correção do AZ0 (Azimute Inicial)                                                           *
  *                                                                                                      *
@@ -481,16 +520,21 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
     if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
 
+        /*Nos primeiros cálculos (delta_inclinacao_lateral/10) será grande. a medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante */
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute - PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute - fabs (delta_inclinacao_lateral/10) - PARADA/100;   //Diminue Azimute inicial.
         goto B;
         }
     else{                                                   //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute + PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute + fabs (delta_inclinacao_lateral/10) + PARADA/100;   //Diminue Azimute inicial.
         goto B;
         }
     }
 
+#if DEBUG   /*Cálculo de duração de funções*/
+printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
+#endif
+    
 /****************************************************************************************************
  * A primeira simulação terminada forneceu as distâncias máximas possíveis para origem do disparo,  *
  * pois foi considerado que o disparo ocorreu ao nível médio do mar NMM (projetil.y "inicial" = 0)  *
@@ -502,7 +546,6 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     origemNMM[1] = longitude - distLongGraus (&projetil,latitude);
     double downrangeMax = projetil.x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao.
     
-    
 /************************************
  * Fim das primeiras simulações     *
  * considerandoo projétil partindo  *
@@ -510,17 +553,18 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  ************************************/
 
     /* Questionamento se havia edificações no caminho do projétil */
-    printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo?\n");
+    printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?\n");
     printf("\t\tLatitude\tLongitude\nImpacto\t\t%f,\t%f\nOrigem (NMM)\t%f,\t%f\n",(180/M_PI)*latitude,longitude,origemNMM[0], origemNMM[1]);
     printf("\n1 - SIM. 2 - NAO: ");
 
     if (getchar() == '1'){ /* Em ASCII: 49 */
             haviaEdf = 1;
-    #if DEBUG
-    latitudeEdf=-8.108592;
-    longitudeEdf=-34.8936705;
-    alturaEdf=100;
+    #if DEBUG //, Holiday -8.123596, -34.898176 60m
+    latitudeEdf=-8.123596 ;
+    longitudeEdf=-34.898176;
+    alturaEdf=60;
     distanciaPredio_Impacataco = haversine (180*latitude/M_PI,longitude,latitudeEdf, longitudeEdf);
+
 
     #else
             printf("\nInsira as coordenadas da edificação mais próximas da região da impactação.");
@@ -538,10 +582,13 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
         goto ULTIMA;
     }
 
+#if DEBUG   /*Cálculo de duração de funções*/
+ciclos_cpu = clock();
+#endif
 
     C: //Ponto de partida do goto após correção do ângulo θ = theta/Phi e Altura para o sistema com edificação.
 
-  //Condições iniciais para variáveis com edificação no caminho:
+    //Condições iniciais para variáveis com edificação no caminho:
     
     t=0.0;
     projetil.x=0.0;
@@ -591,10 +638,11 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
             if (projetil_1.x > (downrangeMax-distanciaPredio_Impacataco) ) { 
             //essa condicao aumenta o erro se o usuário colocar uma edificao fora da trajetória
             //Essa condicao testa para ver se o projétil já passou da edificação. Nesse caso, testa (abaixo) para saber se o projétil passou por cima da edificação.
-                
+
                 if(projetil_1.y < alturaEdf){
+
                     t=0.0;
-                    downrangeMax = downrangeMax-projetil.x; // subtraindo a posição atual do projétil, temos a distância da edificação até a impactacao.
+                    downrangeMax = downrangeMax-projetil_1.x; // subtraindo a posição atual do projétil, temos a distância da edificação até a impactacao.
                     projetil.x=0.0; // Eixo "x" é o Downrange.
                     /*Gravação da variável altura_disparo.*/
                     altura_disparo=projetil.y;
@@ -615,7 +663,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
                 }
             }
         }
-    
+
         //Atualizações de variáveis.
         t = t1;
         projetil = projetil_1;
@@ -625,26 +673,6 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
         inclinacao_lateral = atan (projetil_1.vz/projetil_1.vx);
         //inclinacao lateral final (como não é critério de parada para o laço, só precisa ser calculado ao final do processo).
         t_total = t; //Guarda o tempo total para colocar na ordem inversa na gravação do arquivo.
-        
-/************************************
- * Etapa de correção da altura      *
- * inicial do disparo a partir      *
- * do edificio.                     *
- ************************************/
-
-    delta_y = fabs (projetil.y - altura); //EXPLICAR EM RELACAO AO PRÉDIO
-
-    if ( delta_y > 0.01){ //1 cm;
-        
-        if (projetil.y > altura) {
-            altura_disparo -= 0.01;
-            goto C;
-        } else {
-            altura_disparo += 0.01;
-            goto C;
-        }
- 
-    }
 
 
 /************************************
@@ -655,17 +683,54 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     delta_phi = fabs (inclinacao) - phi;
     
     if ( fabs (delta_phi) > PARADA/10){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-    
-
+        
+        /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
+         Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
+       
     if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-PARADA/100;         //Diminue θ inicial.
+        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
         goto C;
         }
     else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+PARADA/100;         //Aumenta θ inicial.
+        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
         goto C;
         }
-    } 
+    }
+
+/****************************************************************
+ * Etapa de correção da altura inicial do disparo a partir      *
+ * do edificio.                                                 *
+ *                                                              *
+ * IMPORTANTE: Após a correção realizada no theta, o programa   *
+ * ajustará a altura de disparo, mas note que é possível que:   *
+ * com v0 mais alto, o projétil precise partir de uma altura    *
+ * maior que a do próprio prédio.                               *
+ * Quando foi inserido o prédio entre o solo e o disparo, o     *
+ * projétil passava por esta região da edificacao com uma       *
+ * velocidade MENOR do que V0, com isso conseguiria curvar e    *
+ * atingir na região de impactação com a inclinação medida.     *
+ ****************************************************************/
+
+    delta_y = fabs (projetil.y - altura); //EXPLICAR EM RELACAO AO PRÉDIO
+
+    if ( delta_y > 0.01){ //10 cm - Possivelmente Diminuir para 0.01 m (1 cm) e a correcao pra 0.005 m (5 mm).
+        if (projetil.y > altura) {
+            altura_disparo -= delta_y/2 + 0.001; //em delta_y já foi aplicado fabs. Aqui pode ser delta_y/2 ao invés de delta_y/10 porque para o caso da correção do ângulo, phi/2 é muito maior que o que faltaria entre a inclinação e o phi.
+            goto C;
+        } else {
+            altura_disparo += delta_y/2 + 0.001;
+            goto C;
+        }
+    }
+
+    /*Checagem para ver se o projétil parte acima da edificação*/
+    if (altura_disparo > alturaEdf + 1.5) { /*+1.5 porque uma pessoa, em tese, pode subir no topo e disparar. Cuidado porque o tiro pode vir de antes do prédio. Analisar com calma.*/
+        printf("\nATENÇÃO!\n");
+        printf("\nPara que o projétil atinja uma altura de %.2lf m com inclinação de %.0lfº, disparado a %.0lf m de distância da impactação (Coordenadas: %lf ,%lf), precisaria ter sido disparado a uma altura de %.2lf m do solo (considerando que sua velocidade inicial é %.0lf m/s), ou seja, mais alto que a suposta edificação de origem, logo, não pode ter partido desta edificação.",altura,180*phi/M_PI,distanciaPredio_Impacataco,latitudeEdf,longitudeEdf,altura_disparo,v);
+        printf("\n\nReveja as condições inciais e reinicie o programa.\n\n");
+        fclose(arquivo);
+        goto FATALERROR;
+    }
 
 /********************************************************************************************************
  * Etapa de correção do AZ0 (Azimute Inicial)                                                           *
@@ -680,18 +745,23 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     
     delta_inclinacao_lateral = projetil.azimute + inclinacao_lateral - gamma;
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
-    if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
+    if ( fabs (delta_inclinacao_lateral) > PARADA/10){     // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
 
+        /*Nos primeiros cálculos (delta_inclinacao_lateral/10) será grande. a medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante */
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute - PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute - fabs (delta_inclinacao_lateral/10) - PARADA/100;   //Diminue Azimute inicial.
         goto C;
         }
     else{                                                   //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute + PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute + fabs (delta_inclinacao_lateral/10) + PARADA/100;   //Diminue Azimute inicial.
         goto C;
         }
     }
-    
+
+
+#if DEBUG   /*Cálculo de duração de funções*/
+printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
+#endif    
     
 /************************************************************************
  * Recalculo a partir da última correção apenas para gravar no arquivo  *
@@ -699,6 +769,18 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  ************************************************************************/    
 
     ULTIMA: //Ponto de partida do goto quando não há edificações no percurso do projétil.
+
+/********************************************************************
+ * Antes de fazer o último laço para gravar a simulação no arquivo, *
+ * é registrado a coordenada do ponto inicial para que seja o ponto *
+ * de partida do projétil e assim, seja adicionado ponto a ponto as *
+ * coordenadas do projétil.                                         *
+ * ******************************************************************/
+    
+    double latitude_disparo, longitude_disparo; //Em graus
+    latitude_disparo = (180/M_PI)*latitude- distLatGraus (&projetil_1);
+    longitude_disparo = longitude - distLongGraus(&projetil_1,latitude);
+
 
     t=0.0;
     projetil.x=0.0; // Eixo "x" é o Downrange.
@@ -717,9 +799,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  *                                  *
  ************************************/
 
-    fprintf(arquivo,"Os dados serão gravados (distâncias em m e velocidades em m/s)"
-                    " na ordem:\ntempo    L/O      Altura    N/S      V(L/O)      V(y)      V(N/S)   Downrange:\n");
-    fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t,projetil.x,projetil.y,projetil.z,projetil.vx,projetil.vy,projetil.vz, projetil.x);
+    fprintf(arquivo,"A posição e altura do projétil dadas a partir do momento do disparo na seguinte ordem:"
+                    "\nTempo\tLatitude\t\t\tLongitude\t\tAltura:\n");
 
     /* O último laço para gravar os resultados precisa apenas obedecer o downrangeMax com as devidas condições iniciais. */
     while ( projetil_1.x < downrangeMax){
@@ -732,14 +813,13 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
         
         kappa = kappaSdensidade*densidade_ar(projetil.y);
  
-
 /********************************
  * Imprimir alguma informação   *
  * relevante para análise.      *
  *                              *
  ********************************/
 #if DEBUG
-fprintf(debug,"%f\t%lf\n",(180/M_PI)*latitude- distLatGraus (&projetil_1),longitude - distLongGraus(&projetil_1,latitude));
+fprintf(debug,"%lf,%lf\tAltura: %lf m\n",latitudeEdf + distLatGraus (&projetil_1), longitudeEdf + distLongGraus(&projetil_1,latitude),projetil.y);
 #endif
 
         projetil_1.vx = projetil.vx + kvx(&projetil, &w, inclinacao_lateral, H, kappa)*H;   //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
@@ -752,7 +832,7 @@ fprintf(debug,"%f\t%lf\n",(180/M_PI)*latitude- distLatGraus (&projetil_1),longit
         t = t1;
         projetil = projetil_1;        
        
-        fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t1,(projetil_1.x*cos(projetil_1.azimute) - projetil_1.z*sin(projetil_1.azimute) ),projetil_1.y,(projetil_1.x*sin(projetil_1.azimute) + projetil_1.z*cos(projetil_1.azimute) ),projetil_1.vx,projetil_1.vy,projetil_1.vz,projetil_1.x); //x e z rotacionados para Norte-Leste
+        fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t1, latitude_disparo + distLatGraus (&projetil_1), longitude_disparo + distLongGraus(&projetil_1,latitude),projetil.y);
         
     }
 
@@ -773,7 +853,7 @@ fprintf(debug,"%f\t%lf\n",(180/M_PI)*latitude- distLatGraus (&projetil_1),longit
            "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*theta/M_PI, 180*projetil.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
     
-    printf("\nO projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O, a uma altura de %.2lf m.\n",(180/M_PI)*latitude- distLatGraus (&projetil_1), longitude - distLongGraus(&projetil_1,latitude),altura_disparo);
+    printf("\nO projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O, a uma altura de %.2lf m.\n",latitude_disparo, longitude_disparo, altura_disparo); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
     double velocidade_final;
     velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
     printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*m*pow(velocidade_final,2));
@@ -800,5 +880,6 @@ fprintf(debug,"%f\t%lf\n",(180/M_PI)*latitude- distLatGraus (&projetil_1),longit
     fclose(debug);
 #endif
     
+    FATALERROR:
     return 0;
 }
