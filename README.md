@@ -46,6 +46,8 @@ Para Localização e imagens vamos utilizar o https://earth.google.com/web/.
 
 ![01](https://user-images.githubusercontent.com/86118560/123481188-c1255180-d5d9-11eb-9a16-ed9b1921209c.jpg)
 
+![00](https://user-images.githubusercontent.com/86118560/123556326-f7d9a400-d760-11eb-84ce-71f57044ad95.jpg)
+
 Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os seguintes parâmetros:
 | Parâmetros da Impactação        | Medidas      |
 |---------------------------------|--------------|
