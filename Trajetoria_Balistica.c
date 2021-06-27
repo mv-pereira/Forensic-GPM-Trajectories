@@ -34,6 +34,7 @@
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <stdlib.h> //Para função exit() na condicional da abertura do arquivo;
 #include <stdbool.h>
+#include <time.h>   //Para velocidade de funções - DEBUG
 
 
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
@@ -231,9 +232,12 @@ int main(){
     FILE *arquivo;
     arquivo = fopen("data","w");
     
-#if DEBUG //DEBUG para geração de arquivos com informações pertinentes.
+#if DEBUG
+    /*DEBUG para geração de arquivos com informações pertinentes.*/
         FILE *debug;
-        debug = fopen("debug","w"); 
+        debug = fopen("debug","w");
+    /*Cálculo de duração de funções*/
+    clock_t ciclos_cpu;
 #endif
 
     if (arquivo == NULL) {
@@ -393,6 +397,9 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     projetil.azimute =azimute;
     n = 0;                          //Contador para registrar quantas vezes toda a trajetória foi calculada.
 
+#if DEBUG   /*Cálculo de duração de funções*/
+ciclos_cpu = clock();
+#endif
 
 /********************************************************
  * Condições Iniciais: Dados dispostos considerando um  *
@@ -431,7 +438,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     inclinacao_lateral = 1.0; // Qualquer valor positivo para entrar no laço.
     
         //Segundo teste do while: se o disparo for descendente, o laço só para quando o projétil cair abaixo da altura medida, caso contrário, para qunaodo o projétil estiver acima da altura medida
-    
+
+        
     while ( descendente ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
@@ -477,20 +485,24 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * de atrito inicial.               *
  *                                  *
  ************************************/
+
+//usa-se o fabs na inclinação porque phi é sempre positivo. (O critério para phi negativo é se a impactacao é descendente ou ascendente.
     delta_phi = fabs (inclinacao) - phi;
-    
+
     if ( fabs (delta_phi) > (fabs (phi) < 0.01745 ? PARADA : PARADA/10)){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-//printf("\nCORRECAO DO THETA\n\n");    
-//printf("\n%lf\t%lf",180*theta/M_PI,180*inclinacao/M_PI);
+        
+        /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
+         Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
+       
     if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-PARADA/100;         //Diminue θ inicial.
+        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
         goto A;
         }
     else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+PARADA/100;         //Aumenta θ inicial.
+        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
         goto A;
         }
-    } 
+    }
 
     
 /********************************************************************************************************
@@ -507,19 +519,22 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     delta_inclinacao_lateral = projetil.azimute + inclinacao_lateral - gamma;
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
     if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-//printf("\n\t\t\t\t\t\tCORRECAO DO AZIMUTE\n\n");
-//printf("\n\t\t\t\t\t\t%lf\t%lf",180*(projetil.azimute + inclinacao_lateral)/M_PI, 180*(fabs (delta_inclinacao_lateral))/M_PI);
-//getchar();
+
+        /*Nos primeiros cálculos (delta_inclinacao_lateral/10) será grande. a medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante */
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute - PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute - fabs (delta_inclinacao_lateral/10) - PARADA/100;   //Diminue Azimute inicial.
         goto B;
         }
     else{                                                   //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute + PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute + fabs (delta_inclinacao_lateral/10) + PARADA/100;   //Diminue Azimute inicial.
         goto B;
         }
     }
 
+#if DEBUG   /*Cálculo de duração de funções*/
+printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
+#endif
+    
 /****************************************************************************************************
  * A primeira simulação terminada forneceu as distâncias máximas possíveis para origem do disparo,  *
  * pois foi considerado que o disparo ocorreu ao nível médio do mar NMM (projetil.y "inicial" = 0)  *
@@ -569,6 +584,9 @@ printf("\nDownrange = %lf m\n",projetil.y);
         goto ULTIMA;
     }
 
+#if DEBUG   /*Cálculo de duração de funções*/
+ciclos_cpu = clock();
+#endif
 
     C: //Ponto de partida do goto após correção do ângulo θ = theta/Phi e Altura para o sistema com edificação.
 
@@ -667,6 +685,19 @@ printf("\nDownrange = %lf m\n",projetil.y);
     delta_phi = fabs (inclinacao) - phi;
     
     if ( fabs (delta_phi) > PARADA/10){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
+        
+        /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
+         Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
+       
+    if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
+        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
+        goto C;
+        }
+    else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
+        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
+        goto C;
+        }
+    }/*{ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
 //printf ("\ntheta = %lf",180*theta/M_PI);
 
 
@@ -678,7 +709,7 @@ printf("\nDownrange = %lf m\n",projetil.y);
         theta=theta+PARADA/100;         //Aumenta θ inicial.
         goto C;
         }
-    } 
+    }*/
 
 /****************************************************************
  * Etapa de correção da altura inicial do disparo a partir      *
@@ -696,12 +727,12 @@ printf("\nDownrange = %lf m\n",projetil.y);
 
     delta_y = fabs (projetil.y - altura); //EXPLICAR EM RELACAO AO PRÉDIO
 
-    if ( delta_y > 0.03){ //10 cm - Possivelmente Diminuir para 0.01 m (1 cm) e a correcao pra 0.005 m (5 mm).
+    if ( delta_y > 0.01){ //10 cm - Possivelmente Diminuir para 0.01 m (1 cm) e a correcao pra 0.005 m (5 mm).
         if (projetil.y > altura) {
-            altura_disparo -= 0.005;
+            altura_disparo -= delta_y/2 + 0.001; //em delta_y já foi aplicado fabs. Aqui pode ser delta_y/2 ao invés de delta_y/10 porque para o caso da correção do ângulo, phi/2 é muito maior que o que faltaria entre a inclinação e o phi.
             goto C;
         } else {
-            altura_disparo += 0.005;
+            altura_disparo += delta_y/2 + 0.001;
             goto C;
         }
     }
@@ -728,17 +759,24 @@ printf("\nDownrange = %lf m\n",projetil.y);
     
     delta_inclinacao_lateral = projetil.azimute + inclinacao_lateral - gamma;
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
-    if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
+    if ( fabs (delta_inclinacao_lateral) > PARADA/10){     // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
 
+        /*Nos primeiros cálculos (delta_inclinacao_lateral/10) será grande. a medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante */
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute - PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute - fabs (delta_inclinacao_lateral/10) - PARADA/100;   //Diminue Azimute inicial.
         goto C;
         }
     else{                                                   //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
-        projetil.azimute = projetil.azimute + PARADA/100;   //Diminue Azimute inicial.
+        projetil.azimute = projetil.azimute + fabs (delta_inclinacao_lateral/10) + PARADA/100;   //Diminue Azimute inicial.
         goto C;
         }
     }
+
+#if DEBUG   /*Cálculo de duração de funções*/
+printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
+#endif
+
+
 printf("\nDelta Phi: %lf",180*delta_phi/M_PI);
 printf("\nSTOPPP");
 getchar();     
