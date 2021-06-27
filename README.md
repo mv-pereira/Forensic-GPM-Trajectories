@@ -129,3 +129,28 @@ O programa fornece, por fim, a estimativa de duração do tempo de deslocamento 
 | Energia Cinética              | 117.44 J       |
 
 > É importante destacar que, caso haja ainda outras edificações ainda mais próximas da impactação é necessário rodar novamente o programa com essas novas coordenadas e altura até não sobrar dúvidas.
+
+Vamos supor que havia uma suspeita que o projétil pudesse ser disparado a partir do Edf. D Pedro I, na Rua Dos Navegantes, 768, dado encontrar-se no caminho entre a origem e a impactação.
+
+| Edificacao | Características |
+|------------|-----------------|
+| Latitude   | -8.125346 °     |
+| Longitude  | -34.898260 °    |
+| Altura     | 55 m            |
+
+![01_1](https://user-images.githubusercontent.com/86118560/123550644-e5ea0800-d744-11eb-8602-18e65dd0fa21.jpg)
+
+Com esses parâmetros o programa retorna o seguinte resultado:
+> O projétil passou por cima da edificação fornecida.
+
+Considerando que partiu, de fato, da primeira edificação fornecida, ao analisar o Output `data` do programa, próximo às coordenadas fornecidas para a segunda edificação é possivel observar que:
+
+| Tempo  | Latitude        | Longitude        | Altura      |
+|--------|-----------------|------------------|-------------|
+| …      | …               | …                | …           |
+| 0.937 s| -8.125346086077 | -34.898260159499 | 57.005053 m |
+| **0.937 s**| **-8.125346256627** | **-34.898260167993** | **57.008145 m** |
+| 0.937 s| -8.125346427174 | -34.898260176488 | 57.011236 m |
+| …      | …               | …                | …           |
+
+Ou seja, na região de interesse, o projétil passou 2 metros acima da edificação.
