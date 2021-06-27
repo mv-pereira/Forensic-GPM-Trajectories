@@ -283,11 +283,11 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
     if ( fabs (delta_v) > 0.01){
 
     if ( delta_v > 0 ){               //Projétil terminou com mais velocidade que a Vf dada pela fabricante, após x metros de Downrange.
-        c = c + 0.0001;               //Adicione coeficiente de Arrasto.
+        c = c + 0.00001;               //Adicione coeficiente de Arrasto.
         goto A;
         }
     else{                             //Projétil terminou com menos velocidade que a Vf dada pela fabricante, após x metros de Downrange.
-        c = c - 0.0001;               //Retire coeficiente de Arrasto.
+        c = c - 0.00001;               //Retire coeficiente de Arrasto.
         goto A;
         }
     }
