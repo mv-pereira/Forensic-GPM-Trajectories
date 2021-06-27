@@ -267,7 +267,6 @@ int main(){
  *****************************************************************/
     double latitudeEdf,longitudeEdf,alturaEdf;
     int haviaEdf = 0;
-    double d[2];        //Distâcia entre o projétil e a edificação -> [0] e o projetil_1 e edificacao -> [1].
     double altura_disparo = 0; //Altura do disparo inicia como sendo 0, ao NMM, depois corrige caso haja edificações na trajetória do projétil.
     double delta_y; //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco; //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
