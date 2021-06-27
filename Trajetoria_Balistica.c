@@ -40,7 +40,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 //Estrutura do Projétil
 
@@ -697,19 +697,7 @@ ciclos_cpu = clock();
         theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
         goto C;
         }
-    }/*{ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-//printf ("\ntheta = %lf",180*theta/M_PI);
-
-
-    if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-PARADA/100;         //Diminue θ inicial.
-        goto C;
-        }
-    else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+PARADA/100;         //Aumenta θ inicial.
-        goto C;
-        }
-    }*/
+    }
 
 /****************************************************************
  * Etapa de correção da altura inicial do disparo a partir      *
@@ -772,6 +760,7 @@ ciclos_cpu = clock();
         }
     }
 
+
 #if DEBUG   /*Cálculo de duração de funções*/
 printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
 #endif
@@ -787,6 +776,18 @@ getchar();
  ************************************************************************/    
 
     ULTIMA: //Ponto de partida do goto quando não há edificações no percurso do projétil.
+
+/********************************************************************
+ * Antes de fazer o último laço para gravar a simulação no arquivo, *
+ * é registrado a coordenada do ponto inicial para que seja o ponto *
+ * de partida do projétil e assim, seja adicionado ponto a ponto as *
+ * coordenadas do projétil.                                         *
+ * ******************************************************************/
+    
+    double latitude_disparo, longitude_disparo; //Em graus
+    latitude_disparo = (180/M_PI)*latitude- distLatGraus (&projetil_1);
+    longitude_disparo = longitude - distLongGraus(&projetil_1,latitude);
+
 
     t=0.0;
     projetil.x=0.0; // Eixo "x" é o Downrange.
@@ -805,9 +806,8 @@ getchar();
  *                                  *
  ************************************/
 
-    fprintf(arquivo,"Os dados serão gravados (distâncias em m e velocidades em m/s)"
-                    " na ordem:\ntempo    L/O      Altura    N/S      V(L/O)      V(y)      V(N/S)   Downrange:\n");
-    fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t,projetil.x,projetil.y,projetil.z,projetil.vx,projetil.vy,projetil.vz, projetil.x);
+    fprintf(arquivo,"A posição e altura do projétil dadas a partir do momento do disparo na seguinte ordem:"
+                    "\nTempo\tLatitude\t\t\tLongitude\t\tAltura:\n");
 
     /* O último laço para gravar os resultados precisa apenas obedecer o downrangeMax com as devidas condições iniciais. */
     while ( projetil_1.x < downrangeMax){
@@ -839,7 +839,7 @@ fprintf(debug,"%lf,%lf\tAltura: %lf m\n",latitudeEdf + distLatGraus (&projetil_1
         t = t1;
         projetil = projetil_1;        
        
-        fprintf(arquivo,"%lf %lf %lf %lf %lf %lf %lf %lf\n",t1,(projetil_1.x*cos(projetil_1.azimute) - projetil_1.z*sin(projetil_1.azimute) ),projetil_1.y,(projetil_1.x*sin(projetil_1.azimute) + projetil_1.z*cos(projetil_1.azimute) ),projetil_1.vx,projetil_1.vy,projetil_1.vz,projetil_1.x); //x e z rotacionados para Norte-Leste
+        fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t1, latitude_disparo + distLatGraus (&projetil_1), longitude_disparo + distLongGraus(&projetil_1,latitude),projetil.y);
         
     }
 
@@ -860,7 +860,7 @@ fprintf(debug,"%lf,%lf\tAltura: %lf m\n",latitudeEdf + distLatGraus (&projetil_1
            "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*theta/M_PI, 180*projetil.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), dextrogiro ? "direta" : "esquerda");
     
-    printf("\nO projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O, a uma altura de %.2lf m.\n",(180/M_PI)*latitude- distLatGraus (&projetil_1), longitude - distLongGraus(&projetil_1,latitude),altura_disparo);
+    printf("\nO projétil partiu, aproximadamente, das coordenadas: %f N/S, %f L/O, a uma altura de %.2lf m.\n",latitude_disparo, longitude_disparo, altura_disparo); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
     double velocidade_final;
     velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
     printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*m*pow(velocidade_final,2));
