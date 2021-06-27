@@ -30,28 +30,21 @@ Para um projétil encamisado .38 foi calculado:
 
 [mario@g7 2.1]$ ./Cd
 
-Programa para cálculo do Coeficiente de Arrasto Cd (adimensional) para projéteis de dimensões conhecidas utilizando parâmetros fornecidos pelos fabricantes de projétis.
-
-
-Digite a velocidade inicial (em m/s) do projétil:
-230
-
-
-Digite para qual distancia (em m) o Cd será calculado:
-100
-
-
-Digite a velocidade final (em m/s) do projétil:
-211
-
-
-Digite a massa (em g) do projétil:
-10.24
-
-
-Digite o diâmetro (em mm) do projétil:
-8.82
-
-
-Considerando uma perda de velocidade de 19.00 m/s em 100.00 m,
-O coeficiente de Arrasto vale: **Cd=0.235800**.
+>Programa para cálculo do Coeficiente de Arrasto Cd (adimensional) para projéteis de dimensões conhecidas utilizando parâmetros fornecidos pelos fabricantes de projétis.
+>Digite a velocidade inicial (em m/s) do projétil:
+>230
+>
+>Digite para qual distancia (em m) o Cd será calculado:
+>100
+>
+>Digite a velocidade final (em m/s) do projétil:
+>211
+>
+>Digite a massa (em g) do projétil:
+>10.24
+>
+>Digite o diâmetro (em mm) do projétil:
+>8.82
+>
+>Considerando uma perda de velocidade de 19.00 m/s em 100.00 m,
+>O coeficiente de Arrasto vale: **Cd=0.235800**.
