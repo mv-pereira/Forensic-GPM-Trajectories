@@ -545,8 +545,6 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     origemNMM[0] = (180/M_PI)*latitude - distLatGraus (&projetil);
     origemNMM[1] = longitude - distLongGraus (&projetil,latitude);
     double downrangeMax = projetil.x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao.
-
-printf("\nDownrange = %lf m\n",projetil.y);   
     
 /************************************
  * Fim das primeiras simulações     *
@@ -590,7 +588,7 @@ ciclos_cpu = clock();
 
     C: //Ponto de partida do goto após correção do ângulo θ = theta/Phi e Altura para o sistema com edificação.
 
-  //Condições iniciais para variáveis com edificação no caminho:
+    //Condições iniciais para variáveis com edificação no caminho:
     
     t=0.0;
     projetil.x=0.0;
@@ -763,12 +761,7 @@ ciclos_cpu = clock();
 
 #if DEBUG   /*Cálculo de duração de funções*/
 printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
-#endif
-
-
-printf("\nDelta Phi: %lf",180*delta_phi/M_PI);
-printf("\nSTOPPP");
-getchar();     
+#endif    
     
 /************************************************************************
  * Recalculo a partir da última correção apenas para gravar no arquivo  *
