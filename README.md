@@ -143,7 +143,7 @@ Vamos supor que havia uma suspeita que o projétil pudesse ser disparado a parti
 Com esses parâmetros o programa retorna o seguinte resultado:
 > O projétil passou por cima da edificação fornecida.
 
-Considerando que partiu, de fato, da primeira edificação fornecida, ao analisar o Output `data` do programa, próximo às coordenadas fornecidas para a segunda edificação é possivel observar que:
+Considerando que partiu, de fato, da primeira edificação fornecida, ao analisar o Output `data` do programa, próximo às coordenadas fornecidas para a segunda edificação, é possivel observar que:
 
 | Tempo  | Latitude        | Longitude        | Altura      |
 |--------|-----------------|------------------|-------------|
