@@ -20,6 +20,10 @@ Após **x** m, se o projétil terminar com mais velocidade que o fornecido pelo 
 Se após **x** m o projétil o terminar com menor velocidade, o programa diminui Cd (diminui o arrasto) e recalcula.
 O cálculo é repetido até que o **Δv < ε** (velocidade final estimada pelo programa e a velocidade final fornecida pelo fabricante).
 
+Abaixo, um fluxograma (https://www.zenflowchart.com) do procedimento adotado pelo programa.
+<img src="https://github.com/mv-pereira/Forensic-GPM-Trajectories/blob/main/Coeficiente%20de%20Arrasto/flowchart_Cd.png" alt="1" width="822" height="439">
+
+
 ## Exemplo
 
 Para um projétil encamisado .38 foi calculado:
