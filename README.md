@@ -35,6 +35,10 @@ O critério de parada do cálculo é que ![image](https://user-images.githubuser
 
 O mesmo cálculo é realizado para o Azimute.
 
+Abaixo, um fluxograma (https://www.zenflowchart.com) do procedimento adotado pelo programa.
+<img src="https://github.com/mv-pereira/Forensic-GPM-Trajectories/blob/main/flowchart.png" alt="1" width="819" height="541">
+
+
 ## Exemplo:
 Vamos supor que um projétil de arma de fogo atingiu o Edifício Maria Juliana, localizado na Av. Boa Viagem, 4398, a 89 m do solo, no último pavimento.
 
