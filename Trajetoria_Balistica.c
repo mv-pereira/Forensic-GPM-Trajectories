@@ -40,7 +40,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 0
+#define DEBUG 1
 
 //Estrutura do Projétil
 
@@ -271,15 +271,16 @@ int main(){
     double delta_y; //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco; //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
     double px, pz; //Ponto de latitude do projétil durante as iterações, apenas para calcular se passa por cima da edificação, caso exista.
+    int loading=1,resto;
     
     struct prjt projetil, projetil_1; //projetil_1 é o projétil para n+1 | Definição dessa struct no começo do programa.
     struct vento w;                     //Definição da struct do vento.
 
 #if DEBUG //Valores padrão apenas para comparação
 
-altura = 89;
-descendente = 0;
-phi = 4*M_PI/180;
+altura = 20;
+descendente = 1;
+phi = -1*M_PI/180;
 gamma = 183*M_PI/180;
 v = 230;
 m=10.240/1000.0;
@@ -439,7 +440,8 @@ ciclos_cpu = clock();
         //Segundo teste do while: se o disparo for descendente, o laço só para quando o projétil cair abaixo da altura medida, caso contrário, para qunaodo o projétil estiver acima da altura medida
 
         
-    while ( descendente ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
+    while ( (phi<0) ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
+    //while ( descendente ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
         t1 = t + H;
         projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
         projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
@@ -478,7 +480,9 @@ ciclos_cpu = clock();
         inclinacao_lateral = atan (projetil_1.vz/projetil_1.vx);
         //inclinacao lateral final (como não é critério de parada para o laço, só precisa ser calculado ao final do processo).
         t_total = t; //Guarda o tempo total para colocar na ordem inversa na gravação do arquivo.
-        
+
+
+
 /************************************
  * Etapa de correção do θ inicial   *
  * de atrito inicial.               *
@@ -486,19 +490,30 @@ ciclos_cpu = clock();
  ************************************/
 
 //usa-se o fabs na inclinação porque phi é sempre positivo. (O critério para phi negativo é se a impactacao é descendente ou ascendente.
-    delta_phi = fabs (inclinacao) - phi;
-
-    if ( fabs (delta_phi) > (fabs (phi) < 0.01745 ? PARADA : PARADA/10)){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
+    delta_phi = inclinacao - phi;
+    //delta_phi = fabs (inclinacao) - phi;
+//printf("inclinacao = %lf\tdelta = %lf\n",inclinacao*(180/M_PI),delta_phi*(180/M_PI));
+    if ( fabs (delta_phi) >  PARADA/10){
+    //if ( fabs (delta_phi) > (fabs (phi) < 0.01745 ? PARADA : PARADA/10)){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
         
+  
         /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
          Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
-       
-    if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
+//printf("theta = %lf\tInclinacao = %lf\n",180*theta/M_PI, (180*inclinacao/M_PI));
+    //if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
+    if ( inclinacao > phi ){
+        //theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
+        //theta=theta-(delta_phi/10)-PARADA/100;
+        if (phi >= 0) {
+            theta = theta - (fabs (phi) < 0.3 ? PARADA/1000 : PARADA/100);
+        }   else theta = theta + (fabs (phi) < 0.3 ? PARADA/1000 : PARADA/100);
         goto A;
         }
     else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
+        //theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
+        //theta=theta+(delta_phi/10)+PARADA/100;
+        if (phi>=0) theta = theta + (fabs (phi) < 0.3 ? PARADA/1000 : PARADA/100);
+        else       theta = theta - (fabs (phi) < 0.3 ? PARADA/1000 : PARADA/100);
         goto A;
         }
     }
@@ -518,7 +533,7 @@ ciclos_cpu = clock();
     delta_inclinacao_lateral = projetil.azimute + inclinacao_lateral - gamma;
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
     if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
-
+//printf("\t\t\t\tAZIMUTE = %lf\tphi = %lf\n",(projetil.azimute + inclinacao_lateral)*(180/M_PI),gamma*(180/M_PI));
         /*Nos primeiros cálculos (delta_inclinacao_lateral/10) será grande. a medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante */
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
         projetil.azimute = projetil.azimute - fabs (delta_inclinacao_lateral/10) - PARADA/100;   //Diminue Azimute inicial.
@@ -544,7 +559,7 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     origemNMM[0] = (180/M_PI)*latitude - distLatGraus (&projetil);
     origemNMM[1] = longitude - distLongGraus (&projetil,latitude);
     double downrangeMax = projetil.x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao.
-    
+
 /************************************
  * Fim das primeiras simulações     *
  * considerandoo projétil partindo  *
@@ -559,9 +574,9 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     if (getchar() == '1'){ /* Em ASCII: 49 */
             haviaEdf = 1;
     #if DEBUG //, Holiday -8.123596, -34.898176 60m
-    latitudeEdf=-8.123596 ;
-    longitudeEdf=-34.898176;
-    alturaEdf=60;
+    latitudeEdf=-8.127541 ;
+    longitudeEdf= -34.898404;
+    alturaEdf=500;
     distanciaPredio_Impacataco = haversine (180*latitude/M_PI,longitude,latitudeEdf, longitudeEdf);
 
 
@@ -610,11 +625,10 @@ ciclos_cpu = clock();
  *                                                                                                                  *
  ********************************************************************************************************************/
 
-    inclinacao = 1.0; // Qualquer valor positivo só para iniciar. Valor será recalculado dentro do laço. Essa variável será comparada com o valor real medido ϕ durante a perícia de local de crime.
-    inclinacao_lateral = 1.0; // Qualquer valor positivo para entrar no laço.
 
-    
-    while ( haviaEdf ? (descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)) : projetil_1.x < downrangeMax){
+//Se já tiver downrangeMax pode fazer somente ele como critério****************************************    
+    //while ( haviaEdf ? (descendente ? ((inclinacao > 0) || (projetil_1.y>altura)) : (projetil_1.y<altura)) : projetil_1.x < downrangeMax){
+    while ( projetil_1.x < downrangeMax){
         //A única coisa que importa após o edf. é a distância percorrida ser menor que a distância entre a edificação e a impactação.
         
         t1 = t + H;
@@ -679,19 +693,20 @@ ciclos_cpu = clock();
  * de atrito inicial.               *
  *                                  *
  ************************************/
-    delta_phi = fabs (inclinacao) - phi;
-    
+
+    delta_phi = inclinacao - phi;
+    //delta_phi = fabs (inclinacao) - phi;
     if ( fabs (delta_phi) > PARADA/10){ // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
         
         /*Nos primeiros cálculos (delta_phi/10) será grande. A medida que for corrigindo, será cada vez menor e o termo PARADA/100 será dominante.
          Não precisa mudar o sinal dele na correção porque ele já carrega a informação se está acima ou abaixo no próprio sinal*/
        
     if ( delta_phi > 0 ){               //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta=theta-fabs(delta_phi/10)-PARADA/100;         //Diminue θ inicial.
+        theta=theta-PARADA/100;         //Diminue θ inicial.
         goto C;
         }
     else{                               //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
-        theta=theta+fabs(delta_phi/10)+PARADA/100;         //Aumenta θ inicial.
+        theta=theta+PARADA/100;         //Aumenta θ inicial.
         goto C;
         }
     }
