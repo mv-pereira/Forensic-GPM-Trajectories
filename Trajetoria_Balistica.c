@@ -40,7 +40,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 //Estrutura do Projétil
 
@@ -288,9 +288,8 @@ dextrogiro=1;
 c = 0.235800;
 vento = 10/3.6;
 ang = (100+180.0)*M_PI/180.0;
-latitude = -8.127727;
+latitude = -8.127727*M_PI/180.0;
 g = 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude)); //Açeleração da gravidade na latitude. (em m/s^2)
-latitude = latitude*M_PI/180.0;
 longitude = -34.898383;
 azimute = gamma;
 
@@ -343,8 +342,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     
     printf("\nDigite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: ");
     scanf("%lf", &latitude);
-    g = 9.780327*(1+0.0053024*pow(sin(latitude),2) - 0.0000058*pow (sin(2*latitude),2)); //Aceleração da gravidade na latitude. (em m/s^2) nvl do mar
     latitude = latitude*M_PI/180.0; //grau para radianos
+    g = 9.780327*(1+0.0053024*pow(sin(latitude),2) - 0.0000058*pow (sin(2*latitude),2)); //Aceleração da gravidade na latitude. (em m/s^2) nvl do mar. g calculado antes de a la
 
     printf("\nDigite a longitude decimal da impactacao (em °): ");
     scanf("%lf", &longitude);
