@@ -53,7 +53,6 @@ Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os 
 |---------------------------------|--------------|
 | Altura da Impactação            | 89 m         |
 | Ângulo ϕ com a Horizontal       | 4 °          |
-| Trajetória Era Descendente?     | Não          |
 | Ângulo γ com o Norte (azimute)  | 183 °        |
 | Latitude Decimal da Impactação  | -8.127727 °  |
 | Longitude Decimal da Impactação | -34.898383 ° |
