@@ -306,7 +306,8 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     printf("Digite a altura (em metros) da impactação em relação ao disparo: ");
     scanf("%lf", &altura);
 
-    printf("\nDigite o ângulo ϕ com a horizontal (em °). Se a impactação for descendente, ϕ < 0: ");
+    printf("\nDigite o ângulo ϕ com a horizontal (em °):");
+    printf("\nϕ ≈ 0 causa um bug conhecido. Se a impactação for descendente, ϕ < 0: ");
     scanf("%lf", &phi);
     phi = phi*M_PI/180; //Conversão de grau para radianos.
     
