@@ -40,7 +40,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.0174533    // Critério de parada para ajuste de angulação. 0.0174533 rad = 1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 0
+#define DEBUG 1
 
 //Estrutura do Projétil
 
@@ -226,23 +226,20 @@ double kvz (struct prjt *projetil, struct vento *w, double inclinacao_lateral, d
  *                                                      *
  ********************************************************/
 
- double ajustar_theta (double phi_final, double phi_medido, double theta, double criterio_de_parada_grau){
-    //double delta_phi = phi_final - phi_medido;
+ double ajustar_theta (double phi_final, double phi_medido, double theta){
 
-    double criterio_de_parada_rad = M_PI*criterio_de_parada_grau/180;
+    double grau_sobre_cem_rad = 0.0001745329;
 
-    if ( fabs (phi_medido) < 0.3) {
-        criterio_de_parada_rad *= (1/1000); //a correção passa a ser de 0.001 grau
-    } else {
-        criterio_de_parada_rad *= (1/100);
-    }
+    if ( fabs (phi_medido) < 0.3) grau_sobre_cem_rad = grau_sobre_cem_rad/10; //a correção passa a ser de 0.001 grau
 
     if ( phi_medido < phi_final ){              //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
-        theta += (phi_medido >= 0) ? (-criterio_de_parada_rad) : (+criterio_de_parada_rad);
+        if (phi_medido >= 0) theta -= grau_sobre_cem_rad;
+        else                 theta += grau_sobre_cem_rad;
     }
     else{                                   //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
         /*phi_final < phi_medido*/
-        theta += (phi_medido>=0) ? (+criterio_de_parada_rad) : (-criterio_de_parada_rad);
+        if (phi_medido >= 0) theta += grau_sobre_cem_rad;
+        else                 theta -= grau_sobre_cem_rad;
         }
 
     return theta;
@@ -253,20 +250,19 @@ double kvz (struct prjt *projetil, struct vento *w, double inclinacao_lateral, d
  * γ = azimute_medido                                   *
  ********************************************************/
 
-double ajuste_AZ(double azimute_disparo, double inclinacao_lateral, double azimute_medido, double criterio_de_parada_grau){
+double ajuste_AZ(double azimute_disparo, double inclinacao_lateral, double azimute_medido){
 
-    double criterio_de_parada_rad = M_PI*criterio_de_parada_grau/180;
+    double grau_sobre_cem_rad = 0.0001745329;
 
     double azimute_final = azimute_disparo + inclinacao_lateral;
 
     if (azimute_final > azimute_medido) {
-        azimute_disparo -= criterio_de_parada_rad/100;
+        azimute_disparo -= grau_sobre_cem_rad;
     } else {
-        azimute_disparo += criterio_de_parada_rad/100;
+        azimute_disparo += grau_sobre_cem_rad;
     }
 
     return azimute_disparo;
-
 }
 
 
@@ -533,6 +529,12 @@ ciclos_cpu = clock();
 
     delta_phi = inclinacao - phi;
 
+    if (fabs (delta_phi) >  PARADA/10){
+        theta = ajustar_theta (inclinacao,phi,theta);
+        goto A;
+    } 
+
+/*
     if ( fabs (delta_phi) >  PARADA/10){    // Critério de parada. Se o Δϕ for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
            
     if ( inclinacao > phi ){                //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
@@ -547,6 +549,7 @@ ciclos_cpu = clock();
         goto A;
         }
     }
+    */
 
     
 /********************************************************************************************************
@@ -562,6 +565,12 @@ ciclos_cpu = clock();
     
     delta_inclinacao_lateral = projetil.azimute + inclinacao_lateral - gamma;
     //delta_inclinacao_lateral e gamma (γ) precisam ser declarados. gamma (γ) é uma variavel medida, como φ.
+
+    if( fabs (delta_inclinacao_lateral) > PARADA/10 ){
+        projetil.azimute = ajuste_AZ(projetil.azimute, inclinacao_lateral, gamma);
+        goto B;
+    }
+/*
     if ( fabs (delta_inclinacao_lateral) > PARADA/10){      // Critério de parada. Se for maior que 0.1º (0.00174533 rad), soma ou subtrai 0.01º.
 
     if (delta_inclinacao_lateral > 0){                      //Projétil terminou com azimute maior que o γ medido, devendo reduzir azimute inicial.
@@ -572,7 +581,7 @@ ciclos_cpu = clock();
         projetil.azimute = projetil.azimute + fabs (delta_inclinacao_lateral/10) + PARADA/100;   //Diminue Azimute inicial.
         goto B;
         }
-    }
+    } */
 
 #if DEBUG   /*Cálculo de duração de funções*/
 printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",  ((double) (clock() - ciclos_cpu))/CLOCKS_PER_SEC);
