@@ -221,6 +221,56 @@ double kvz (struct prjt *projetil, struct vento *w, double inclinacao_lateral, d
     return k;
 }
 
+/********************************************************
+ * Ajuste de θ inicial para coincidência de ϕ (final)   *
+ *                                                      *
+ ********************************************************/
+
+ double ajustar_theta (double phi_final, double phi_medido, double theta, double criterio_de_parada_grau){
+    //double delta_phi = phi_final - phi_medido;
+
+    double criterio_de_parada_rad = M_PI*criterio_de_parada_grau/180;
+
+    if ( fabs (phi_medido) < 0.3) {
+        criterio_de_parada_rad *= (1/1000); //a correção passa a ser de 0.001 grau
+    } else {
+        criterio_de_parada_rad *= (1/100);
+    }
+
+    if ( phi_medido < phi_final ){              //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
+        theta += (phi_medido >= 0) ? (-criterio_de_parada_rad) : (+criterio_de_parada_rad);
+    }
+    else{                                   //Projétil terminou com angulação menos que o φ medido, indicando que o disparo foi mais alto.
+        /*phi_final < phi_medido*/
+        theta += (phi_medido>=0) ? (+criterio_de_parada_rad) : (-criterio_de_parada_rad);
+        }
+
+    return theta;
+ }
+
+ /*******************************************************
+ * Ajuste de AZ inicial para coincidência de gamma (γ)  *
+ * γ = azimute_medido                                   *
+ ********************************************************/
+
+double ajuste_AZ(double azimute_disparo, double inclinacao_lateral, double azimute_medido, double criterio_de_parada_grau){
+
+    double criterio_de_parada_rad = M_PI*criterio_de_parada_grau/180;
+
+    double azimute_final = azimute_disparo + inclinacao_lateral;
+
+    if (azimute_final > azimute_medido) {
+        azimute_disparo -= criterio_de_parada_rad/100;
+    } else {
+        azimute_disparo += criterio_de_parada_rad/100;
+    }
+
+    return azimute_disparo;
+
+}
+
+
+
 /****************************************************
  * Função Principal: Trajetória Balística           *
  *                                                  *
