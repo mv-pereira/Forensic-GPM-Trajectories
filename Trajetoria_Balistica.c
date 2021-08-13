@@ -221,6 +221,81 @@ double kvz (struct prjt *projetil, struct vento *w, double inclinacao_lateral, d
     return k;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+double pos_x (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vx;
+}
+
+double pos_y (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vy;
+}
+
+double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vz;
+}
+
+double w_vx_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->azimute)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
+}
+
+double w_vy_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->azimute)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->azimute)) ) );
+}
+
+double w_vz_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->azimute)) )   );
+}
+
+double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct vento (*), double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g){
+    double k,k1,k2,k3,k4;
+    double inclinacao_lateral;
+    inclinacao_lateral = atan (projetil->vz/projetil->vx);
+    projetil->azimute += inclinacao_lateral;
+
+    k1 = funcao(kappa, projetil, 0, w, g);
+    k2 = funcao(kappa, projetil, k1*(passo/2), w, g);
+    k3 = funcao(kappa, projetil, k2*(passo/2), w, g);
+    k4 = funcao(kappa, projetil, k3*(passo/2), w, g);
+    k = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4);
+    //printf("k = %lf\n",k);
+    return k;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /********************************************************
  * Ajuste de θ inicial para coincidência de ϕ (final)   *
  *                                                      *
@@ -482,17 +557,24 @@ ciclos_cpu = clock();
         
     while ( (phi<0) ? ((inclinacao >= 0) || (projetil_1.y>altura)) : (projetil_1.y<altura) ){
         t1 = t + H;
-        projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
-        projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
-        projetil_1.z = projetil.z + pos(projetil.vz,H)*H;
+//funcao pra fazer tudo - call by reference
+//runge_kutta só recebe como argumento uma função f e um passo; <- na verdade tem que receber todos os argumentos
+        projetil_1.x = projetil.x + runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
+        projetil_1.y = projetil.y + runge_kutta(&pos_y, &projetil, &w, H, 0, 0)*H;
+        projetil_1.z = projetil.z + runge_kutta(&pos_z, &projetil, &w, H, 0, 0)*H;
 
         inclinacao_lateral = atan (projetil.vz/projetil.vx);
 
         kappa = kappaSdensidade*densidade_ar(projetil.y);
 
-        projetil_1.vx = projetil.vx + kvx(&projetil, &w, inclinacao_lateral, H, kappa)*H;   //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
-        projetil_1.vy = projetil.vy + kvy(&projetil, &w, inclinacao_lateral, H, kappa, g)*H;
-        projetil_1.vz = projetil.vz + kvz(&projetil, &w, inclinacao_lateral, H, kappa)*H;
+        //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
+
+        projetil_1.vx = projetil.vx + runge_kutta(&w_vx_2, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vy = projetil.vy + runge_kutta(&w_vy_2, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vz = projetil.vz + runge_kutta(&w_vz_2, &projetil, &w, H, kappa, g)*H;
+
+printf("x = %lf\ty = %lf\tz = %lf\tvx = %lf\tvy = %lf\tvz = %lf\n",projetil_1.x,projetil_1.y,projetil_1.z,projetil_1.vx,projetil_1.vy,projetil_1.vz);
+
         inclinacao = atan (projetil_1.vy/projetil_1.vx);
         //Na equação das velocidades, uma das variáveis é o Azimute atual em relação ao Norte, por isso o termo recebe somado a "inclinação lateral", pois assim será o azimute naquela posição do projétil.
         
