@@ -202,21 +202,6 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /********************************************************
  * Ajuste de θ inicial para coincidência de ϕ (final)   *
  *                                                      *
