@@ -134,112 +134,10 @@ double spindrift (double tempo){
     return 2.54*drift;                      //Resultado em centímetro.
 }
 
-/************************************************
- * Funções para cálculo de Runge-Kutta 4a Ordem *
- ************************************************/
 
-double pos(double v_na_direcao, double h){
-    double k,kx1,kx2,kx3,kx4;
-    kx1 = v_na_direcao;
-    kx2 = v_na_direcao+kx1*(h/2);
-    kx3 = v_na_direcao+kx2*(h/2);
-    kx4 = v_na_direcao+kx3*h;
-    k = (1/6.0)*(kx1 + 2*kx2 + 2*kx3 + kx4);
-    return k;  
-}
-
-/********************************************************************
- * funcao Auxiliar w_vx para Vel x (Downrange): Esta função apenas  *
- *                                              calculra o 'k' para *
- *                                              projetil_1.vx.      *
- * Esta função w_vx (y ou z) recebe o endereço da estrutura projétil*
- * a correção da iteração kvx1*(h/2) e o endereço da estrutura      *
- * da velocidade do vento                                           *
- *                                                                  *
- ********************************************************************/
-
-double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w){
-    return  (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->azimute)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
-}
-
-double kvx (struct prjt *projetil, struct vento *w, double inclinacao_lateral, double h, double kappa){
-    double k,kvx1,kvx2,kvx3,kvx4;
-    projetil->azimute += inclinacao_lateral;
-    kvx1 = w_vx(kappa, projetil, 0, w);
-    kvx2 = w_vx(kappa, projetil, kvx1*(h/2), w);
-    kvx3 = w_vx(kappa, projetil, kvx2*(h/2), w);
-    kvx4 = w_vx(kappa, projetil, kvx3*(h/2), w);
-    k = (1/6.0)*(kvx1 + 2*kvx2 + 2*kvx3 + kvx4);
-    return k;
-}
-
-/*****************************************************************
- * funcao Auxiliar w_vy para Vel y (Altura): Esta função apenas  *
- *                                           calculra o 'k' para *
- *                                           projetil_1.vy.      *
- *                                                               *
- *****************************************************************/
-
-
-double w_vyy (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
-    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->azimute)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->azimute)) ) );
-} 
-
-
-double kvy (struct prjt *projetil, struct vento *w, double inclinacao_lateral, double h, double kappa, double g){
-    double k,kvy1,kvy2,kvy3,kvy4;
-    projetil->azimute += inclinacao_lateral;
-    kvy1 = w_vyy(kappa, projetil, 0, w,g);
-    kvy2 = w_vyy(kappa, projetil, kvy1*(h/2), w,g);
-    kvy3 = w_vyy(kappa, projetil, kvy2*(h/2), w,g);
-    kvy4 = w_vyy(kappa, projetil, kvy3*(h/2), w,g);
-    k = (1/6.0)*(kvy1 + 2*kvy2 + 2*kvy3 + kvy4);
-    return k;
-}
-
-
-/******************************************************************
- * funcao Auxiliar para Vel z (Deriva/drift): Esta função apenas  *
- *                                            calculra o 'k' para *
- *                                            projetil_1.vz1.     *
- *                                                                *
- ******************************************************************/
-
-double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w){
-    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->azimute)) )   );
-}
-
-
-double kvz (struct prjt *projetil, struct vento *w, double inclinacao_lateral, double h, double kappa){
-    double k,kvz1,kvz2,kvz3,kvz4;
-    projetil->azimute += inclinacao_lateral;
-    kvz1 = w_vz(kappa, projetil, 0, w);
-    kvz2 = w_vz(kappa, projetil, kvz1*(h/2), w);
-    kvz3 = w_vz(kappa, projetil, kvz2*(h/2), w);
-    kvz4 = w_vz(kappa, projetil, kvz3*(h/2), w);
-    k = (1/6.0)*(kvz1 + 2*kvz2 + 2*kvz3 + kvz4);
-    return k;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/****************************************************************
+ * funções auxiliares para cálculo de posição no RK.            *
+ ****************************************************************/
 
 double pos_x (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
     return  projetil->vx;
@@ -253,18 +151,42 @@ double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior
     return  projetil->vz;
 }
 
-double w_vx_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+/********************************************************************
+ * funcao Auxiliar w_vx para Vel x (Downrange): Esta função apenas  *
+ *                                              calculra o 'k' para *
+ *                                              projetil_1.vx.      *
+ * Esta função w_vx (y ou z) recebe o endereço da estrutura projétil*
+ * a correção da iteração kvx1*(h/2) e o endereço da estrutura      *
+ * da velocidade do vento                                           *
+ *                                                                  *
+ ********************************************************************/
+double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->azimute)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
 }
 
-double w_vy_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+/*****************************************************************
+ * funcao Auxiliar w_vy para Vel y (Altura): Esta função apenas  *
+ *                                           calculra o 'k' para *
+ *                                           projetil_1.vy.      *
+ *                                                               *
+ *****************************************************************/
+double w_vy (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->azimute)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->azimute)) ) );
 }
 
-double w_vz_2 (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+/******************************************************************
+ * funcao Auxiliar para Vel z (Deriva/drift): Esta função apenas  *
+ *                                            calculra o 'k' para *
+ *                                            projetil_1.vz1.     *
+ *                                                                *
+ ******************************************************************/
+double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->azimute)) )   );
 }
 
+/************************************************
+ * Função para cálculo de Runge-Kutta 4a Ordem  *
+ ************************************************/
 double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct vento (*), double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g){
     double k,k1,k2,k3,k4;
     double inclinacao_lateral;
@@ -276,7 +198,6 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
     k3 = funcao(kappa, projetil, k2*(passo/2), w, g);
     k4 = funcao(kappa, projetil, k3*(passo/2), w, g);
     k = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4);
-    //printf("k = %lf\n",k);
     return k;
 }
 
@@ -569,11 +490,10 @@ ciclos_cpu = clock();
 
         //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
 
-        projetil_1.vx = projetil.vx + runge_kutta(&w_vx_2, &projetil, &w, H, kappa, g)*H;
-        projetil_1.vy = projetil.vy + runge_kutta(&w_vy_2, &projetil, &w, H, kappa, g)*H;
-        projetil_1.vz = projetil.vz + runge_kutta(&w_vz_2, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vx = projetil.vx + runge_kutta(&w_vx, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vy = projetil.vy + runge_kutta(&w_vy, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vz = projetil.vz + runge_kutta(&w_vz, &projetil, &w, H, kappa, g)*H;
 
-printf("x = %lf\ty = %lf\tz = %lf\tvx = %lf\tvy = %lf\tvz = %lf\n",projetil_1.x,projetil_1.y,projetil_1.z,projetil_1.vx,projetil_1.vy,projetil_1.vz);
 
         inclinacao = atan (projetil_1.vy/projetil_1.vx);
         //Na equação das velocidades, uma das variáveis é o Azimute atual em relação ao Norte, por isso o termo recebe somado a "inclinação lateral", pois assim será o azimute naquela posição do projétil.
@@ -723,17 +643,19 @@ ciclos_cpu = clock();
         //A única coisa que importa após o edf. é a distância percorrida ser menor que a distância entre a edificação e a impactação.
         
         t1 = t + H;
-        projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
-        projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
-        projetil_1.z = projetil.z + pos(projetil.vz,H)*H;
-        
+        projetil_1.x = projetil.x + runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
+        projetil_1.y = projetil.y + runge_kutta(&pos_y, &projetil, &w, H, 0, 0)*H;
+        projetil_1.z = projetil.z + runge_kutta(&pos_z, &projetil, &w, H, 0, 0)*H;
+
         inclinacao_lateral = atan (projetil.vz/projetil.vx);
-        
+
         kappa = kappaSdensidade*densidade_ar(projetil.y);
 
-        projetil_1.vx = projetil.vx + kvx(&projetil, &w, inclinacao_lateral, H, kappa)*H;   //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
-        projetil_1.vy = projetil.vy + kvy(&projetil, &w, inclinacao_lateral, H, kappa, g)*H;
-        projetil_1.vz = projetil.vz + kvz(&projetil, &w, inclinacao_lateral, H, kappa)*H;
+        //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
+
+        projetil_1.vx = projetil.vx + runge_kutta(&w_vx, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vy = projetil.vy + runge_kutta(&w_vy, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vz = projetil.vz + runge_kutta(&w_vz, &projetil, &w, H, kappa, g)*H;
         inclinacao = atan (projetil_1.vy/projetil_1.vx);
         //Na equação das velocidades, uma das variáveis é o Azimute atual em relação ao Norte, por isso o termo recebe somado a "inclinação lateral", pois assim será o azimute naquela posição do projétil.
 
@@ -886,9 +808,9 @@ printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",
     /* O último laço para gravar os resultados precisa apenas obedecer o downrangeMax com as devidas condições iniciais. */
     while ( projetil_1.x < downrangeMax){
         t1 = t + H;
-        projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
-        projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
-        projetil_1.z = projetil.z + pos(projetil.vz,H)*H;
+        projetil_1.x = projetil.x + runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
+        projetil_1.y = projetil.y + runge_kutta(&pos_y, &projetil, &w, H, 0, 0)*H;
+        projetil_1.z = projetil.z + runge_kutta(&pos_z, &projetil, &w, H, 0, 0)*H;
 
         inclinacao_lateral = atan (projetil.vz/projetil.vx);
         
@@ -903,9 +825,9 @@ printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",
 fprintf(debug,"%lf,%lf\tAltura: %lf m\n",latitudeEdf + distLatGraus (&projetil_1), longitudeEdf + distLongGraus(&projetil_1,latitude),projetil.y);
 #endif
 
-        projetil_1.vx = projetil.vx + kvx(&projetil, &w, inclinacao_lateral, H, kappa)*H;   //Lembrar que, a cada passo, o azimute atual muda, pois muda a inclinacao_lateral.
-        projetil_1.vy = projetil.vy + kvy(&projetil, &w, inclinacao_lateral, H, kappa, g)*H;
-        projetil_1.vz = projetil.vz + kvz(&projetil, &w, inclinacao_lateral, H, kappa)*H;
+        projetil_1.vx = projetil.vx + runge_kutta(&w_vx, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vy = projetil.vy + runge_kutta(&w_vy, &projetil, &w, H, kappa, g)*H;
+        projetil_1.vz = projetil.vz + runge_kutta(&w_vz, &projetil, &w, H, kappa, g)*H;
         inclinacao = atan (projetil_1.vy/projetil_1.vx);
 
         //Na equação das velocidades, uma das variáveis é o Azimute atual em relação ao Norte, por isso o termo recebe somado a "inclinação lateral", pois assim será o azimute naquela posição específica do projétil.
