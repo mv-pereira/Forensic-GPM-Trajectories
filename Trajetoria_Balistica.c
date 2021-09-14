@@ -333,11 +333,11 @@ int main(){
 /*****************************************************************
  * Declaração das variaveis da possivel Edificação no meio do    *
  * caminho. Inicia-se o valor sem edificação e depois corrige    *
- * haviaEdf == 0 -> Não havia                                    *
- * haviaEdf == 1 -> Havia.                                       *
+ * calcular_Edf == 0 -> Não havia                                    *
+ * calcular_Edf == 1 -> Havia.                                       *
  *****************************************************************/
 
-    int haviaEdf = 0;
+    int calcular_Edf = 0;
     double delta_y;                     //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco;  //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
     double velocidade_final;            //Velocidade do projétil na impactactação.
@@ -599,7 +599,7 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     printf("\n1 - SIM. 2 - NAO: ");
 
     if (getchar() == '1'){ /* Em ASCII: 49 */
-            haviaEdf = 1;
+            calcular_Edf = 1;
 #if DEBUG //, Holiday -8.123596, -34.898176 60m   , 
 edificio.latitude = -8.123596;
 edificio.longitude = -34.898176;
@@ -670,8 +670,7 @@ ciclos_cpu = clock();
         projetil.taxa_de_subida = atan2 (projetil.vy,projetil.vx);
         //Na equação das velocidades, uma das variáveis é o Azimute atual em relação ao Norte, por isso o termo recebe somado a "inclinação lateral", pois assim será o azimute naquela posição do projétil.
 
-//if (haviaEdf == 0) printf("%lf\t%lf\t%lf\n",projetil.x,projetil.y,downrangeMax);
-        if (haviaEdf) {
+        if (calcular_Edf) {
 
             if (projetil.x > (downrangeMax-distanciaPredio_Impacataco) ) { 
             //essa condicao aumenta o erro se o usuário colocar uma edificao fora da trajetória
@@ -692,7 +691,7 @@ ciclos_cpu = clock();
                     projetil.vz=0.0; // Seria possível já iniciar projetil.vz com a inclinacao_lateral, mas deixa recalcular... menos trabalho.
                     tiro.latitude = edificio.latitude;
                     tiro.longitude = edificio.longitude;
-                    haviaEdf = 0; // == 0 Interrompe os testes para esses cálculos (condição do "if" acima).
+                    calcular_Edf = 0; // == 0 Interrompe os testes para esses cálculos (condição do "if" acima).
                     tiro.origem = Edificacao;
 
                 } else {
