@@ -254,7 +254,6 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
 
     if ( fabs (phi_medido) < 0.3) grau_sobre_cem_rad = 0.0000174532; //a correção passa a ser de 0.001 grau
     if (phi_medido == 0) grau_sobre_cem_rad = 0.0000017453;          //Necessário para aumento de precisão se phi == 0;
-
     if ( phi_medido < phi_final ){              //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
         if (phi_medido >= 0) theta -= grau_sobre_cem_rad;
         else                 theta += grau_sobre_cem_rad;
@@ -329,7 +328,7 @@ int main(){
     double delta_y;                     //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
     double distanciaPredio_Impacataco;  //Distancia entre a edificacao e a impactacao a ser calculada caso haja edificações.
     double velocidade_final;            //Velocidade do projétil na impactactação.
-    
+    double temp = 0;                        //para debug.
 #if DEBUG //Valores padrão apenas para comparação
 
 impacto.altura = 89;
@@ -346,7 +345,6 @@ projetil.propriedades.rotacao = Dextrogiro;
 projetil.propriedades.coef_arrasto = 0.235800;
 w.velocidade = 10/3.6;
 w.direcao = (100+180.0)*M_PI/180.0;
-
 
 printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da função DEBUG, mudar a definição de DEBUG para 0 no cabeçalho do programa e recompilar.\n\n");
 
@@ -479,7 +477,8 @@ ciclos_cpu = clock();
     projetil.rumo = tiro.azimute + atan2 (projetil.vz,projetil.vx);
 
     //Segundo teste do while: se o disparo for descendente, o laço só para quando o projétil cair abaixo da altura medida, caso contrário, para qunaodo o projétil estiver acima da altura medida      
-    while ( (impacto.phi<0) ? ((projetil.taxa_de_subida >= 0) || (projetil.y>impacto.altura)) : (projetil.y<impacto.altura) ){
+    while ( (impacto.phi<0) ?  (fabs(projetil.y-impacto.altura)>0.1 || projetil.taxa_de_subida > 0) : (projetil.y<impacto.altura) ){
+
         t += H;
 
         projetil.x += runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
@@ -502,7 +501,6 @@ ciclos_cpu = clock();
         //Se com arrasto, o projétil caiu antes de atingir a "altura" é porque para o dado theta, ele não subirá muito. Então deve-se incrementar "theta".
         if (projetil.y<0 ) {
             tiro.theta = tiro.theta + PARADA;
-
             if (tiro.theta>0.785) { //Se theta estiver a 45 graus e ainda sim o projétil não atingir a altura, não há solução para o problema com os parâmetros fornecidos. O programa encerra-se.
                 printf ("\nCom os parâmetros fornecidos, o projétil não atingiria a altura de impactação.");
                 fclose(arquivo);
@@ -526,12 +524,11 @@ ciclos_cpu = clock();
  ************************************/
 
     delta_phi = projetil.taxa_de_subida - impacto.phi;
-
-    if (fabs (delta_phi) > 0.00174533){
+    if (fabs (delta_phi) > PARADA){
         tiro.theta = ajustar_theta (projetil.taxa_de_subida,impacto.phi,tiro.theta);
         goto PRIMEIRA_CORRECAO_DE_THETA_E_AZ;
-    } 
-    
+    }
+
 /********************************************************************************************************
  * Etapa de correção do AZ0 (Azimute Inicial = tiro.azimute)                                            *
  *                                                                                                      *
@@ -579,7 +576,7 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     /* Questionamento se havia edificações no caminho do projétil */
     printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?\n");
     printf("\t\tLatitude\tLongitude\nImpacto\t\t%f,\t%f\nOrigem (NMM)\t%f,\t%f\n",(180/M_PI)*impacto.latitude,impacto.longitude,tiro.latitude, tiro.longitude);
-    printf("\n1 - SIM. 2 - NAO: ");
+    printf("\n1 - SIM. 2 - NAO: "); 
 
     if (getchar() == '1'){ /* Em ASCII: 49 */
             calcular_Edf = 1;
