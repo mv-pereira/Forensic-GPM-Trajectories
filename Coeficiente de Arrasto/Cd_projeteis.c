@@ -41,13 +41,57 @@
 
 //Estrutura do Projétil
 
-struct prjt { //estrutura que guarda a posição tridimensional e sua velocidade
-    double x,y,z,vx,vy,vz,latitude,azimute;
+enum sentido_rotacao {Dextrogiro,Levogiro};
+
+struct caracteristicas_do_projetil { //Todas medidas com base no projétil
+    enum sentido_rotacao rotacao;
+    double massa;
+    double diametro;
+    double coef_arrasto;
+};
+
+struct prjt {
+    double x, y, z;
+    double vx, vy, vz;
+    double taxa_de_subida, rumo; //inclinacao e inclinação lateral instantânea
+    double latitude, longitude;
+    struct caracteristicas_do_projetil propriedades;
 };
 
 //Estrutura do Vento
-struct vento { //Estrutura para guardar a velocidade do vento nos eixos.
-    double x,y,z;
+struct vento {
+    double velocidade, direcao;
+    double x,y,z;           //Componentes x,y,z na direção de deslocamento principal (downrange) do projétil.
+    double norte,leste;     //Componentes Norte e Leste da direção do vento.
+};
+
+//Estrutura da Edificação
+struct edificacao {
+    double latitude;
+    double longitude;
+    double altura;
+};
+
+//Estrutura do Disparo
+enum origem_disparo {Nivel_do_Mar, Edificacao};
+
+struct disparo {
+    enum origem_disparo origem;
+    double latitude;
+    double longitude;
+    double altura;
+    double velocidade;      //Estimado pela característica do projétil.
+    double azimute;
+    double theta;
+};
+
+//Estrutura da Impactação - Todas medidas na cena de crime.
+struct impactacao {
+    double latitude;
+    double longitude;
+    double altura;
+    double phi;
+    double azimute;
 };
 
 /****************************************************************************
@@ -70,18 +114,20 @@ double arcsec(double x){
     return acos(1/x); //arcsec t = arccos(1/t).
 }
 
-/************************************************
- * Funções para cálculo de Runge-Kutta 4a Ordem *
- ************************************************/
+/****************************************************************
+ * funções auxiliares para cálculo de posição no RK.            *
+ ****************************************************************/
 
-double pos(double v_na_direcao, double h){
-    double k,kx1,kx2,kx3,kx4;
-    kx1 = v_na_direcao;
-    kx2 = v_na_direcao+kx1*(h/2);
-    kx3 = v_na_direcao+kx2*(h/2);
-    kx4 = v_na_direcao+kx3*h;
-    k = (1/6.0)*(kx1 + 2*kx2 + 2*kx3 + kx4);
-    return k;
+double pos_x (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vx;
+}
+
+double pos_y (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vy;
+}
+
+double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return  projetil->vz;
 }
 
 /********************************************************************
@@ -93,19 +139,8 @@ double pos(double v_na_direcao, double h){
  * da velocidade do vento                                           *
  *                                                                  *
  ********************************************************************/
-
-double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w){
-    return  (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->azimute)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
-}
-
-double kvx (struct prjt *projetil, struct vento *w, double h, double kappa){
-    double k,kvx1,kvx2,kvx3,kvx4;
-    kvx1 = w_vx(kappa, projetil, 0, w);
-    kvx2 = w_vx(kappa, projetil, kvx1*(h/2), w);
-    kvx3 = w_vx(kappa, projetil, kvx2*(h/2), w);
-    kvx4 = w_vx(kappa, projetil, kvx3*(h/2), w);
-    k = (1/6.0)*(kvx1 + 2*kvx2 + 2*kvx3 + kvx4);
-    return k;
+double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->rumo)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
 }
 
 /*****************************************************************
@@ -114,43 +149,31 @@ double kvx (struct prjt *projetil, struct vento *w, double h, double kappa){
  *                                           projetil_1.vy.      *
  *                                                               *
  *****************************************************************/
-
-
-double w_vyy (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
-    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->azimute)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->azimute)) ) );
-} 
-
-
-double kvy (struct prjt *projetil, struct vento *w, double h, double kappa, double g){
-    double k,kvy1,kvy2,kvy3,kvy4;
-    kvy1 = w_vyy(kappa, projetil, 0, w,g);
-    kvy2 = w_vyy(kappa, projetil, kvy1*(h/2), w,g);
-    kvy3 = w_vyy(kappa, projetil, kvy2*(h/2), w,g);
-    kvy4 = w_vyy(kappa, projetil, kvy3*(h/2), w,g);
-    k = (1/6.0)*(kvy1 + 2*kvy2 + 2*kvy3 + kvy4);
-    return k;
+double w_vy (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->rumo)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->rumo)) ) );
 }
-
 
 /******************************************************************
  * funcao Auxiliar para Vel z (Deriva/drift): Esta função apenas  *
  *                                            calculra o 'k' para *
- *                                            vz1.                *
+ *                                            projetil_1.vz1.     *
  *                                                                *
  ******************************************************************/
-
-double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w){
-    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->azimute)) )   );
+double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+    return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->rumo)) )   );
 }
 
-
-double kvz (struct prjt *projetil, struct vento *w, double h, double kappa){
-    double k,kvz1,kvz2,kvz3,kvz4;
-    kvz1 = w_vz(kappa, projetil, 0, w);
-    kvz2 = w_vz(kappa, projetil, kvz1*(h/2), w);
-    kvz3 = w_vz(kappa, projetil, kvz2*(h/2), w);
-    kvz4 = w_vz(kappa, projetil, kvz3*(h/2), w);
-    k = (1/6.0)*(kvz1 + 2*kvz2 + 2*kvz3 + kvz4);
+/************************************************
+ * Função para cálculo de Runge-Kutta 4a Ordem  *
+ ************************************************/
+double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct vento (*), double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g){
+    double k,k1,k2,k3,k4;
+    
+    k1 = funcao(kappa, projetil, 0, w, g);
+    k2 = funcao(kappa, projetil, k1*(passo/2), w, g);
+    k3 = funcao(kappa, projetil, k2*(passo/2), w, g);
+    k4 = funcao(kappa, projetil, k3*(passo/2), w, g);
+    k = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4);
     return k;
 }
 
@@ -167,22 +190,24 @@ int main(){
 
     printf("\nPrograma para cálculo do Coeficiente de Arrasto Cd (adimensional) para projéteis de dimensões conhecidas utilizando parâmetros fornecidos pelos fabricantes de projétis.\n");
     
-    double v0;                                      //Velocidade Inicial
-    double t,t1,g;                                  //Tempo e Aceleração da gravidade. t1 representa o tempo no momento n+1.
-    double c, a, massa, kappa, kappaSdensidade;     //Valores de entrada (Coef. Arrasto; densidade do Ar; área de sec trasnversal do objeto, massa, constante).
-    double latitude = -23.698308;                   //Latitude da Fábrica da CBC em São Paulo
+    double t, g;                       //Tempo e Aceleração da gravidade. t1 representa o tempo no momento n+1.
+    double kappa, kappaSdensidade;     //Valores da característica relacionada ao arrasto.
+
     double distancia,velocidadeF,delta_v;
     
-    struct prjt projetil, projetil_1;   //projetil_1 é o projétil para n+1 | Definição dessa struct no começo do programa.
+    struct prjt projetil;               //Estrutura do projétil.
     struct vento w;                     //Definição da struct do vento.
+    struct impactacao impacto;          //Estrutura da Impactação.
+    struct disparo tiro;                //Estrutura do Tiro.
 
+    tiro.latitude = -23.698308;         //Latitude da Fábrica da CBC em São Paulo
     
 #if DEBUG   //Valores padrão de .40 ETPP
-v0 = 302.0;
+tiro.velocidade = 302.0;
 distancia = 100.0;
 velocidadeF = 274.0;
-massa = 11.66/1000;
-a = M_PI*powl((10/1000.0),2)/4;
+projetil.propriedades.massa = 11.66/1000;
+projetil.propriedades.diametro = M_PI*powl((10/1000.0),2)/4;
 printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil calibre .40 ETPP.\n");
 
 #else
@@ -191,7 +216,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
  ********************************/
 
     printf("\nDigite a velocidade inicial (em m/s) do projétil:\n");
-    scanf("%lf", &v0);
+    scanf("%lf", &tiro.velocidade);
 
     printf("\nDigite para qual distancia (em m) o Cd será calculado:\n");
     scanf("%lf", &distancia);
@@ -200,21 +225,21 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
     scanf("%lf", &velocidadeF);
 
     printf("\nDigite a massa (em g) do projétil:\n");
-    scanf("%lf", &massa);
-    massa = massa/1000.0; //No SI, massa em Kg
+    scanf("%lf", &projetil.propriedades.massa);
+    projetil.propriedades.massa = projetil.propriedades.massa/1000.0; //No SI, massa em Kg
 
     printf("\nDigite o diâmetro (em mm) do projétil Disparado:\n");
-    scanf("%lf", &a);
+    scanf("%lf", &projetil.propriedades.diametro);
     // A variável chama-se a para cálculo da área transversal.
-    a = M_PI*powl((a/1000.0),2)/4;
+    projetil.propriedades.diametro = M_PI*powl((projetil.propriedades.diametro/1000.0),2)/4;
 
 #endif
     
     //Valor médio estimado para início dos cálculos.
-    c = 0.2;
+    projetil.propriedades.coef_arrasto = 0.2;
 
     //Aceleração da gravidade na latitude. (em m/s^2)
-    g = 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude));
+    g = 9.780327*(1+0.0053024*sin(tiro.latitude)*sin(tiro.latitude) - 0.0000058*sin(2*tiro.latitude)*sin(2*tiro.latitude));
 
 /********************************
  * Ponto de Partida do GOTO após*
@@ -224,7 +249,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
 
     A:
     
-    kappaSdensidade = c*a/(2.0*massa);
+    kappaSdensidade = (projetil.propriedades.coef_arrasto/projetil.propriedades.massa)*(projetil.propriedades.diametro/2); //Ordem alterada de c*a/(2.0*m) para evitar Underflow.
     //kappaSdensidade -> κ/densidade_ar. Note que a massa já entra na constante. Densidade do ar será calculado dentro do laço...
     
 /********************************************************
@@ -237,13 +262,13 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
     projetil.x=0.0;
     projetil.y=1;
     projetil.z=0.0;
-    projetil.vx=v0*cos(0);
-    projetil.vy=v0*sin(0);
+    projetil.vx=tiro.velocidade*cos(0);
+    projetil.vy=tiro.velocidade*sin(0);
     projetil.vz=0.0;                    //Downrange continua sendo no eixo x;
-    projetil.latitude = -23.698308;     //Latitude da Fábrica da CBC em São Paulo
-    projetil.azimute = 0;
-    projetil_1 = projetil;
-    
+
+    projetil.taxa_de_subida = atan2 (projetil.vy,projetil.vx);
+    projetil.rumo = tiro.azimute + atan2 (projetil.vz,projetil.vx);
+
     w.x=0.0; //Condições iniciais do vento.
     w.y=0.0;
     w.z=0.0;
@@ -253,23 +278,24 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
  *                                  *
  ************************************/
     
-    while (projetil_1.x < distancia){
-        t1 = t + H;
-        projetil_1.x = projetil.x + pos(projetil.vx,H)*H;
-        projetil_1.y = projetil.y + pos(projetil.vy,H)*H;
-        projetil_1.z = projetil.z + pos(projetil.vz,H)*H;
+    while (projetil.x < distancia){
+        t += H;
+        projetil.x += runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
+        projetil.y += runge_kutta(&pos_y, &projetil, &w, H, 0, 0)*H;
+        projetil.z += runge_kutta(&pos_z, &projetil, &w, H, 0, 0)*H;
         
+        projetil.rumo = tiro.azimute + atan2 (projetil.vz,projetil.vx);
+
         kappa = kappaSdensidade*densidade_ar(projetil.y);
 
         // Nos cálculos iterativos da velocidade nos eixos, as variáveis: w.x,w.y e w.z (Velocidade do vento), latitude e azimute foram desconsideradas.
 
-        projetil_1.vx = projetil.vx + kvx(&projetil, &w, H, kappa)*H;        
-        projetil_1.vy = projetil.vy + kvy(&projetil, &w, H, kappa, g)*H;
-        projetil_1.vz = projetil.vz + kvz(&projetil, &w, H, kappa)*H;
-        
-        // Atualização das variáveis.
-        t = t1;
-        projetil = projetil_1;
+        projetil.vx += runge_kutta(&w_vx, &projetil, &w, H, kappa, g)*H;
+        projetil.vy += runge_kutta(&w_vy, &projetil, &w, H, kappa, g)*H;
+        projetil.vz += runge_kutta(&w_vz, &projetil, &w, H, kappa, g)*H;
+
+        projetil.taxa_de_subida = atan2 (projetil.vy,projetil.vx);
+
         }
 
 /************************************
@@ -278,21 +304,21 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\nValores prefixados para um projétil cali
  *                                  *
  ************************************/    
 
-    delta_v = projetil_1.vx - velocidadeF; // Δv precisa ser menor do que uma quantidade ε. Aqui escolhido: 0.01 m/s.
+    delta_v = projetil.vx - velocidadeF; // Δv precisa ser menor do que uma quantidade ε. Aqui escolhido: 0.01 m/s.
 
     if ( fabs (delta_v) > 0.01){
 
     if ( delta_v > 0 ){               //Projétil terminou com mais velocidade que a Vf dada pela fabricante, após x metros de Downrange.
-        c = c + 0.00001;               //Adicione coeficiente de Arrasto.
+        projetil.propriedades.coef_arrasto += 0.00001;               //Adicione coeficiente de Arrasto.
         goto A;
         }
     else{                             //Projétil terminou com menos velocidade que a Vf dada pela fabricante, após x metros de Downrange.
-        c = c - 0.00001;               //Retire coeficiente de Arrasto.
+        projetil.propriedades.coef_arrasto -= 0.00001;               //Retire coeficiente de Arrasto.
         goto A;
         }
     }
     
-    printf ("\nConsiderando uma perda de velocidade de %.2f m/s em %.2f m,\nO coeficiente de Arrasto vale: Cd=%f.\n",v0-velocidadeF,distancia,c);
+    printf ("\nConsiderando uma perda de velocidade de %.2f m/s em %.2f m,\nO coeficiente de Arrasto vale: Cd=%f.\n",tiro.velocidade-velocidadeF,distancia,projetil.propriedades.coef_arrasto);
     
     return 0;
 }
