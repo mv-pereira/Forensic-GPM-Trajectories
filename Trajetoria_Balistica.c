@@ -42,16 +42,17 @@
 #define H 0.0001            //passo da iteração do Runge-Kutta.
 #define DEBUG 1
 
+
+//Estrutura do Projétil
+
 enum sentido_rotacao {Dextrogiro,Levogiro};
 
-struct caracteristicas_do_projetil {
+struct caracteristicas_do_projetil { //Todas medidas com base no projétil
     enum sentido_rotacao rotacao;
     double massa;
     double diametro;
     double coef_arrasto;
 };
-
-//Estrutura do Projétil
 
 struct prjt {
     double x, y, z;
@@ -62,10 +63,10 @@ struct prjt {
 };
 
 //Estrutura do Vento
-struct vento { //Estrutura para guardar a velocidade do vento nos eixos.
+struct vento {
     double velocidade, direcao;
-    double x,y,z;   //Componentes x,y,z na direção de deslocamento principal (downrange) do projétil.
-    double norte,leste; //Componentes Norte e Leste da direção do vento.
+    double x,y,z;           //Componentes x,y,z na direção de deslocamento principal (downrange) do projétil.
+    double norte,leste;     //Componentes Norte e Leste da direção do vento.
 };
 
 //Estrutura da Edificação
@@ -75,20 +76,20 @@ struct edificacao {
     double altura;
 };
 
+//Estrutura do Disparo
 enum origem_disparo {Nivel_do_Mar, Edificacao};
 
-//Estrutura do Disparo
 struct disparo {
     enum origem_disparo origem;
     double latitude;
     double longitude;
     double altura;
-    double velocidade;
+    double velocidade;      //Estimado pela característica do projétil.
     double azimute;
     double theta;
 };
 
-//Estrutura da Impactação
+//Estrutura da Impactação - Todas medidas na cena de crime.
 struct impactacao {
     double latitude;
     double longitude;
