@@ -250,10 +250,10 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
  ********************************************************/
 
  double ajustar_theta (double phi_final, double phi_medido, double theta){
-
     double grau_sobre_cem_rad = 0.0001745329;
 
-    if ( fabs (phi_medido) < 0.3) grau_sobre_cem_rad = grau_sobre_cem_rad/10; //a correção passa a ser de 0.001 grau
+    if ( fabs (phi_medido) < 0.3) grau_sobre_cem_rad = 0.0000174532; //a correção passa a ser de 0.001 grau
+    if (phi_medido == 0) grau_sobre_cem_rad = 0.0000017453;          //Necessário para aumento de precisão se phi == 0;
 
     if ( phi_medido < phi_final ){              //Projétil terminou com angulação maior que o φ medido, indicando que o disparo foi mais baixo.
         if (phi_medido >= 0) theta -= grau_sobre_cem_rad;
@@ -528,7 +528,7 @@ ciclos_cpu = clock();
 
     delta_phi = projetil.taxa_de_subida - impacto.phi;
 
-    if (fabs (delta_phi) >  PARADA){
+    if (fabs (delta_phi) > 0.00174533){
         tiro.theta = ajustar_theta (projetil.taxa_de_subida,impacto.phi,tiro.theta);
         goto PRIMEIRA_CORRECAO_DE_THETA_E_AZ;
     } 
