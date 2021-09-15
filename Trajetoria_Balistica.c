@@ -57,7 +57,7 @@ struct prjt {
     double x, y, z;
     double vx, vy, vz;
     double taxa_de_subida, rumo; //inclinacao e inclinação lateral instantânea
-    double latitude, longitude, azimute;
+    double latitude, longitude;
     struct caracteristicas_do_projetil propriedades;
 };
 
