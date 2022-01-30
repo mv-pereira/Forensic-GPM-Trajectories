@@ -40,7 +40,7 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 #define PARADA 0.00174533    // Critério de parada para ajuste de angulação. 0.00174533 rad = 0.1º.
 #define H 0.0001            //passo da iteração do Runge-Kutta.
-#define DEBUG 1
+#define DEBUG 0
 
 
 //Estrutura do Projétil
@@ -368,7 +368,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
 
     printf("\nDigite a latitude decimal da impactacao (em °), Valor precisa ser negativo, se o disparo ocorrer Hemisfério Sul: ");
     scanf("%lf", &impacto.latitude);
-    impacto.latitude = latitude*M_PI/180.0; //grau para radianos
+    impacto.latitude = impacto.latitude*M_PI/180.0; //grau para radianos
     g = 9.780327*(1+0.0053024*pow(sin(impacto.latitude),2) - 0.0000058*pow (sin(2*impacto.latitude),2)); //Aceleração da gravidade na latitude da impactação. (em m/s^2)
 
     printf("\nDigite a longitude decimal da impactacao (em °): ");
@@ -390,15 +390,15 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
     
     printf("\nO projetil é dextrogiro ou levogiro? 1 - Dextrogiro.\t2 - Levogiro.\n");
     scanf("%d", &dextrogiro);
-    (dextrogiro != 1) ? projetil.propriedades.rotacao = Levogiro : projetil.propriedades.rotacao = Dextrogiro;
+    (dextrogiro != 1) ? (projetil.propriedades.rotacao = Levogiro) : (projetil.propriedades.rotacao = Dextrogiro);
  
     printf("\nDigite o módulo da velocidade do vento (em km/h): ");
     scanf("%lf", &w.velocidade);
     w.velocidade = w.velocidade/3.6; // Velocidade do vento precisa ser em m/s.
 
     printf("\nDigite a direção do vento em relação ao Norte (em °): ");
-    scanf("%lf", &w.direacao);
-    w.direacao = (w.direacao+180.0)*M_PI/180.0; // A direção dos ventos é dada de onde ele vem, não para onde sopra.
+    scanf("%lf", &w.direcao);
+    w.direcao = (w.direcao+180.0)*M_PI/180.0; // A direção dos ventos é dada de onde ele vem, não para onde sopra.
     
     /* A melhor estimativa para o Azimute inicial é o próprio impacto.azimute. Em condições normais de vento, não tem como divergir muito do γ */
     tiro.azimute = impacto.azimute;
@@ -630,7 +630,9 @@ ciclos_cpu = clock();
  *                                                                                                                  *
  ********************************************************************************************************************/
 
-    while ( projetil.x < downrangeMax){
+    //while ( projetil.x < downrangeMax){ <- downrangeMax != "caminho total percorrido no ar"
+    while ( (impacto.phi<0) ?  (fabs(projetil.y-impacto.altura)>0.1 || projetil.taxa_de_subida > 0) : (projetil.y<impacto.altura) ){
+
         //A única coisa que importa após o edf. é a distância percorrida ser menor que a distância entre a edificação e a impactação.
 
         t += H;
@@ -780,7 +782,7 @@ printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",
                     "\nTempo\tLatitude\t\t\tLongitude\t\tAltura:\n");
 
     /* O último laço para gravar os resultados precisa apenas obedecer o downrangeMax com as devidas condições iniciais. */
-    while ( projetil.x < downrangeMax){
+    while ( (impacto.phi<0) ?  (fabs(projetil.y-impacto.altura)>0.1 || projetil.taxa_de_subida > 0) : (projetil.y<impacto.altura) ){
         t += H;
         projetil.x += runge_kutta(&pos_x, &projetil, &w, H, 0, 0)*H;
         projetil.y += runge_kutta(&pos_y, &projetil, &w, H, 0, 0)*H;
