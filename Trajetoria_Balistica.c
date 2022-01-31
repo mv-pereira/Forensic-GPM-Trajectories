@@ -355,6 +355,7 @@ printf ("\n*\t*\tDEBUG Ativado.\t*\t*\n\t\tValores prefixados.\n\nPara sair da f
  * Características do projetil  *
  ********************************/
     
+    fflush(stdin);
     printf("Digite a altura (em metros) da impactação em relação ao disparo: ");
     scanf("%lf", &impacto.altura);
 
@@ -577,8 +578,10 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
     printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?\n");
     printf("\t\tLatitude\tLongitude\nImpacto\t\t%f,\t%f\nOrigem (NMM)\t%f,\t%f\n",(180/M_PI)*impacto.latitude,impacto.longitude,tiro.latitude, tiro.longitude);
     printf("\n1 - SIM. 2 - NAO: "); 
-
-    if (getchar() == '1'){ /* Em ASCII: 49 */
+    fflush(stdin);
+    char predio_no_caminho;
+    scanf ("%c",&predio_no_caminho);
+    if (predio_no_caminho == '1'){ /* Em ASCII: 49 */
             calcular_Edf = 1;
             #if DEBUG //, Holiday -8.123596, -34.898176 60m   , 
             edificio.latitude = -8.123596;
@@ -589,10 +592,13 @@ printf("\n\n\nTEMPO GASTO NO PRIMEIRO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n"
 
             printf("\nInsira as coordenadas da edificação mais próximas da região da impactação.");
             printf("\nLatitude da edificação: ");
-            ("%lf", &edificio.latitude);
+            fflush(stdin);
+            scanf("%lf", &edificio.latitude);
             printf("Longitude da edificação: ");
+            fflush(stdin);
             scanf("%lf", &edificio.longitude);
             printf("Altura da edificação: ");
+            fflush(stdin);
             scanf("%lf", &edificio.altura);
             distanciaPredio_Impacataco = haversine (180*impacto.latitude/M_PI, impacto.longitude, edificio.latitude, edificio.longitude);
             #endif
@@ -824,7 +830,7 @@ printf("\n\n\nTEMPO GASTO NO SEGUNDO LAÇO DE CALCULOS:\nt = %f segundos\n\n\n",
            "\nDesvios para %s = %.3lf m."
            "\nÂngulo θ (inicial) do disparo = %.2lfº."
            "\nÂngulo ϕ (ao final da simulação) = %.2lfº."
-           "\nAzimute inicial do disparo = %.2lfº.\n",n,projetil.x,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*tiro.theta/M_PI, 180*projetil.taxa_de_subida/M_PI, 180*tiro.azimute/M_PI);
+           "\nAzimute inicial do disparo = %.2lfº.\n",n, downrangeMax/* projetil.x */,projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*tiro.theta/M_PI, 180*projetil.taxa_de_subida/M_PI, 180*tiro.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), projetil.propriedades.rotacao == Dextrogiro ? "direta" : "esquerda");
     
     printf("\nO projétil partiu, aproximadamente, das coordenadas: %lf N/S, %lf L/O, a uma altura de %.2lf m, partindo %s.\n",tiro.latitude, tiro.longitude, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
