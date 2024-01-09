@@ -58,7 +58,7 @@ void inicializarProjetilEW(double *t, struct prjt *projetil, const struct dispar
 
 void inicializarTiro(const struct prjt *projetil, const struct impactacao *impacto, struct disparo *tiro, const struct vento *w, const struct edificacao *edificio, enum origem_disparo origem);
 
-double movimentoProjetil(struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf);
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf);
 
 int main(){
     setlocale(LC_ALL, "Portuguese"); //Utilizando caracteres e acentuação da língua portuguesa.
@@ -131,7 +131,7 @@ int main(){
  ****************************************************************/    
 
     // Principal função
-    movimentoProjetil(&projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
+    movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
     inicializarTiro(&projetil, &impacto, &tiro, &w, &edificio, Nivel_do_Mar);
 
 
@@ -157,7 +157,7 @@ int main(){
 
     }
     // Cálculo com edifício
-    t = movimentoProjetil(&projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
+    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
 
 /************************************
  * Considerações Finais e           *
@@ -405,7 +405,7 @@ void inicializarTiro(const struct prjt *projetil, const struct impactacao *impac
 
 
 //linha 233
-double movimentoProjetil(struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf){
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf){
  
     FILE *arquivo;
     arquivo = fopen("data","w");
@@ -424,7 +424,6 @@ double movimentoProjetil(struct prjt *projetil, struct impactacao *impacto, stru
 
     double downrangeMax = projetil->x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao. Valor só será diferente de 0 na segunda vez, ou seja, quando tiver edificio
     double distanciaPredio_Impacataco = 0;
-    static int n = 0;
 
     double t;
     if (calcular_Edf){
@@ -488,7 +487,8 @@ double movimentoProjetil(struct prjt *projetil, struct impactacao *impacto, stru
                 }
             }
         }
-        n++;
+
+        (*n)++;
         projetil->rumo = tiro->azimute + atan2 (projetil->vz,projetil->vx);
 
         // Etapa de correções de ângulo e altura inicial.
