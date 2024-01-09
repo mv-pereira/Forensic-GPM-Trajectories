@@ -159,3 +159,7 @@ Considerando que partiu, de fato, da primeira edificação fornecida, ao analisa
 | …      | …               | …                | …           |
 
 Ou seja, na região de interesse, o projétil passou 2 metros acima da edificação.
+
+> Sugestão de Compilação
+
+> gcc Trajetoria_Balistica.c projetil.c -o Trajetoria -lm
