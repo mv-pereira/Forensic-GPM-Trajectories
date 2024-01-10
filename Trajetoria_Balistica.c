@@ -28,7 +28,7 @@
  * Perito Criminal - DEPP/ICPAS - Pernambuco            *
  ********************************************************/
 
-
+#define _GNU_SOURCE // Para usar qsort_r
 
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <stdlib.h> //Para função exit() na condicional da abertura do arquivo;
@@ -40,12 +40,21 @@
 #define H 0.0001            //passo da iteração do Runge-Kutta.
 #define DEBUG 0
 
-double calcularg(double latitude);
+
+struct listaEdificacoes {
+    struct edificacao *edificios;
+    double *distPredioImpact;
+    int numEdificios;
+};
+
+// Calcula a aceleração da gravidade com base na latitude.
+double calcularg(const double latitude);
 
 void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct disparo *tiro, struct prjt *projetil, struct vento *w, double *g);
 
 void lerDadosEdificacao(char *nomeArquivo, struct edificacao *edificio);
 
+// Atualiza o estado do projétil com base nas condições atuais e no disparo.
 void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro);
 
 bool correcaoTheta(struct prjt *projetil, struct disparo *tiro, const double impacto_phi);
@@ -54,11 +63,28 @@ bool correcaoAzimute(struct prjt *projetil, struct disparo *tiro, const double i
 
 bool correcaoAltura(struct prjt *projetil, struct disparo *tiro, const double impacto_altura);
 
+// Inicializa o projétil e o vento com valores iniciais para simulação de disparo.
 void inicializarProjetilEW(double *t, struct prjt *projetil, const struct disparo *tiro, struct vento *w, const double yInicial);
 
+// Prepara o disparo com base nas informações do projétil, impactação, vento e edificação.
 void inicializarTiro(const struct prjt *projetil, const struct impactacao *impacto, struct disparo *tiro, const struct vento *w, const struct edificacao *edificio, enum origem_disparo origem);
 
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf);
+// Calcula o movimento do projétil e retorna informações relevantes sobre a trajetória.
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco);
+
+// Calcula as distâncias entre as edificações e o ponto de impacto.
+void calcularDistancias(struct listaEdificacoes *lista, struct impactacao *impacto);
+void lerDadosEdificacao(char *nomeArquivo, struct edificacao *edificio);
+struct listaEdificacoes lerDadosEdificacaoVar(char *nomeArquivo);
+
+// Ordena as edificações com base nas distâncias do ponto de impacto.
+void ordenarEdificacoes(struct listaEdificacoes *lista);
+
+// Função de comparação usada por qsort_r para ordenar um array.
+int compare(const void *a, const void *b, void *arg);
+
+double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, int n, double lat3, double long3);
+
 
 int main(){
     setlocale(LC_ALL, "Portuguese"); //Utilizando caracteres e acentuação da língua portuguesa.
@@ -130,9 +156,25 @@ int main(){
  *                                                              *
  ****************************************************************/    
 
-    // Principal função
-    movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
+    struct listaEdificacoes edificacoes = lerDadosEdificacaoVar("edificacao.txt");
+    calcularDistancias(&edificacoes, &impacto);
+    ordenarEdificacoes(&edificacoes);
+
+
+    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0]);
     inicializarTiro(&projetil, &impacto, &tiro, &w, &edificio, Nivel_do_Mar);
+
+    printf("Sem edificações e considerando o arrasto, os cálculos terminaram com os seguintes valores:"
+            "\nTempo de deslocamento total do projétil: %.1f segundos."
+            "\nDownrange Total = %.1lf m."
+            "\nÂngulo θ (inicial) do disparo = %.1lfº."
+            "\nÂngulo Az (inicial) = %.1lfº."
+            "\nCoordenadas Georgráficas do disparo ao NMM (N/S, L/O): %.6lf, %.6lf.\n\n",
+            t, projetil.x, (180/M_PI)*tiro.theta, (180/M_PI)*tiro.azimute, tiro.latitude, tiro.longitude);
+
+    // Guardar as coordenadas do disparo partindo do solo para calcular a distância entre o edifício fornecido
+    // e a trajetória calculada.
+    double tiroLatSolo = tiro.latitude, tiroLongSolo = tiro.longitude;
 
 
 /************************************
@@ -141,23 +183,25 @@ int main(){
  * do solo.                         *
  ************************************/
 
-    /* Questionamento se havia edificações no caminho do projétil */
-    printf("Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?\n");
-    printf("\t\tLatitude\tLongitude\nImpacto\t\t%f,\t%f\nOrigem (NMM)\t%f,\t%f\n",(180/M_PI)*impacto.latitude,impacto.longitude,tiro.latitude, tiro.longitude);
-    printf("\n1 - SIM. 2 - NAO: "); 
-    fflush(stdin);
-    char predio_no_caminho;
-    scanf ("%c",&predio_no_caminho);
-    if (predio_no_caminho == '1'){ /* Em ASCII: 49 */
-            calcular_Edf = true;
-    } else {
-        printf("\nComo não há outras edificações no caminho:\n");
-        tiro.altura=0;
-        tiro.origem = Nivel_do_Mar;
+    if (edificacoes.numEdificios != 0) calcular_Edf = true;
 
+    for (int i=0; i<edificacoes.numEdificios; i++){
+        // Principal função
+        printf("\n\nTestando a edificação #%d.\n",i+1);
+        printf("Edifício %d: Coordenadas: (N/S, L/O): %.6lf, %.6lf, Altura %.2lf m, Distância até Impacto: %.2lf m.\n"
+        "A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: %f m.\n",
+        i + 1,
+        edificacoes.edificios[i].latitude,
+        edificacoes.edificios[i].longitude,
+        edificacoes.edificios[i].altura,
+        edificacoes.distPredioImpact[i],
+        pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, (180/M_PI)*impacto.latitude, impacto.longitude, 1000, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude));
+        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
+        
+        if (tiro.origem == Edificacao) break; // Já tá calculando a partir do prédio mais próximo.
+        //if (downrangeMax > downrangeMaxAnterior) break;
     }
-    // Cálculo com edifício
-    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificio, calcular_Edf);
+
 
 /************************************
  * Considerações Finais e           *
@@ -194,6 +238,9 @@ int main(){
     printf(".357 Mag        724\n");
     printf(".454 Casull     2531\n");
 
+    free(edificacoes.distPredioImpact);
+    free(edificacoes.edificios);
+    
     return 0;
 }
 
@@ -233,7 +280,7 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     printf("Latitude: %lf graus\n", impacto->latitude);
     impacto->latitude = impacto->latitude*M_PI/180.0;
 
-    *g = calcularg(impacto->latitude); //Açeleração da gravidade na latitude. (em m/s^2)
+    *g = calcularg((180/M_PI)*impacto->latitude); //Açeleração da gravidade na latitude. (em m/s^2)
 
     fscanf(file, "%*[^:]: %lf", &impacto->longitude);
     printf("Longitude: %lf\n", impacto->longitude);
@@ -299,6 +346,74 @@ void lerDadosEdificacao(char *nomeArquivo, struct edificacao *edificio) {
     fclose(file);
 }
 
+struct listaEdificacoes lerDadosEdificacaoVar(char *nomeArquivo) {
+    FILE *file = fopen(nomeArquivo, "r");
+    char buffer[256];
+    char *token, *start;
+    const char delim[2] = ",";
+    struct listaEdificacoes lista;
+    int i;
+
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo de edificação!\n");
+        exit(1);
+    }
+    
+    // Ignorando comentários e linhas em branco no início do arquivo
+    while (fgets(buffer, sizeof(buffer), file)) {
+        if (buffer[0] != '#' && buffer[0] != '\n') {
+            break;
+        }
+    }
+
+    // Lê o número de edificações
+    //fgets(buffer, sizeof(buffer), file);
+    sscanf(buffer, "Numero de edificacoes: %d", &lista.numEdificios);
+
+    // Aloca memória para as edificações
+    lista.edificios = (struct edificacao *)malloc(lista.numEdificios * sizeof(struct edificacao));
+    if (lista.edificios == NULL) {
+        printf("Erro na alocação de memória.\n");
+        fclose(file);
+        exit(1);
+    }
+
+    // Latitude
+    fgets(buffer, sizeof(buffer), file);
+    start = strchr(buffer, ':');
+    if (start != NULL) {
+        token = strtok(start + 1, delim);
+        for (i = 0; i < lista.numEdificios; i++) {
+            lista.edificios[i].latitude = atof(token);
+            token = strtok(NULL, delim);
+        }
+    }
+
+    // Longitude
+    fgets(buffer, sizeof(buffer), file);
+    start = strchr(buffer, ':');
+    if (start != NULL) {
+        token = strtok(start + 1, delim);
+        for (i = 0; i < lista.numEdificios; i++) {
+            lista.edificios[i].longitude = atof(token);
+            token = strtok(NULL, delim);
+        }
+    }
+
+    // Altura
+    fgets(buffer, sizeof(buffer), file);
+    start = strchr(buffer, ':');
+    if (start != NULL) {
+        token = strtok(start + 1, delim);
+        for (i = 0; i < lista.numEdificios; i++) {
+            lista.edificios[i].altura = atof(token);
+            token = strtok(NULL, delim);
+        }
+    }
+
+    fclose(file);
+    return lista;
+}
 
 void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro) {
     //Constante de arrasto/ro. Note que a massa já entra na constante. Densidade do ar será calculado nas funcoes de vx,vy,vz...
@@ -352,17 +467,21 @@ bool correcaoAzimute(struct prjt *projetil, struct disparo *tiro, const double i
      ********************************************************************/
 bool correcaoAltura(struct prjt *projetil, struct disparo *tiro, const double impacto_altura) {
     double delta_y = fabs (projetil->y - impacto_altura); //parâmetro para comparação entre a altura após atingir e a altura calculada após as iterações ao sair da edificação.
-    if ( delta_y > 0.01){
+    if ( delta_y > PARADA_ALTURA){
         if (projetil->y > impacto_altura) {
-            tiro->altura -= delta_y/2 + 0.001;   //delta_y >= 0 pelo "fabs" aplicado anteriormente.
-            return true;
+            tiro->altura -= delta_y + PARADA_ALTURA/2;   //delta_y >= 0 pelo "fabs" aplicado anteriormente.
+                if (tiro->altura < 0) {
+                    tiro->altura = 0;
+                return false;
+                }
         } else {
-            tiro->altura += delta_y/2 + 0.001;
-            return true;
+            tiro->altura += delta_y + PARADA_ALTURA/2;
         }
+        return true;
     }
     return false;
 }
+
 
 void inicializarProjetilEW(double *t, struct prjt *projetil, const struct disparo *tiro, struct vento *w, const double yInicial) {
     *t=0;
@@ -402,10 +521,8 @@ void inicializarTiro(const struct prjt *projetil, const struct impactacao *impac
 }
 
 
-
-
 //linha 233
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf){
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco){
  
     FILE *arquivo;
     arquivo = fopen("data","w");
@@ -422,14 +539,14 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
 
     if(calcular_Edf == false) corrigirAltura = false; // só corrige altura se houver prédio
 
-    double downrangeMax = projetil->x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao. Valor só será diferente de 0 na segunda vez, ou seja, quando tiver edificio
-    double distanciaPredio_Impacataco = 0;
+    //double downrangeMax = projetil->x; // pra subtrair do Downrange do NMM até o prédio e ficar somente a distância entre o prédio e a impactacao. Valor só será diferente de 0 na segunda vez, ou seja, quando tiver edificio
+    //double distanciaPredio_Impacataco = 0;
 
     double t;
-    if (calcular_Edf){
-        lerDadosEdificacao("edificacao.txt", edificio);
-        distanciaPredio_Impacataco = haversine (180*impacto->latitude/M_PI, impacto->longitude, edificio->latitude, edificio->longitude);
-    }
+    // if (calcular_Edf){
+    //     lerDadosEdificacao("edificacao.txt", edificio);
+    //     distanciaPredio_Impacataco = haversine (180*impacto->latitude/M_PI, impacto->longitude, edificio->latitude, edificio->longitude);
+    // }
 
     tiro->altura = 0; // incialmente, considera ao nível do mar, se hovuer edf: muda no decorrer
 
@@ -445,10 +562,10 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
          ********************************************************************************************************************/
 
         //while ( projetil.x < downrangeMax){ <- downrangeMax != "caminho total percorrido no ar"
-        while ( (impacto->phi<0) ?   (fabs(projetil->y-impacto->altura)>0.1 || projetil->taxa_de_subida > 0) :   (projetil->y < impacto->altura) ){
+        while ( (impacto->phi<0) ?   (fabs(projetil->y-impacto->altura)>PARADA_ALTURA || projetil->taxa_de_subida > 0) :   (projetil->y < impacto->altura) ){
 
             t += H;
-            atualizarProjetil(projetil, w, calcularg(impacto->latitude), tiro->azimute);
+            atualizarProjetil(projetil, w, calcularg(180*impacto->latitude/M_PI), tiro->azimute);
             
             if (ultimarodada) {
                 fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t, tiro->latitude + distLatGraus (projetil, tiro), tiro->longitude + distLongGraus (projetil, impacto, tiro), projetil->y);
@@ -466,7 +583,7 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
                 break; // necessário sair do while caso tiro->theta = tiro->theta + PARADA, para recálculo de inicialização de variáveis
             }
 
-            if (calcular_Edf && projetil->x > (downrangeMax-distanciaPredio_Impacataco) ) {
+            if (calcular_Edf && projetil->x > (*downrangeMax-distanciaPredio_Impacataco) ) {
             //essa condicao aumenta o erro se o usuário colocar uma edificação fora da trajetória
             //Essa condicao testa para ver se o projétil já passou da edificação. Nesse caso, testa (abaixo) para saber se o projétil passou por cima da edificação.
 
@@ -474,13 +591,13 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
 
                     t=0.0;
                     inicializarTiro(projetil, impacto, tiro, w, edificio, Edificacao);     
-                    downrangeMax = downrangeMax - projetil->x; // subtraindo a posição atual do projétil, temos a distância da edificação até a impactacao.
+                    *downrangeMax = *downrangeMax - projetil->x; // subtraindo a posição atual do projétil, temos a distância da edificação até a impactacao.
                     inicializarProjetilEW(&t, projetil, tiro, w, tiro->altura);
                     calcular_Edf = false;                       // == 0 Interrompe os testes para esses cálculos (condição do "if" acima).
 
 
                 } else {
-                    printf ("O projétil passou por cima da edificação.");
+                    printf ("O projétil passou por cima desta edificação.\n\n");
                     inicializarTiro(projetil, impacto, tiro, w, edificio, Nivel_do_Mar);
                     inicializarProjetilEW(&t, projetil, tiro, w, tiro->altura);
                     calcular_Edf = false;
@@ -530,11 +647,98 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
             if (ultimarodada) break;
             ultimarodada = true;
         }
+
     }
+    if(calcular_Edf == false) *downrangeMax = projetil->x; // O cálculo terminava na primeira iteração e downrangeMax não era avaliado, pois não havia prédio
     fclose(arquivo);
     return t;
 }
 
-double calcularg(double latitude){
+double calcularg(const double latitude){
     return 9.780327*(1+0.0053024*sin(latitude)*sin(latitude) - 0.0000058*sin(2*latitude)*sin(2*latitude));
+}
+
+
+void calcularDistancias(struct listaEdificacoes *lista, struct impactacao *impacto) {
+    lista->distPredioImpact = (double *)malloc(lista->numEdificios * sizeof(double));
+    if (lista->distPredioImpact == NULL) {
+        printf("Erro na alocação de memória.\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < lista->numEdificios; i++) {
+        lista->distPredioImpact[i] = haversine(180*impacto->latitude/M_PI, impacto->longitude, lista->edificios[i].latitude, lista->edificios[i].longitude);
+    }
+}
+
+int compare(const void *a, const void *b, void *arg) {
+    const double *distPredioImpact = (double *)arg;
+    int indexA = *(const int *)a;
+    int indexB = *(const int *)b;
+    double distA = distPredioImpact[indexA];
+    double distB = distPredioImpact[indexB];
+
+    // Para ordenação decrescente
+    if (distA > distB) return 1;
+    if (distA < distB) return -1;
+    return 0;
+}
+
+void ordenarEdificacoes(struct listaEdificacoes *lista) {
+    int *indices = (int *)malloc(lista->numEdificios * sizeof(int));
+    if (indices == NULL) {
+        printf("Erro na alocação de memória.\n");
+        exit(1);
+    }
+
+    // Inicializa os índices
+    for (int i = 0; i < lista->numEdificios; i++) {
+        indices[i] = i;
+    }
+
+    // Ordena os índices baseados nas distâncias
+    qsort_r(indices, lista->numEdificios, sizeof(int), compare, lista->distPredioImpact);
+
+    // Cria cópias temporárias para reordenar os arrays originais
+    struct edificacao *edificiosOrdenados = (struct edificacao *)malloc(lista->numEdificios * sizeof(struct edificacao));
+    double *distanciasOrdenadas = (double *)malloc(lista->numEdificios * sizeof(double));
+    if (edificiosOrdenados == NULL || distanciasOrdenadas == NULL) {
+        printf("Erro na alocação de memória.\n");
+        exit(1);
+    }
+
+    // Reordena os arrays
+    for (int i = 0; i < lista->numEdificios; i++) {
+        edificiosOrdenados[i] = lista->edificios[indices[i]];
+        distanciasOrdenadas[i] = lista->distPredioImpact[indices[i]];
+    }
+
+    // Copia os arrays ordenados de volta para os originais
+    memcpy(lista->edificios, edificiosOrdenados, lista->numEdificios * sizeof(struct edificacao));
+    memcpy(lista->distPredioImpact, distanciasOrdenadas, lista->numEdificios * sizeof(double));
+
+    // Libera a memória temporária
+    free(indices);
+    free(edificiosOrdenados);
+    free(distanciasOrdenadas);
+}
+
+double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, int n, double lat_edf, double long_edf) {
+    double passoLat = (lat2 - lat1) / (n + 1);
+    double passoLong = (long2 - long1) / (n + 1);
+    double menorDistancia = INFINITY;
+
+    for (int i = 1; i <= n; i++) {
+        double latIntermediaria = lat1 + passoLat * i;
+        double longIntermediaria = long1 + passoLong * i;
+
+        double distancia = haversine(latIntermediaria, longIntermediaria, lat_edf, long_edf);
+        if (distancia < menorDistancia) {
+            menorDistancia = distancia;
+        } else {
+            break;
+        }
+    }
+
+    return menorDistancia;
 }
