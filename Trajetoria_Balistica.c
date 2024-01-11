@@ -116,13 +116,21 @@ int main(){
     bool corrigirAzimute = true;
     bool corrigirAltura = true;
 
-    lerDadosDoArquivo("input.txt", &impacto, &tiro, &projetil, &w, &g);
+    char *nomeArquivo = "input.txt";
+    printf("\n------------------------------------------------------------------------------------------------------------\n");
+    printf("Início da leitura dos dados a partir do arquivo: %s\n", nomeArquivo);
+    printf("------------------------------------------------------------------------------------------------------------\n");
+    lerDadosDoArquivo(nomeArquivo, &impacto, &tiro, &projetil, &w, &g);
 
 /************************************
  * Início do cálculo SEM arrasto    *
  * para estimativa do θ inicial     *
  * a ser utilizado nas iterações    *
  ************************************/    
+    printf("\n\n------------------------------------------------------------------------------------------------------------\n");
+    printf("Cálculo do sistema sem arrasto.\n");
+    printf("------------------------------------------------------------------------------------------------------------\n");
+
 
     tiro.theta = arcsec (sqrtl(pow(tiro.velocidade,2)*sec(impacto.phi)*sec(impacto.phi)/(pow(tiro.velocidade,2)-2*g*impacto.altura)));
     printf("\nO ângulo θ do início do disparo com a horizontal considerado a partir do solo e em um sistema sem arrasto ou outras correcoes vale: %.2lf°\n",tiro.theta*180/M_PI);
@@ -156,6 +164,9 @@ int main(){
  *                                                              *
  ****************************************************************/    
 
+    printf("\n\n------------------------------------------------------------------------------------------------------------\n");
+    printf("Leitura e ordenamento das edificações a partir da mais próxima da impactação.\n");
+    printf("------------------------------------------------------------------------------------------------------------\n");
     struct listaEdificacoes edificacoes = lerDadosEdificacaoVar("edificacao.txt");
     calcularDistancias(&edificacoes, &impacto);
     ordenarEdificacoes(&edificacoes);
@@ -187,15 +198,17 @@ int main(){
 
     for (int i=0; i<edificacoes.numEdificios; i++){
         // Principal função
-        printf("\n\nTestando a edificação #%d.\n",i+1);
+        printf("\n\n------------------------------------------------------------------------------------------------------------\n");
+        printf("Testando a edificação #%d.\n",i+1);
         printf("Edifício %d: Coordenadas: (N/S, L/O): %.6lf, %.6lf, Altura %.2lf m, Distância até Impacto: %.2lf m.\n"
-        "A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: %f m.\n",
+        "A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: %.2f m.\n",
         i + 1,
         edificacoes.edificios[i].latitude,
         edificacoes.edificios[i].longitude,
         edificacoes.edificios[i].altura,
         edificacoes.distPredioImpact[i],
         pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, (180/M_PI)*impacto.latitude, impacto.longitude, 1000, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude));
+        printf("------------------------------------------------------------------------------------------------------------\n");        
         t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
         
         if (tiro.origem == Edificacao) break; // Já tá calculando a partir do prédio mais próximo.

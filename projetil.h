@@ -9,6 +9,9 @@
 #endif
 
 #define PARADA 0.00174533    // Critério de parada para ajuste de angulação. 0.00174533 rad = 0.1º.
+#define PARADA_ALTURA 0.01
+
+#include <string.h>
 
 // Estrutura do Projétil
 enum sentido_rotacao {Dextrogiro, Levogiro};
