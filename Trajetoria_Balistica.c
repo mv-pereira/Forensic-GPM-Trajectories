@@ -32,14 +32,12 @@
 
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <stdlib.h> //Para função exit() na condicional da abertura do arquivo;
-#include <stdbool.h>
 #include <time.h>   //Para velocidade de funções - DEBUG
 #include "projetil.h"
 
 
 #define H 0.0001            //passo da iteração do Runge-Kutta.
 #define DEBUG 0
-
 
 struct listaEdificacoes {
     struct edificacao *edificios;
@@ -211,8 +209,10 @@ int main(){
         printf("------------------------------------------------------------------------------------------------------------\n");        
         t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
         
-        if (tiro.origem == Edificacao) break; // Já tá calculando a partir do prédio mais próximo.
-        //if (downrangeMax > downrangeMaxAnterior) break;
+        if (tiro.origem == Edificacao) {
+            printf ("O projétil partiu desta edificação\n\n");
+            break; // Já tá calculando a partir do prédio mais próximo.
+        }
     }
 
 
@@ -231,11 +231,18 @@ int main(){
            "\nAzimute inicial do disparo = %.2lfº.\n",n, projetil.x, projetil.y,(projetil.z<0 ? "esquerda" : "direita"), fabs(projetil.z), 180*tiro.theta/M_PI, 180*projetil.taxa_de_subida/M_PI, 180*tiro.azimute/M_PI);
     printf("\nA trajetória teve outro desvio devido ao spindrift de, aproximadamente, %.0f cm para %s, não incluidos nos cálculos.\n", spindrift(t), projetil.propriedades.rotacao == Dextrogiro ? "direta" : "esquerda");
     
-    printf("\nO projétil partiu, aproximadamente, das coordenadas: %lf N/S, %lf L/O, a uma altura de %.2lf m, partindo %s.\n",tiro.latitude, tiro.longitude, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
+    if (projetil.cor.calcular) {
+        printf("\nO efeito Coriolis foi responsável por deslocar o projétil:\nEixo x: %f cm;\nEixo y: %f cm;\nEixo z: %f cm;\n",100*projetil.cor.x, 100*projetil.cor.y, 100*projetil.cor.z);
+    } else{
+        printf("\nO efeito Corilis não foi calculado separadamente.\n");
+    }
+
+    printf("\n\n------------------------------------------------------------------------------------------------------------\n");
+    printf("O projétil partiu, aproximadamente, das coordenadas: %lf N/S, %lf L/O, a uma altura de %.2lf m, partindo %s.\n",tiro.latitude, tiro.longitude, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
  
     velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
     printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*projetil.propriedades.massa*pow(velocidade_final,2));
-    
+    printf("------------------------------------------------------------------------------------------------------------\n");    
 /************************************************
  * Dados para comparação da energia cinética    *
  *                                              *
@@ -279,53 +286,58 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     }
 
     sscanf(buffer, "%*[^:]: %lf", &impacto->altura);
-    printf("Altura de Impacto: %lf m\n", impacto->altura);
+    printf("Altura de Impacto: %lf m;\n", impacto->altura);
 
     fscanf(file, "%*[^:]: %lf", &impacto->phi);
-    printf("Ângulo Phi: %lf graus\n", impacto->phi);
+    printf("Ângulo Phi: %lf graus;\n", impacto->phi);
     impacto->phi = impacto->phi*M_PI/180;
 
     fscanf(file, "%*[^:]: %lf", &impacto->azimute);
-    printf("Ângulo Azimute: %lf graus\n", impacto->azimute);
+    printf("Ângulo Azimute: %lf graus;\n", impacto->azimute);
     impacto->azimute = impacto->azimute*M_PI/180;
 
     fscanf(file, "%*[^:]: %lf", &impacto->latitude);
-    printf("Latitude: %lf graus\n", impacto->latitude);
+    printf("Latitude: %lf graus;\n", impacto->latitude);
     impacto->latitude = impacto->latitude*M_PI/180.0;
 
     *g = calcularg((180/M_PI)*impacto->latitude); //Açeleração da gravidade na latitude. (em m/s^2)
 
     fscanf(file, "%*[^:]: %lf", &impacto->longitude);
-    printf("Longitude: %lf\n", impacto->longitude);
+    printf("Longitude: %lf graus;\n", impacto->longitude);
 
     tiro->azimute = impacto->azimute;
 
     fscanf(file, "%*[^:]: %lf", &tiro->velocidade);
-    printf("Velocidade Inicial: %lf m/s\n", tiro->velocidade);
+    printf("Velocidade Inicial: %lf m/s;\n", tiro->velocidade);
 
     fscanf(file, "%*[^:]: %lf", &projetil->propriedades.massa);
-    printf("Massa do Projétil: %lf g\n", projetil->propriedades.massa);
+    printf("Massa do Projétil: %lf g;\n", projetil->propriedades.massa);
     projetil->propriedades.massa = projetil->propriedades.massa/1000.0;
 
     fscanf(file, "%*[^:]: %lf", &projetil->propriedades.diametro);
-    printf("Diâmetro do Projétil: %lf mm\n", projetil->propriedades.diametro);
+    printf("Diâmetro do Projétil: %lf mm;\n", projetil->propriedades.diametro);
     projetil->propriedades.diametro = M_PI*powl((projetil->propriedades.diametro/1000.0),2)/4;  // A divisão por quatro leva em conta o raio.
 
     fscanf(file, "%*[^:]: %lf", &projetil->propriedades.coef_arrasto);
-    printf("Coeficiente de Arrasto: %lf\n", projetil->propriedades.coef_arrasto);
+    printf("Coeficiente de Arrasto: %lf;\n", projetil->propriedades.coef_arrasto);
 
     int rotacao;
     fscanf(file, "%*[^:]: %d", &rotacao);
     projetil->propriedades.rotacao = (rotacao == 1) ? Dextrogiro : Levogiro;
-    printf("Rotação do Projétil: %d\n", rotacao);
+    printf("Rotação do Projétil: %d;\n", rotacao);
 
     fscanf(file, "%*[^:]: %lf", &w->velocidade);
     w->velocidade = w->velocidade / 3.6; // Convertendo km/h para m/s
-    printf("Velocidade do Vento: %lf m/s\n", w->velocidade);
+    printf("Velocidade do Vento: %lf m/s;\n", w->velocidade);
 
     fscanf(file, "%*[^:]: %lf", &w->direcao);
-    printf("Direção do Vento: %lf graus\n", w->direcao);
+    printf("Direção do Vento: %.2lf graus;\n", w->direcao);
     w->direcao = (w->direcao+180.0)*M_PI/180.0;
+
+    int coriolis;
+    fscanf(file, "%*[^:]: %d", &coriolis);
+    projetil->cor.calcular = (coriolis == 1) ? true : false;
+    printf("O efeito Coriolis %s calculado separadamente.\n", (projetil->cor.calcular) ? "será" : "não será");
 
     fclose(file);
 }
@@ -434,6 +446,12 @@ void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double 
     double kappaSdensidade = (projetil->propriedades.coef_arrasto/projetil->propriedades.massa)*(projetil->propriedades.diametro/2); //Ordem alterada de c*a/(2.0*m) para evitar Underflow.
     double kappa = kappaSdensidade * densidade_ar(projetil->y); // kappaSdensidade deve ser definido em algum lugar do seu código
 
+    if (projetil->cor.calcular) {
+        projetil->cor.x += runge_kutta(&pos_x_cor, projetil, w, H, kappa, g) * H;
+        projetil->cor.y += runge_kutta(&pos_y_cor, projetil, w, H, kappa, g) * H;
+        projetil->cor.z += runge_kutta(&pos_z_cor, projetil, w, H, kappa, g) * H;
+    }
+
     projetil->x += runge_kutta(&pos_x, projetil, w, H, kappa, g) * H;
     projetil->y += runge_kutta(&pos_y, projetil, w, H, kappa, g) * H;
     projetil->z += runge_kutta(&pos_z, projetil, w, H, kappa, g) * H;
@@ -498,6 +516,11 @@ bool correcaoAltura(struct prjt *projetil, struct disparo *tiro, const double im
 
 void inicializarProjetilEW(double *t, struct prjt *projetil, const struct disparo *tiro, struct vento *w, const double yInicial) {
     *t=0;
+    if (projetil->cor.calcular) {
+        projetil->cor.x = 0;
+        projetil->cor.y = 0;
+        projetil->cor.z = 0;
+    }
     projetil->x = 0.0;
     projetil->y = yInicial; // Permite inicialização com um valor diferente de zero
     projetil->z = 0.0;

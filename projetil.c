@@ -151,6 +151,22 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
     return k;
 }
 
+/********************************************************************************************************
+ * funções auxiliares para cálculo de posição com contribuição exclusiva do efeito coriolis.            *
+ * Note que a função retorna apenas a parte relativa ao efeito coriolis das funções auxiliares w        *
+ ********************************************************************************************************/
+
+double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return 2*OMEGA*( -(projetil->vy +inclinacao_RK_anterior -w->y)*(cos (projetil->latitude))*(sin (projetil->rumo)) -(projetil->vz +inclinacao_RK_anterior -w->z)*(sin (projetil->latitude)));
+}
+
+double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return 2*OMEGA*( (projetil->vx +inclinacao_RK_anterior -w->x)*(cos (projetil->latitude))*(sin (projetil->rumo)) +(projetil->vz +inclinacao_RK_anterior -w->z)*(cos (projetil->latitude))*(sin (projetil->rumo)));
+}
+
+double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+    return 2*OMEGA*( (projetil->vx +inclinacao_RK_anterior -w->x)*(sin (projetil->latitude)) -(projetil->vy +inclinacao_RK_anterior -w->y)*(cos (projetil->latitude))*(cos (projetil->rumo)));
+}
 
 /********************************************************
  * Ajuste de θ inicial para coincidência de ϕ (final)   *

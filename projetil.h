@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -10,8 +12,6 @@
 
 #define PARADA 0.00174533    // Critério de parada para ajuste de angulação. 0.00174533 rad = 0.1º.
 #define PARADA_ALTURA 0.01
-
-#include <string.h>
 
 // Estrutura do Projétil
 enum sentido_rotacao {Dextrogiro, Levogiro};
@@ -23,12 +23,20 @@ struct caracteristicas_do_projetil {
     double coef_arrasto;
 };
 
+struct coriolis {
+    bool calcular;
+    double x;
+    double y;
+    double z;
+};
+
 struct prjt {
     double x, y, z;
     double vx, vy, vz;
     double taxa_de_subida, rumo; // Inclinação e inclinação lateral instantânea
     double latitude, longitude;
     struct caracteristicas_do_projetil propriedades;
+    struct coriolis cor;
 };
 
 // Estrutura do Vento
@@ -82,6 +90,9 @@ double pos_z(double kappa, struct prjt *projetil, double inclinacao_RK_anterior,
 double w_vx(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
 double w_vy(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
 double w_vz(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
+double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
+double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
+double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
 double runge_kutta(double (*funcao)(double, struct prjt *, double, struct vento *, double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g);
 double ajustar_theta(double phi_final, double phi_medido, double theta);
 double ajuste_AZ(double azimute_disparo, double azimute_final, double azimete_medido);
