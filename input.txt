@@ -14,6 +14,8 @@ Massa do Projétil (g): 10.24
 Diâmetro do Projétil (mm): 8.82
 Coeficiente de Arrasto: 0.235800
 Rotação do Projétil (1-Dextrogiro, 2-Levogiro): 1
+Twist rate do Projétil: 1:16.5
+Comprimento do Projétil (mm): 16.6
 Velocidade do Vento (km/h): 13
 Direção do Vento (graus): 100
 Calcular Coriolis Separadamente: 1
