@@ -33,6 +33,7 @@
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <time.h>   //Para velocidade de funções - DEBUG
 #include "projetil.h"
+#include "windows.h"
 
 struct listaEdificacoes {
     struct edificacao *edificios;
