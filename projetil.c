@@ -115,21 +115,27 @@ double spindrift (double tempo, double sg){
     return 0.0254*drift;                      //Resultado em metro.
 }
 
+double d_spindrift(const double step, const double sg){
+    double drift;
+    drift = 2.2875*(sg+1.2)*pow(step,0.83);
+    return 0.0254*drift;
+}
+
 
 /****************************************************************
  * funções auxiliares para cálculo de posição no RK.            *
  ****************************************************************/
 
-double pos_x (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+double pos_x (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
     return  projetil->vx;
 }
 
-double pos_y (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+double pos_y (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
     return  projetil->vy;
 }
 
-double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
-    return  projetil->vz;
+double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
+    return  projetil->vz + projetil->propriedades.rotacao*d_spindrift(t, projetil->sg);
 }
 
 /********************************************************************
@@ -141,7 +147,7 @@ double pos_z (double kappa, struct prjt *projetil, double inclinacao_RK_anterior
  * da velocidade do vento                                           *
  *                                                                  *
  ********************************************************************/
-double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vx +correcao -w->x) + 2*OMEGA*( -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(sin (projetil->rumo)) -(projetil->vz +correcao -w->z)*(sin (projetil->latitude))));
 }
 
@@ -151,7 +157,7 @@ double w_vx (double k, struct prjt *projetil, double correcao, struct vento *w, 
  *                                           projetil_1.vy.      *
  *                                                               *
  *****************************************************************/
-double w_vy (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+double w_vy (double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vy +correcao -w->y) -g + 2*OMEGA*( (projetil->vx +correcao -w->x)*(cos (projetil->latitude))*(sin (projetil->rumo)) +(projetil->vz +correcao -w->z)*(cos (projetil->latitude))*(sin (projetil->rumo)) ) );
 }
 
@@ -161,21 +167,21 @@ double w_vy (double k, struct prjt *projetil, double correcao, struct vento *w, 
  *                                            projetil_1.vz1.     *
  *                                                                *
  ******************************************************************/
-double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w, double g){
+double w_vz (double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t){
     return (  -k*(sqrtl ( powl((projetil->vx +correcao -w->x),2) + powl((projetil->vy +correcao -w->y),2) + powl((projetil->vz +correcao -w->z),2) ))*(projetil->vz +correcao -w->z) + 2*OMEGA*( (projetil->vx +correcao -w->x)*(sin (projetil->latitude)) -(projetil->vy +correcao -w->y)*(cos (projetil->latitude))*(cos (projetil->rumo)) ));
 }
 
 /************************************************
  * Função para cálculo de Runge-Kutta 4a Ordem  *
  ************************************************/
-double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct vento (*), double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g){
+double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct vento (*), double, double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g, double t){
     double k,k1,k2,k3,k4;
     
-    k1 = funcao(kappa, projetil, 0, w, g);
-    k2 = funcao(kappa, projetil, k1*(passo/2), w, g);
-    k3 = funcao(kappa, projetil, k2*(passo/2), w, g);
-    k4 = funcao(kappa, projetil, k3*(passo/2), w, g);
-    k = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4);
+    k1 = funcao(kappa, projetil, 0, w, g, t);
+    k2 = funcao(kappa, projetil, k1*(passo/2), w, g, t);
+    k3 = funcao(kappa, projetil, k2*(passo/2), w, g, t);
+    k4 = funcao(kappa, projetil, k3*(passo/2), w, g, t);
+    k = (1.0/6.0)*(k1 + 2*k2 + 2*k3 + k4);
     return k;
 }
 
@@ -184,15 +190,15 @@ double runge_kutta (double (*funcao) (double, struct prjt (*), double, struct ve
  * Note que a função retorna apenas a parte relativa ao efeito coriolis das funções auxiliares w        *
  ********************************************************************************************************/
 
-double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
     return 2*OMEGA*( -(projetil->vy +inclinacao_RK_anterior -w->y)*(cos (projetil->latitude))*(sin (projetil->rumo)) -(projetil->vz +inclinacao_RK_anterior -w->z)*(sin (projetil->latitude)));
 }
 
-double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
     return 2*OMEGA*( (projetil->vx +inclinacao_RK_anterior -w->x)*(cos (projetil->latitude))*(sin (projetil->rumo)) +(projetil->vz +inclinacao_RK_anterior -w->z)*(cos (projetil->latitude))*(sin (projetil->rumo)));
 }
 
-double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g){
+double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t){
     return 2*OMEGA*( (projetil->vx +inclinacao_RK_anterior -w->x)*(sin (projetil->latitude)) -(projetil->vy +inclinacao_RK_anterior -w->y)*(cos (projetil->latitude))*(cos (projetil->rumo)));
 }
 
@@ -250,25 +256,25 @@ double calcularg(double latitude){
 }
 
 
-void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro, double d_spin) {
+void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro, double t) {
     //Constante de arrasto/ro. Note que a massa já entra na constante. Densidade do ar será calculado nas funcoes de vx,vy,vz...
     //kappa - Variável da qual depende o arrasto. Há o cálculo inicial de tal kappa sem densidade e a cada altura (projetil.y) é calculada a densidade do ar.
     double kappaSdensidade = (projetil->propriedades.coef_arrasto/projetil->propriedades.massa)*(projetil->propriedades.diametro/2); //Ordem alterada de c*a/(2.0*m) para evitar Underflow.
     double kappa = kappaSdensidade * densidade_ar(projetil->y); // kappaSdensidade deve ser definido em algum lugar do seu código
 
     if (projetil->cor.calcular) {
-        projetil->cor.x += runge_kutta(&pos_x_cor, projetil, w, H, kappa, g) * H;
-        projetil->cor.y += runge_kutta(&pos_y_cor, projetil, w, H, kappa, g) * H;
-        projetil->cor.z += runge_kutta(&pos_z_cor, projetil, w, H, kappa, g) * H;
+        projetil->cor.x += runge_kutta(&pos_x_cor, projetil, w, H, kappa, g, t) * H;
+        projetil->cor.y += runge_kutta(&pos_y_cor, projetil, w, H, kappa, g, t) * H;
+        projetil->cor.z += runge_kutta(&pos_z_cor, projetil, w, H, kappa, g, t) * H;
     }
 
-    projetil->x += runge_kutta(&pos_x, projetil, w, H, kappa, g) * H;
-    projetil->y += runge_kutta(&pos_y, projetil, w, H, kappa, g) * H;
-    projetil->z += runge_kutta(&pos_z, projetil, w, H, kappa, g) * H + d_spin; //Foi calculado inicialmente o spin total e dividido pelo passo, para integrar no total.
+    projetil->x += runge_kutta(&pos_x, projetil, w, H, kappa, g, t) * H;
+    projetil->y += runge_kutta(&pos_y, projetil, w, H, kappa, g, t) * H;
+    projetil->z += runge_kutta(&pos_z, projetil, w, H, kappa, g, t) * H;
 
-    projetil->vx += runge_kutta(&w_vx, projetil, w, H, kappa, g) * H;
-    projetil->vy += runge_kutta(&w_vy, projetil, w, H, kappa, g) * H;
-    projetil->vz += runge_kutta(&w_vz, projetil, w, H, kappa, g) * H;
+    projetil->vx += runge_kutta(&w_vx, projetil, w, H, kappa, g, t) * H;
+    projetil->vy += runge_kutta(&w_vy, projetil, w, H, kappa, g, t) * H;
+    projetil->vz += runge_kutta(&w_vz, projetil, w, H, kappa, g, t) * H;
 
     projetil->taxa_de_subida = atan2(projetil->vy, projetil->vx);
     projetil->rumo = azimuteTiro + atan2(projetil->vz, projetil->vx);
@@ -373,7 +379,7 @@ void inicializarTiro(const struct prjt *projetil, const struct impactacao *impac
 
 
 //linha 233
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco, double d_spin){
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco){
  
     FILE *arquivo;
     arquivo = fopen("data","w");
@@ -410,7 +416,7 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
         while ( (impacto->phi<0) ?   (fabs(projetil->y-impacto->altura)>PARADA_ALTURA || projetil->taxa_de_subida > 0) :   (projetil->y < impacto->altura) ){
 
             t += H;
-            atualizarProjetil(projetil, w, calcularg(projetil->latitude), tiro->azimute, d_spin);
+            atualizarProjetil(projetil, w, calcularg(projetil->latitude), tiro->azimute, t);
             
             if (ultimarodada) {
                 fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t, tiro->latitude + distLat (projetil, tiro), tiro->longitude + distLong (projetil, impacto, tiro), projetil->y);

@@ -33,7 +33,7 @@
 #include <locale.h> //Utilizando caracteres e acentuação da língua portuguesa.
 #include <time.h>   //Para velocidade de funções - DEBUG
 #include "projetil.h"
-#include "windows.h"
+//#include "windows.h"
 
 struct listaEdificacoes {
     struct edificacao *edificios;
@@ -145,7 +145,7 @@ int main(){
     ordenarEdificacoes(&edificacoes);
 
 
-    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0], 0);
+    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0]);
     inicializarTiro(&projetil, &impacto, &tiro, &w, &edificio, Nivel_do_Mar);
 
     printf("Sem edificações e considerando o arrasto, os cálculos terminaram com os seguintes valores:"
@@ -183,7 +183,7 @@ int main(){
         edificacoes.distPredioImpact[i],
         pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, impacto.latitude, impacto.longitude, 10000, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude, &latitudeMaisProxima, &longitudeMaisProxima));
         printf("------------------------------------------------------------------------------------------------------------\n");        
-        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i], spindrift(t, projetil.sg)*(H/t)*projetil.propriedades.rotacao);
+        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
         
         if (tiro.origem == Edificacao) {
             printf ("O projétil partiu desta edificação\n\n");

@@ -89,16 +89,16 @@ double raioTerraLatitude(double latitude);
 double distLat(const struct prjt *projetil, const struct disparo *tiro);
 double distLong(const struct prjt *projetil, const struct impactacao *impacto, const struct disparo *tiro);
 double spindrift(double tempo, double sg);
-double pos_x(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double pos_y(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double pos_z(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double w_vx(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
-double w_vy(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
-double w_vz(double k, struct prjt *projetil, double correcao, struct vento *w, double g);
-double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g);
-double runge_kutta(double (*funcao)(double, struct prjt *, double, struct vento *, double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g);
+double pos_x(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double pos_y(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double pos_z(double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double w_vx(double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t);
+double w_vy(double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t);
+double w_vz(double k, struct prjt *projetil, double correcao, struct vento *w, double g, double t);
+double pos_x_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double pos_y_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_anterior, struct vento *w, double g, double t);
+double runge_kutta(double (*funcao)(double, struct prjt *, double, struct vento *, double, double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g, double t);
 double ajustar_theta(double phi_final, double phi_medido, double theta);
 double ajuste_AZ(double azimute_disparo, double azimute_final, double azimete_medido);
 double v_correction_msf(double v);
@@ -116,6 +116,6 @@ void inicializarProjetilEW(double *t, struct prjt *projetil, const struct dispar
 // Prepara o disparo com base nas informações do projétil, impactação, vento e edificação.
 void inicializarTiro(const struct prjt *projetil, const struct impactacao *impacto, struct disparo *tiro, const struct vento *w, const struct edificacao *edificio, enum origem_disparo origem);
 // Calcula o movimento do projétil e retorna informações relevantes sobre a trajetória.
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco, double spin);
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco);
 
 #endif // PROJETIL_H
