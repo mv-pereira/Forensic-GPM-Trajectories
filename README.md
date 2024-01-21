@@ -130,31 +130,44 @@ Ao examinar as coordenadas de possível origem observou-se que havia diversas ed
 
 ![disparo_01](https://github.com/mv-pereira/Forensic-GPM-Trajectories/assets/86118560/7098c0e0-0aff-46e2-9502-1ae93acceb33)
 
+Ao editar o arquivo **edificacao** com número de edificações igual a **5**:
+```
+# Dados da Edificação
+# Substitua os valores pelos dados da edificação de interesse.
+# Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
+
+Numero de edificacoes: 5
+Latitude (graus): -8.123596,-8.124629,-8.125496,-8.126696,-8.127302
+Longitude (graus): -34.898176,-34.898046,-34.898242,-34.898255,-34.898351
+Altura (metros): 60,50,55,70,51
+```
+
+O programa conclui que, ao invés da origem estimada, partiu, de fato, de uma das edificações indicadas, com o segunite aviso:
+>------------------------------------------------------------------------------------------------------------
+>
+>Testando a edificação #2.
+>
+>Coordenadas: (N/S, L/O): -8.124629, -34.898046, Altura 50.00 m, Distância até Impacto: 346.84 m.
+>
+>A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 19.62 m.
+>
+>------------------------------------------------------------------------------------------------------------
+>
+>O projétil provavelmente partiu desta edificação, no entanto, o projétil passa a mais de cinco metros (5 m) de distância do ponto fornecido para a edificação.
+>
+>Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S) -0.141801, -0.609089.
+>
+>Caso inexista, considere a remoção desta edificação e reinicie os cálculos.
+
+Como de fato a edificação número 2 inserida distava muito da linha de tiro foi removida e o cálculo foi reiniciado (**lembrando de atualizar para 4 o número de edificações e remover a latitude, longitude e altura correspondente**).
 
 
-![05](https://user-images.githubusercontent.com/86118560/123485984-9939ec00-d5e1-11eb-9b85-d6e80a7a91b7.jpg)
 
-![06](https://user-images.githubusercontent.com/86118560/123486256-0d748f80-d5e2-11eb-88e7-65ce055537c6.jpg)
 
-Após responder Sim (1) ao programa, foi inserido as coordenadas e altura dessa edificação:
-| Edificacao | Características |
-|------------|-----------------|
-| Latitude   | -8.123596 °     |
-| Longitude  | -34.898176 °    |
-| Altura     | 60 m            |
 
-O programa conclui que, ao invés da origem estimada, partiu, de fato, da edificação indicada, com o segunite resultado:
 
-| Resultado                     | Valores        |
-|-------------------------------|----------------|
-| Downrange Total               | 458.996 m      |
-| Altura de impactação          | 88.974 m       |
-| Desvios para direita          | 1.292 m        |
-| Ângulo θ (inicial) do disparo | 11.71º         |
-| Azimute inicial do disparo    | 182.75º        |
-| Latitude do disparo           | -8.123609 N/S  |
-| Longitude do disparo          | -34.898176 L/O |
-| Altura do Disparo             | 20.87 m        |
+
+
 
 Assim, procurou-se as coordenadas e altura fornecida pelo programa:
 
