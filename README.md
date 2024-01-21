@@ -161,12 +161,66 @@ O programa conclui que, ao invés da origem estimada, partiu, de fato, de uma da
 
 Como de fato a edificação número 2 inserida distava muito da linha de tiro foi removida e o cálculo foi reiniciado (**lembrando de atualizar para 4 o número de edificações e remover a latitude, longitude e altura correspondente**).
 
+Após remoção e recálculo, houve o seguinte resultado:
+```
+------------------------------------------------------------------------------------------------------------
+Testando a edificação #2.
+Coordenadas: (N/S, L/O): -8.125496, -34.898242, Altura 55.00 m, Distância até Impacto: 248.82 m.
+A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 2.94 m.
+------------------------------------------------------------------------------------------------------------
+O projétil passou por cima desta edificação.
 
 
 
+------------------------------------------------------------------------------------------------------------
+Testando a edificação #1.
+Coordenadas: (N/S, L/O): -8.123596, -34.898176, Altura 60.00 m, Distância até Impacto: 460.40 m.
+A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 0.51 m.
+------------------------------------------------------------------------------------------------------------
+O projétil provavelmente partiu desta edificação, visto que o ponto do edifício fornecido dista 0.51 m da linha de tiro.
+Caso infira que o projétil não partiu dessa edificação, remova-a da lista de edificações e reinicie os cálculos.
 
 
+Considerando um sistema com arrasto, os cálculos terminaram com os seguintes valores:
+Foram efetuados 33 iterações para cálculos de trajetória.
+Downrange Total = 478.251 m.
+Altura de impactação = 89.000 m.
+Desvios para direita = 2.339 m.
+Ângulo θ (inicial) do disparo = 12.20º.
+Ângulo ϕ (ao final da simulação) = 4.08º.
+Azimute inicial do disparo = 182.69º.
 
+O efeito de Spin Drift foi responsável por deslocar o projétil aproximadamente, 0.94 m para direta.
+
+O efeito Coriolis foi responsável por deslocar o projétil:
+Eixo x: 0.010232 cm;
+Eixo y: -0.290645 cm;
+Eixo z: -2.040989 cm;
+
+
+------------------------------------------------------------------------------------------------------------
+O projétil partiu, aproximadamente, das coordenadas: -8.123596 N/S, -34.898171 L/O, a uma altura de 15.45 m, partindo de uma edificação.
+
+O projétil levou cerca de 2.6 segundos do momento do disparo à impactação.
+Possuía velocidade final de 148.58 m/s e energia cinética de 113.04 J.
+O disparo foi efetuado com o cano apontado, aproximadamente, a 14 m acima do alvo, ou 1.66º acima da impactação.
+------------------------------------------------------------------------------------------------------------
+
+Energia cinética de alguns projéteis para comparação:
+Calibre 	Energia (J)
+.25 AUTO	87     
+.32 AUTO	175    
+.380 AUTO EXPO  259
+.38 SPL CHOG    271
+9x19mm (124gr)  459
+.40 EXPO Gold   568
+.357 Mag        724
+.454 Casull     2531
+```
+
+Após testar as edificações, da mais próxima da impactação à mais longe, os cálculos indicaram ter partido de uma delas.
+
+É possível saber a contribuição para o efeito Coriolis e SpinDrift.
 
 
 Assim, procurou-se as coordenadas e altura fornecida pelo programa:
