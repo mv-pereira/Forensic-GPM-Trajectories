@@ -122,7 +122,7 @@ Altura (metros): 0
 >
 >Ângulo Az (inicial) = 182.6º.
 >
->Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -0.137118, -0.608849.
+>Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -8.122989, -34.898140.
 
 Ao examinar as coordenadas de possível origem observou-se que havia diversas edificações próximas.
 
