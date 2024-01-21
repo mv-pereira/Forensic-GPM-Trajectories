@@ -239,8 +239,8 @@ O programa fornece, por fim, a estimativa de duração do tempo de deslocamento 
 | Energia Cinética              | 113.04 J       |
 
 > É importante destacar que, caso haja ainda outras edificações próximas à trajetória fornecida, é importante que sejam incluídas de modo ao programa identificar se o projétil passou acima das edificações ou partiu delas.
->
-> Fica a cargo do **usuário** a indicação precisa da posição da edificação.
+
+#### Fica a cargo do **usuário** a indicação precisa da posição da edificação.
 
 
 > Sugestão de Compilação
