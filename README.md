@@ -76,22 +76,6 @@ Direção do Vento (graus): 100
 Calcular Coriolis Separadamente: 1
 ```
 
-| Parâmetros da Impactação        | Medidas      |
-|---------------------------------|--------------|
-| Altura da Impactação            | 89 m         |
-| Ângulo ϕ com a Horizontal       | 4 °          |
-| Ângulo γ com o Norte (azimute)  | 183 °        |
-| Latitude Decimal da Impactação  | -8.127727 °  |
-| Longitude Decimal da Impactação | -34.898383 ° |
-
-
-|  Parametros do Projétil           | Medidas    |
-|-----------------------------------|------------|
-| Massa do projétil                 | 10.240 g   |
-| Velocidade inicial do projétil    | 230 m/s    |
-| Diâmetro do projétil já disparado | 8.82 mm    |
-| Coeficiente de Arrasto Cd         | 0.235800   |
-| Dextrogiro ou Levogiro            | Dextrogiro |
 
 > O Coeficiente de Arrasto do projétil pode ser calculado utilizando o programa Forensic-GPM-Trajectories/Coeficiente de Arrasto/Cd_projeteis.c
 
@@ -110,17 +94,30 @@ Após informações sobre a época do fato (o disparo hipotético ocorreu no dia
 | Velocidade do Vento | 10 km/h   |
 | Direção do Vento    | 100 °     |
 
-O programa foi aberto, alimentado com os parâmetros fornecendo o seguinte resultado parcial:
->O ângulo θ do início do disparo com a horizontal considerado a partir do solo e em um sistema sem arrasto ou outras correcoes vale: 12.04°
->
->Considerando um sistema sem arrasto: x- = 559.208 m e x+ = 1646.637 m
->Existe alguma edificacao entre o impacto e a possível origem do disparo no solo de onde possa ter partido o tiro?
->|              | Latitude  | Longitude  |
->|--------------|-----------|------------|
->| Impacto      | -8.127727 | -34.898383 |
->| Origem (NMM) | -8.122955 | -34.898146 |
+O programa foi executado, considerando o arqvuio **edificacao** com número de edificações igual a **0**.
+```
+# Dados da Edificação
+# Substitua os valores pelos dados da edificação de interesse.
+# Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
 
-Ao examinar as coordenadas de possível origem observou-se que havia uma edificação próxima.
+Numero de edificacoes: 0
+Latitude (graus): 0
+Longitude (graus): 0
+Altura (metros): 0
+```
+
+>------------------------------------------------------------------------------------------------------------
+>Leitura e ordenamento das edificações a partir da mais próxima da impactação.
+>------------------------------------------------------------------------------------------------------------
+>Sem edificações e considerando o arrasto, os cálculos terminaram com os seguintes valores:
+>Tempo de deslocamento total do projétil: 3.0 segundos.
+>Downrange Total = 526.3 m.
+>Ângulo θ (inicial) do disparo = 13.5º.
+>Ângulo Az (inicial) = 182.6º.
+>Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -0.137118, -0.608849.
+
+Ao examinar as coordenadas de possível origem observou-se que havia diversas edificações próximas.
+
 
 ![05](https://user-images.githubusercontent.com/86118560/123485984-9939ec00-d5e1-11eb-9b85-d6e80a7a91b7.jpg)
 
