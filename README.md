@@ -1,5 +1,5 @@
 # Forensic-GPM-Trajectories
-Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas Pontuais Generalizadas a partir de Projéteis Dinamicamente estáveis em toda a trajetória utilizando a linguagem de programação C (Compilado Ubuntu 22.04.3 LTS, Kernel: 5.15.0-35-generic.).
+Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas Pontuais Generalizadas a partir de Projéteis Dinamicamente estáveis em toda a trajetória utilizando a linguagem de programação C (Sistema usado: Ubuntu 22.04.3 LTS, Kernel: 5.15.0-35-generic.).
 
 Para uma revisão breve do conteúdo proposto, ver: **GPMT.md**
 
