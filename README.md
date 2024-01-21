@@ -1,5 +1,5 @@
 # Forensic-GPM-Trajectories
-Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas Pontuais Generalizadas a partir de Projéteis Dinamicamente estáveis em toda a trajetória utilizando a linguagem de programação C.
+Estimativa de origem de disparos subsônicos baseado em Trajetórias de Massas Pontuais Generalizadas a partir de Projéteis Dinamicamente estáveis em toda a trajetória utilizando a linguagem de programação C (Compilado Ubuntu 22.04.3 LTS, Kernel: 5.15.0-35-generic.).
 
 Para uma revisão breve do conteúdo proposto, ver: **GPMT.md**
 
@@ -26,6 +26,11 @@ O programa requisita as seguintes informações para funcionamento:
 - **Latitude** e **Longitude** decimal da impactação (em °);
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
+- **Twist rate** do Projétil;
+  - Baseado no cano do armamento;
+  - http://www.taurususa.com
+- **Comprimento** do projétil;
+- Opção de exibir a contribuição do efeito Coriolis em separado;
 
 O programa utiliza as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo **θ0**.
 
