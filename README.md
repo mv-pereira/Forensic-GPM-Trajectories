@@ -106,6 +106,8 @@ Longitude (graus): 0
 Altura (metros): 0
 ```
 
+### Resultado do programa
+
 >------------------------------------------------------------------------------------------------------------
 >
 >Leitura e ordenamento das edificações a partir da mais próxima da impactação.
