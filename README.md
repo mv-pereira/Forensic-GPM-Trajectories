@@ -52,8 +52,8 @@ Para Localização e imagens vamos utilizar o https://earth.google.com/web/.
 Após recuperação do projétil, localizado no interior da residência, ficou constatado tratar-se de um projétil CBC, NTA .38 SPL EOPP 158gr.
 Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os seguintes parâmetros:
 Arquivo **input**:
-> # Este arquivo é usado para inserir dados para o cálculo de trajetórias de projéteis.
-> # Substitua os valores a seguir pelos de interesse para a sua análise.
+| # Este arquivo é usado para inserir dados para o cálculo de trajetórias de projéteis.
+| # Substitua os valores a seguir pelos de interesse para a sua análise.
 > # Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
 > # Por exemplo, se a 'Altura de Impacto' é 100 metros, a linha deve ser 'Altura de Impacto (m): 100'.
 > # O programa calcula a trajetória de projéteis levando em conta fatores como gravidade, vento, etc.
