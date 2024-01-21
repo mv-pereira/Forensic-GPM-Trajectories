@@ -56,6 +56,7 @@ struct edificacao {
     double latitude;
     double longitude;
     double altura;
+    int numero;
 };
 
 // Estrutura do Disparo

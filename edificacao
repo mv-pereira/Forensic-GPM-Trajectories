@@ -2,7 +2,7 @@
 # Substitua os valores pelos dados da edificação de interesse.
 # Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
 
-Numero de edificacoes: 2
-Latitude (graus): -8.027789,-8.023516
-Longitude (graus): -34.905224,-34.904679
-Altura (metros): 54,40
+Numero de edificacoes: 5
+Latitude (graus): -8.123596,-8.124629,-8.125496,-8.126696,-8.127302
+Longitude (graus): -34.898176,-34.898046,-34.898242,-34.898255,-34.898351
+Altura (metros): 60,50,55,70,51

@@ -170,22 +170,29 @@ int main(){
 
     for (int i=0; i<edificacoes.numEdificios; i++){
         // Principal função
-
+        double distancia_edf_linhatiro = pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, impacto.latitude, impacto.longitude, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude, &latitudeMaisProxima, &longitudeMaisProxima);
         printf("\n\n------------------------------------------------------------------------------------------------------------\n");
-        printf("Testando a edificação #%d.\n",i+1);
-        printf("Edifício %d: Coordenadas: (N/S, L/O): %.6lf, %.6lf, Altura %.2lf m, Distância até Impacto: %.2lf m.\n"
+        printf("Testando a edificação #%d.\n",edificacoes.edificios[i].numero);
+        printf("Coordenadas: (N/S, L/O): %.6lf, %.6lf, Altura %.2lf m, Distância até Impacto: %.2lf m.\n"
         "A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: %.2f m.\n",
-        i + 1,
         edificacoes.edificios[i].latitude*(180/M_PI),
         edificacoes.edificios[i].longitude*(180/M_PI),
         edificacoes.edificios[i].altura,
         edificacoes.distPredioImpact[i],
-        pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, impacto.latitude, impacto.longitude, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude, &latitudeMaisProxima, &longitudeMaisProxima));
+        distancia_edf_linhatiro);
         printf("------------------------------------------------------------------------------------------------------------\n");        
         t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
         
         if (tiro.origem == Edificacao) {
-            printf ("O projétil partiu desta edificação\n\n");
+            printf ("O projétil provavelmente partiu desta edificação");
+            if (distancia_edf_linhatiro > 5){
+                printf(", no entanto, o projétil passa a mais de cinco metros (5 m) de distância do ponto fornecido para a edificação.\n");
+                printf("Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S) %.6f, %.6f.\n", latitudeMaisProxima, longitudeMaisProxima);
+                printf("Caso inexista, considere a remoção desta edificação e reinicie os cálculos.\n\n");
+            } else {
+                printf(", visto que o ponto do edifício fornecido dista %.2f m da linha de tiro.\n", distancia_edf_linhatiro);
+                printf("Caso infira que o projétil não partiu dessa edificação, remova-a da lista de edificações e reinicie os cálculos.\n\n");
+            }
             break; // Já tá calculando a partir do prédio mais próximo.
         }
     }
@@ -419,6 +426,7 @@ struct listaEdificacoes lerDadosEdificacaoVar(char *nomeArquivo) {
         for (i = 0; i < lista.numEdificios; i++) {
             lista.edificios[i].latitude = (M_PI/180)*atof(token);
             token = strtok(NULL, delim);
+            lista.edificios[i].numero = i+1;
         }
     }
 
