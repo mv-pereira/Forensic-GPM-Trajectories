@@ -128,6 +128,9 @@ Altura (metros): 0
 
 Ao examinar as coordenadas de possível origem observou-se que havia diversas edificações próximas.
 
+![disparo_01](https://github.com/mv-pereira/Forensic-GPM-Trajectories/assets/86118560/7098c0e0-0aff-46e2-9502-1ae93acceb33)
+
+
 
 ![05](https://user-images.githubusercontent.com/86118560/123485984-9939ec00-d5e1-11eb-9b85-d6e80a7a91b7.jpg)
 
