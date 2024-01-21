@@ -161,6 +161,17 @@ O programa conclui que, ao invés da origem estimada, partiu, de fato, de uma da
 
 Como de fato a edificação número 2 inserida distava muito da linha de tiro foi removida e o cálculo foi reiniciado (**lembrando de atualizar para 4 o número de edificações e remover a latitude, longitude e altura correspondente**).
 
+```
+# Dados da Edificação
+# Substitua os valores pelos dados da edificação de interesse.
+# Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
+
+Numero de edificacoes: 4
+Latitude (graus): -8.123596,-8.125496,-8.126696,-8.127302
+Longitude (graus): -34.898176,-34.898242,-34.898255,-34.898351
+Altura (metros): 60,55,70,51
+```
+
 Após remoção e recálculo, houve o seguinte resultado:
 ```
 ------------------------------------------------------------------------------------------------------------
