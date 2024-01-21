@@ -88,7 +88,7 @@ int main(){
     bool corrigirAzimute = true;
     bool corrigirAltura = true;
 
-    char *nomeArquivo = "input.txt";
+    char *nomeArquivo = "input";
     printf("\n------------------------------------------------------------------------------------------------------------\n");
     printf("Início da leitura dos dados a partir do arquivo: %s\n", nomeArquivo);
     printf("------------------------------------------------------------------------------------------------------------\n");
@@ -139,7 +139,7 @@ int main(){
     printf("\n\n------------------------------------------------------------------------------------------------------------\n");
     printf("Leitura e ordenamento das edificações a partir da mais próxima da impactação.\n");
     printf("------------------------------------------------------------------------------------------------------------\n");
-    struct listaEdificacoes edificacoes = lerDadosEdificacaoVar("edificacao.txt");
+    struct listaEdificacoes edificacoes = lerDadosEdificacaoVar("edificacao");
     calcularDistancias(&edificacoes, &impacto);
     ordenarEdificacoes(&edificacoes);
 
