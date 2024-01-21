@@ -56,7 +56,7 @@ void ordenarEdificacoes(struct listaEdificacoes *lista);
 // Função de comparação usada por qsort_r para ordenar um array.
 int compare(const void *a, const void *b, void *arg);
 
-double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, int n, double lat3, double long3, double *latProx, double *longProx);
+double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, double lat3, double long3, double *latProx, double *longProx);
 
 
 int main(){
@@ -181,7 +181,7 @@ int main(){
         edificacoes.edificios[i].longitude*(180/M_PI),
         edificacoes.edificios[i].altura,
         edificacoes.distPredioImpact[i],
-        pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, impacto.latitude, impacto.longitude, 10000, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude, &latitudeMaisProxima, &longitudeMaisProxima));
+        pontoIntermediarioEDist(tiroLatSolo, tiroLongSolo, impacto.latitude, impacto.longitude, edificacoes.edificios[i].latitude, edificacoes.edificios[i].longitude, &latitudeMaisProxima, &longitudeMaisProxima));
         printf("------------------------------------------------------------------------------------------------------------\n");        
         t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
         
@@ -513,24 +513,30 @@ void ordenarEdificacoes(struct listaEdificacoes *lista) {
     free(distanciasOrdenadas);
 }
 
-double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, int n, double lat_edf, double long_edf, double *latProx, double *longProx) {
-    double passoLat = (lat2 - lat1) / (n + 1);
-    double passoLong = (long2 - long1) / (n + 1);
-    double menorDistancia = INFINITY;
+// Para o cálculo da distância entre o ponto do edifício (escolhido pelo usuário) e a trajetória do projétil
+// É necessário calcular a projeção do ponto C (edifício) na SemiReta do tiro (AB). O ponto projetado na
+// SemiReta AB é D (latitude e longitude possível do disparo, já que estava na linha de tiro original). 
+void pontoDprojecaoDeCemAB(double xa, double ya, double xb, double yb, double xc, double yc, double *xd, double *yd) {
+    double abx, aby, acx, acy, t;
 
-    for (int i = 1; i <= n; i++) {
-        double latIntermediaria = lat1 + passoLat * i;
-        double longIntermediaria = long1 + passoLong * i;
+    // Vetores AB e AC
+    abx = xb - xa;
+    aby = yb - ya;
+    acx = xc - xa;
+    acy = yc - ya;
 
-        double distancia = haversine(latIntermediaria, longIntermediaria, lat_edf, long_edf);
-        if (distancia < menorDistancia) {
-            menorDistancia = distancia;
-            *latProx = latIntermediaria;
-            *longProx = longIntermediaria;
-        } else {
-            break;
-        }
-    }
+    // Calculando o parâmetro t para a projeção
+    t = (acx * abx + acy * aby) / (abx * abx + aby * aby);
 
-    return menorDistancia;
+    // Garantindo que a projeção esteja na semirreta AB
+    if (t < 0) t = 0;
+
+    // Ponto D
+    *xd = xa + t * abx;
+    *yd = ya + t * aby;
+}
+
+double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, double lat_edf, double long_edf, double *latProx, double *longProx) {
+    pontoDprojecaoDeCemAB(long1, lat1, long2, lat2, long_edf, lat_edf, longProx, latProx);
+    return haversine(*latProx, *longProx, lat_edf, long_edf);
 }
