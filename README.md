@@ -40,10 +40,6 @@ O critério de parada do cálculo é que ![image](https://user-images.githubuser
 
 O mesmo cálculo é realizado para o Azimute.
 
-Abaixo, um fluxograma (https://www.zenflowchart.com) do procedimento adotado pelo programa.
-<img src="https://github.com/mv-pereira/Forensic-GPM-Trajectories/blob/main/flowchart.png" alt="1" width="819" height="541">
-
-
 ## Exemplo:
 Vamos supor que um projétil de arma de fogo atingiu o Edifício Maria Juliana, localizado na Av. Boa Viagem, 4398, a 89 m do solo, no último pavimento.
 
@@ -53,7 +49,31 @@ Para Localização e imagens vamos utilizar o https://earth.google.com/web/.
 
 ![00](https://user-images.githubusercontent.com/86118560/123556326-f7d9a400-d760-11eb-84ce-71f57044ad95.jpg)
 
+Após recuperação do projétil, localizado no interior da residência, ficou constatado tratar-se de um projétil CBC, NTA .38 SPL EOPP 158gr.
 Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os seguintes parâmetros:
+Arquivo **input**:
+> # Este arquivo é usado para inserir dados para o cálculo de trajetórias de projéteis.
+> # Substitua os valores a seguir pelos de interesse para a sua análise.
+> # Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
+> # Por exemplo, se a 'Altura de Impacto' é 100 metros, a linha deve ser 'Altura de Impacto (m): 100'.
+> # O programa calcula a trajetória de projéteis levando em conta fatores como gravidade, vento, etc.
+> 
+> Altura de Impacto (m): 89
+> Ângulo Phi (graus): 4
+> Ângulo Azimute (graus): 183
+> Latitude (graus): -8.127727
+> Longitude (graus): -34.898383
+> Velocidade Inicial (m/s): 230
+> Massa do Projétil (g): 10.24
+> Diâmetro do Projétil (mm): 8.82
+> Coeficiente de Arrasto: 0.235800
+> Rotação do Projétil (1-Dextrogiro, 2-Levogiro): 1
+> Twist rate do Projétil: 1:16.5
+> Comprimento do Projétil (mm): 16.6
+> Velocidade do Vento (km/h): 10
+> Direção do Vento (graus): 100
+> Calcular Coriolis Separadamente: 1
+
 | Parâmetros da Impactação        | Medidas      |
 |---------------------------------|--------------|
 | Altura da Impactação            | 89 m         |
@@ -62,7 +82,7 @@ Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os 
 | Latitude Decimal da Impactação  | -8.127727 °  |
 | Longitude Decimal da Impactação | -34.898383 ° |
 
-Após recuperação do projétil, localizado no interior da residência, ficou constatado tratar-se de um projétil CBC, NTA .38 SPL EOPP 158gr.
+
 |  Parametros do Projétil           | Medidas    |
 |-----------------------------------|------------|
 | Massa do projétil                 | 10.240 g   |
