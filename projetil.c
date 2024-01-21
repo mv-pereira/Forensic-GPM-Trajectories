@@ -58,7 +58,7 @@ void navegEsferica(struct prjt *projetil, double distancia) {
 
 /********************************************************************
  * Cáluclo da distância percorrida pelo projétil convertida         *
- * para graus latitude/longitude tendo em vista sua localização     *
+ * para latitude/longitude tendo em vista sua localização           *
  * relativa às edificações e impactações.                           *
  *                                                                  *
  * "distLat" é a "distância" em radianos entre a latitude do        *
@@ -71,13 +71,13 @@ void navegEsferica(struct prjt *projetil, double distancia) {
 
 double distLat (const struct prjt *projetil, const struct disparo *tiro){
     double raio = raioTerraLatitude(projetil->latitude);
-    double c = 360.0/(2*M_PI*raio);
+    double c = 1/raio;
     return c*(projetil->x*cos(tiro->azimute) - projetil->z*sin(tiro->azimute));
 }
 
 double distLong(const struct prjt *projetil, const struct impactacao *impacto, const struct disparo *tiro){
     double raio = raioTerraLatitude(projetil->latitude);
-    double c = 360.0/(2*M_PI*raio);
+    double c = 1/raio;
     return c*cos(impacto->latitude)*(projetil->x*sin(tiro->azimute) + projetil->z*cos(tiro->azimute) );
 }
 

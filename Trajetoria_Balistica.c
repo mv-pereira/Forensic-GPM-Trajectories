@@ -153,7 +153,7 @@ int main(){
             "\nÂngulo θ (inicial) do disparo = %.1lfº."
             "\nÂngulo Az (inicial) = %.1lfº."
             "\nCoordenadas Georgráficas do disparo ao NMM (N/S, L/O): %.6lf, %.6lf.\n\n",
-            t, projetil.x, (180/M_PI)*tiro.theta, (180/M_PI)*tiro.azimute, tiro.latitude, tiro.longitude);
+            t, projetil.x, (180/M_PI)*tiro.theta, (180/M_PI)*tiro.azimute, (180/M_PI)*tiro.latitude, (180/M_PI)*tiro.longitude);
 
     // Guardar as coordenadas do disparo partindo do solo para calcular a distância entre o edifício fornecido
     // e a trajetória calculada.
@@ -187,7 +187,7 @@ int main(){
             printf ("O projétil provavelmente partiu desta edificação");
             if (distancia_edf_linhatiro > 5){
                 printf(", no entanto, o projétil passa a mais de cinco metros (5 m) de distância do ponto fornecido para a edificação.\n");
-                printf("Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S) %.6f, %.6f.\n", latitudeMaisProxima, longitudeMaisProxima);
+                printf("Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S, L/O) %.6f, %.6f.\n", (180/M_PI)*latitudeMaisProxima,  (180/M_PI)*longitudeMaisProxima);
                 printf("Caso inexista, considere a remoção desta edificação e reinicie os cálculos.\n\n");
             } else {
                 printf(", visto que o ponto do edifício fornecido dista %.2f m da linha de tiro.\n", distancia_edf_linhatiro);
@@ -227,7 +227,7 @@ int main(){
     }
 
     printf("\n\n------------------------------------------------------------------------------------------------------------\n");
-    printf("O projétil partiu, aproximadamente, das coordenadas: %lf N/S, %lf L/O, a uma altura de %.2lf m, partindo %s.\n", (180/M_PI)*latitudeMaisProxima, (180/M_PI)*longitudeMaisProxima/*(180/M_PI)*tiro.latitude, (180/M_PI)*tiro.longitude*/, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
+    printf("O projétil partiu, aproximadamente, das coordenadas (N/S, L/O): %lf, %lf, a uma altura de %.2lf m, partindo %s.\n", (180/M_PI)*latitudeMaisProxima, (180/M_PI)*longitudeMaisProxima/*(180/M_PI)*tiro.latitude, (180/M_PI)*tiro.longitude*/, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
  
     velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
     printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*projetil.propriedades.massa*pow(velocidade_final,2));
