@@ -155,7 +155,7 @@ O programa conclui que, ao invés da origem estimada, partiu, de fato, de uma da
 >
 >O projétil provavelmente partiu desta edificação, no entanto, o projétil passa a mais de cinco metros (5 m) de distância do ponto fornecido para a edificação.
 >
->Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S) -0.141801, -0.609089.
+>Considere escolher um ponto para esta edificação mais próximo das coordenadas (N/S) -8.124620, -34.898224.
 >
 >Caso inexista, considere a remoção desta edificação e reinicie os cálculos.
 
