@@ -107,13 +107,21 @@ Altura (metros): 0
 ```
 
 >------------------------------------------------------------------------------------------------------------
+>
 >Leitura e ordenamento das edificações a partir da mais próxima da impactação.
+>
 >------------------------------------------------------------------------------------------------------------
+>
 >Sem edificações e considerando o arrasto, os cálculos terminaram com os seguintes valores:
+>
 >Tempo de deslocamento total do projétil: 3.0 segundos.
+>
 >Downrange Total = 526.3 m.
+>
 >Ângulo θ (inicial) do disparo = 13.5º.
+>
 >Ângulo Az (inicial) = 182.6º.
+>
 >Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -0.137118, -0.608849.
 
 Ao examinar as coordenadas de possível origem observou-se que havia diversas edificações próximas.
