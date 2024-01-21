@@ -52,27 +52,29 @@ Para Localização e imagens vamos utilizar o https://earth.google.com/web/.
 Após recuperação do projétil, localizado no interior da residência, ficou constatado tratar-se de um projétil CBC, NTA .38 SPL EOPP 158gr.
 Ao fazer a linha de tiro da janela ao interior da residência, foram medidos os seguintes parâmetros:
 Arquivo **input**:
-| # Este arquivo é usado para inserir dados para o cálculo de trajetórias de projéteis.
-| # Substitua os valores a seguir pelos de interesse para a sua análise.
-> # Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
-> # Por exemplo, se a 'Altura de Impacto' é 100 metros, a linha deve ser 'Altura de Impacto (m): 100'.
-> # O programa calcula a trajetória de projéteis levando em conta fatores como gravidade, vento, etc.
-> 
-> Altura de Impacto (m): 89
-> Ângulo Phi (graus): 4
-> Ângulo Azimute (graus): 183
-> Latitude (graus): -8.127727
-> Longitude (graus): -34.898383
-> Velocidade Inicial (m/s): 230
-> Massa do Projétil (g): 10.24
-> Diâmetro do Projétil (mm): 8.82
-> Coeficiente de Arrasto: 0.235800
-> Rotação do Projétil (1-Dextrogiro, 2-Levogiro): 1
-> Twist rate do Projétil: 1:16.5
-> Comprimento do Projétil (mm): 16.6
-> Velocidade do Vento (km/h): 10
-> Direção do Vento (graus): 100
-> Calcular Coriolis Separadamente: 1
+```
+# Este arquivo é usado para inserir dados para o cálculo de trajetórias de projéteis.
+# Substitua os valores a seguir pelos de interesse para a sua análise.
+# Cada linha contém um rótulo descritivo e um valor. Altere apenas o valor.
+# Por exemplo, se a 'Altura de Impacto' é 100 metros, a linha deve ser 'Altura de Impacto (m): 100'.
+# O programa calcula a trajetória de projéteis levando em conta fatores como gravidade, vento, etc.
+
+Altura de Impacto (m): 89
+Ângulo Phi (graus): 4
+Ângulo Azimute (graus): 183
+Latitude (graus): -8.127727
+Longitude (graus): -34.898383
+Velocidade Inicial (m/s): 230
+Massa do Projétil (g): 10.24
+Diâmetro do Projétil (mm): 8.82
+Coeficiente de Arrasto: 0.235800
+Rotação do Projétil (1-Dextrogiro, 2-Levogiro): 1
+Twist rate do Projétil: 1:16.5
+Comprimento do Projétil (mm): 16.6
+Velocidade do Vento (km/h): 10
+Direção do Vento (graus): 100
+Calcular Coriolis Separadamente: 1
+```
 
 | Parâmetros da Impactação        | Medidas      |
 |---------------------------------|--------------|
