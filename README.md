@@ -122,13 +122,13 @@ Altura (metros): 0
 >
 >Tempo de deslocamento total do projétil: 3.0 segundos.
 >
->Downrange Total = 526.3 m.
+>Downrange Total = 524.5 m.
 >
->Ângulo θ (inicial) do disparo = 13.5º.
+>Ângulo θ (inicial) do disparo = 13.6º.
 >
->Ângulo Az (inicial) = 182.6º.
+>Ângulo Az (inicial) = 183º.
 >
->Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -8.122989, -34.898140.
+>Coordenadas Georgráficas do disparo ao NMM (N/S, L/O): -8.123007, -34.898122.
 
 Ao examinar as coordenadas de possível origem observou-se que havia diversas edificações próximas.
 
@@ -181,7 +181,7 @@ Após remoção e recálculo, houve o seguinte resultado:
 ------------------------------------------------------------------------------------------------------------
 Testando a edificação #2.
 Coordenadas: (N/S, L/O): -8.125496, -34.898242, Altura 55.00 m, Distância até Impacto: 248.82 m.
-A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 2.94 m.
+A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 1.94 m.
 ------------------------------------------------------------------------------------------------------------
 O projétil passou por cima desta edificação.
 
@@ -190,35 +190,35 @@ O projétil passou por cima desta edificação.
 ------------------------------------------------------------------------------------------------------------
 Testando a edificação #1.
 Coordenadas: (N/S, L/O): -8.123596, -34.898176, Altura 60.00 m, Distância até Impacto: 460.40 m.
-A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 0.51 m.
+A distância lateral aproximada que o projétil partindo do solo (ou nível do mar) passa deste ponto vale: 2.35 m.
 ------------------------------------------------------------------------------------------------------------
-O projétil provavelmente partiu desta edificação, visto que o ponto do edifício fornecido dista 0.51 m da linha de tiro.
+O projétil provavelmente partiu desta edificação, visto que o ponto do edifício fornecido dista 2.35 m da linha de tiro.
 Caso infira que o projétil não partiu dessa edificação, remova-a da lista de edificações e reinicie os cálculos.
 
 
 Considerando um sistema com arrasto, os cálculos terminaram com os seguintes valores:
-Foram efetuados 33 iterações para cálculos de trajetória.
-Downrange Total = 478.251 m.
+Foram efetuados 30 iterações para cálculos de trajetória.
+Downrange Total = 477.594 m.
 Altura de impactação = 89.000 m.
-Desvios para direita = 2.339 m.
-Ângulo θ (inicial) do disparo = 12.20º.
-Ângulo ϕ (ao final da simulação) = 4.08º.
-Azimute inicial do disparo = 182.69º.
+Desvios para direita = 1.440 m.
+Ângulo θ (inicial) do disparo = 12.25º.
+Ângulo ϕ (ao final da simulação) = 4.10º.
+Azimute inicial do disparo = 183.00º.
 
-O efeito de Spin Drift foi responsável por deslocar o projétil aproximadamente, 0.94 m para direta.
+O efeito de Spin Drift foi responsável por deslocar o projétil aproximadamente, 1.33 m para direta.
 
 O efeito Coriolis foi responsável por deslocar o projétil:
-Eixo x: 0.010232 cm;
-Eixo y: -0.290645 cm;
-Eixo z: -2.040989 cm;
+Eixo x: 0.047342 cm;
+Eixo y: -0.315902 cm;
+Eixo z: -2.078656 cm;
 
 
 ------------------------------------------------------------------------------------------------------------
-O projétil partiu, aproximadamente, das coordenadas: -8.123596 N/S, -34.898171 L/O, a uma altura de 15.45 m, partindo de uma edificação.
+O projétil partiu, aproximadamente, das coordenadas (N/S, L/O): -8.123597, -34.898155, a uma altura de 15.07 m, partindo de uma edificação.
 
-O projétil levou cerca de 2.6 segundos do momento do disparo à impactação.
-Possuía velocidade final de 148.58 m/s e energia cinética de 113.04 J.
-O disparo foi efetuado com o cano apontado, aproximadamente, a 14 m acima do alvo, ou 1.66º acima da impactação.
+O projétil levou cerca de 2.7 segundos do momento do disparo à impactação.
+Possuía velocidade final de 147.00 m/s e energia cinética de 110.63 J.
+O disparo foi efetuado com o cano apontado, aproximadamente, a 15 m acima do alvo, ou 1.70º acima da impactação.
 ------------------------------------------------------------------------------------------------------------
 
 Energia cinética de alguns projéteis para comparação:
@@ -249,9 +249,9 @@ O programa fornece, por fim, a estimativa de duração do tempo de deslocamento 
 
 | Resultado                     | Valores        |
 |-------------------------------|----------------|
-| Tempo de Trajetória           | 2.6 segundos   |
-| Velocidade Final              | 148.58 m/s     |
-| Energia Cinética              | 113.04 J       |
+| Tempo de Trajetória           | 2.7 segundos   |
+| Velocidade Final              | 147.00 m/s     |
+| Energia Cinética              | 110.63 J       |
 
 > É importante destacar que, caso haja ainda outras edificações próximas à trajetória fornecida, é importante que sejam incluídas de modo ao programa identificar se o projétil passou acima das edificações ou partiu delas.
 
