@@ -34,7 +34,7 @@ O programa requisita as seguintes informações para funcionamento:
 - **Temperatura** da Região (ºC);
   - https://earth.nullschool.net/
 - **Altura média** da Cidade ou Região;
-  - https://pt-br.topographic-map.com/map-6r951/Recife/?center=-8.07657%2C-34.96124&zoom=12&popup=-8.02133%2C-34.91713
+  - https://pt-br.topographic-map.com/map-6r951/Recife/?center=-8.07657%2C-34.96124&zoom=12
 
 O programa utiliza as soluções encontradas para o caso sem arrasto como ponto de partida, pois podemos estimar a condição de ângulo inicial do disparo **θ0**.
 
