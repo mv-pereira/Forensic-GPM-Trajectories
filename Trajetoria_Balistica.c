@@ -347,16 +347,13 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     fscanf(file, "%*[^:]: %d", &coriolis);
     projetil->cor.calcular = (coriolis == 1) ? true : false;
     printf("O efeito Coriolis %s calculado separadamente.\n", (projetil->cor.calcular) ? "será" : "não será");
-
-    fscanf(file, "%*[^:]: %lf", &w->direcao);
-    printf("Direção do Vento: %.2lf graus;\n", w->direcao);
-
+    
     double temperatura, altura;
     fscanf(file, "%*[^:]: %lf", &temperatura);
-    printf("Temperatura média da região (ºC): %.2lf graus;\n", temperatura);
+    printf("Temperatura média da região (ºC): %.2lfº;\n", temperatura);
 
     fscanf(file, "%*[^:]: %lf", &altura);
-    printf("Altura média da Cidade: %.2lf graus;\n", altura);
+    printf("Altura média da Cidade: %.2lf m;\n", altura);
 
     // projetil->sg poderia, em tese, ser atualizado a cada passo no decorrer do programa, no entanto,
     // a estimativa de Miller já é para toda a trajetória.
