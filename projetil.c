@@ -5,6 +5,11 @@
 #define OMEGA 0.000072921   //Taxa de rotação da terra em "rad/s".
 
 
+// aproximação linear
+// L é o gradiente térmico adiabático seco, que é aproximadamente 0.0065°C/m
+double temperatura_ar(double t0, double altura){
+    return t0 - 0.0065*altura;
+}
 
 /****************************************************************************
  *Aproximacao exponencial para Densidade do ar.                             *
@@ -79,6 +84,18 @@ double distLong(const struct prjt *projetil, const struct impactacao *impacto, c
     double raio = raioTerraLatitude(projetil->latitude);
     double c = 1/raio;
     return c*cos(impacto->latitude)*(projetil->x*sin(tiro->azimute) + projetil->z*cos(tiro->azimute) );
+}
+
+
+/****************************************************************************
+ *         SG - Miller Stability Formula: Atmospheric Correction            *
+ * Applied Ballistics for Long Range Shooting, 3ed, pg 430, Appendix B      *
+ ****************************************************************************/
+double tp_correction_msf(double temp, double altura){
+    double ft = 32 + (9/5)*temperatura_ar(temp + 273.15, altura);
+    double pt = 0.0847510180457656*temperatura_ar(temp+273.15, altura)*densidade_ar(altura);
+    double ftp = ((ft + 460)/(59+460))*(29.92/pt);
+    return ftp;
 }
 
 /****************************************************************************
@@ -417,7 +434,6 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
 
             t += H;
             atualizarProjetil(projetil, w, calcularg(projetil->latitude), tiro->azimute, t);
-            
             if (ultimarodada) {
                 fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t, tiro->latitude + distLat (projetil, tiro), tiro->longitude + distLong (projetil, impacto, tiro), projetil->y);
                 fflush(arquivo);
@@ -455,7 +471,6 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
                 }
             }
         }
-
         (*n)++;
         projetil->rumo = tiro->azimute + atan2 (projetil->vz,projetil->vx);
 

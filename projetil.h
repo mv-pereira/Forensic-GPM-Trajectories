@@ -82,6 +82,7 @@ struct impactacao {
 };
 
 // Protótipos de funções
+double temperatura_ar(double t0, double altura);
 double densidade_ar(double altura);
 double sec(double alpha);
 double arcsec(double x);
@@ -102,6 +103,7 @@ double pos_z_cor (double kappa, struct prjt *projetil, double inclinacao_RK_ante
 double runge_kutta(double (*funcao)(double, struct prjt *, double, struct vento *, double, double), struct prjt *projetil, struct vento *w, double passo, double kappa, double g, double t);
 double ajustar_theta(double phi_final, double phi_medido, double theta);
 double ajuste_AZ(double azimute_disparo, double azimute_final, double azimete_medido);
+double tp_correction_msf(double temp, double altura);
 double v_correction_msf(double v);
 double miller_stability_formula (const double mass, const double twist, const double diameter, const double length);
 

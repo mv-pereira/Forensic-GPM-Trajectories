@@ -315,6 +315,7 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     fscanf(file, "%*[^:]: %lf", &diametro_mm);
     printf("Diâmetro do Projétil: %.3lf mm;\n", diametro_mm);
     projetil->propriedades.diametro = M_PI*powl((diametro_mm/1000.0),2)/4;  // A divisão por quatro leva em conta o raio.
+    // isso é a área transversal
 
     fscanf(file, "%*[^:]: %lf", &projetil->propriedades.coef_arrasto);
     printf("Coeficiente de Arrasto: %lf;\n", projetil->propriedades.coef_arrasto);
@@ -347,7 +348,9 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     projetil->cor.calcular = (coriolis == 1) ? true : false;
     printf("O efeito Coriolis %s calculado separadamente.\n", (projetil->cor.calcular) ? "será" : "não será");
 
-    projetil->sg = miller_stability_formula(massa_g, projetil->propriedades.twist, diametro_mm, projetil->propriedades.length)*v_correction_msf(tiro->velocidade);
+    // projetil->sg poderia, em tese, ser atualizado a cada passo no decorrer do programa, no entanto,
+    // a estimativa de Miller já é para toda a trajetória.
+    projetil->sg = miller_stability_formula(massa_g, projetil->propriedades.twist, diametro_mm, projetil->propriedades.length)*v_correction_msf(tiro->velocidade)*tp_correction_msf(15, 5);
 
     printf("Estabilidade Giroscópica estimada: %.2lf;\n",projetil->sg);
     fclose(file);
