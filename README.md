@@ -25,7 +25,7 @@ O programa requisita as seguintes informações para funcionamento:
     - http://www.climatempo.com.br
 - **Latitude** e **Longitude** decimal da impactação (em °);
 - **Espessura** do vitral impactado (em mm), **0** se não houver;
-  - Perda de energia no vitral realizado a partir de ajuste quadrático. Conferir [Duck Duck Go](9mm Balistics/Redução de Velocidade.ipynb).
+  - Perda de energia no vitral realizado a partir de ajuste quadrático. Conferir [Discussão]([9mm Balistics/Redução de Velocidade.ipynb](https://github.com/mv-pereira/Forensic-GPM-Trajectories/blob/186e238272a6d0f465e6bf1fb8d2b4c36012155d/9mm%20Balistics/Redu%C3%A7%C3%A3o%20de%20Velocidade.ipynb)).
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
 - **Twist rate** do Projétil;
