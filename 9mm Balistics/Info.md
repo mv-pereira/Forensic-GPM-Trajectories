@@ -39,19 +39,42 @@ def poly_relation(x, a, b, c):
     return a*x**2 + b*x + c
 
 popt, pcov = curve_fit(poly_relation, layers, velocities_mps)
+```
 
+Ajustamos os dados a uma função do tipo \( v = ax^2 + bx + c \), onde \( v \) é a velocidade do projétil e \( x \) é o número de camadas de vidro. Os coeficientes encontrados foram \( a = 2.77 \), \( b = -77.86 \), e \( c = 375.98 \).
 
+### Observações
 
+1. O coeficiente \( c \) representa a velocidade inicial do projétil sem nenhuma barreira de vidro. Valores menores de \( c \) poderiam ser usados para representar projéteis de menor velocidade.
+2. Se o vidro for mais grosso, é provável que os coeficientes \( b \) ou \( a \) aumentem, pois o vidro mais espesso provavelmente causaria uma desaceleração maior no projétil.
 
+## Segunda Relação: Modelo Linear
 
+Examinamos a perda de velocidade após o projétil passar por cada camada de vidro, dada a velocidade antes do impacto, usando uma função linear.
 
+### Método
 
+O código a seguir foi empregado para ajustar uma linha reta aos pontos de perda de velocidade:
 
+```python
+velocity_loss = np.diff(velocities_mps) * -1
+velocity_before_impact = velocities_mps[:-1]
 
+def linear_relation(x, m, b):
+    return m * x + b
 
+popt_linear, pcov_linear = curve_fit(linear_relation, velocity_before_impact, velocity_loss)
+```
+A relação linear encontrada foi \( \Delta v = 0.096v_{antes} + 36.67 \), onde \( \Delta v \) é a perda de velocidade e \( v_{antes} \) é a velocidade antes do impacto.
 
+### Observações
 
-A relação entre a quantidade de camadas de vidro e a queda de velocidade do projétil sugere uma progressão não linear, indicando que cada camada adicional de vidro tem um impacto crescente na desaceleração do projétil. Isso pode ser explicado pelo aumento da resistência ao movimento que o projétil enfrenta, além do possível acúmulo de danos no próprio projétil que pode alterar sua aerodinâmica e capacidade de penetração.
+- A discrepância entre os pontos medidos e a reta ajustada sugere que o modelo linear pode não ser o mais adequado para descrever a relação entre a velocidade antes do impacto e a perda de velocidade, indicando a necessidade de explorar modelos mais complexos.
+
+## Conclusão
+
+As análises demonstram que a relação entre a velocidade do projétil e o número de camadas de vidro atravessadas é complexa e pode ser descrita por meio de funções polinomiais ou lineares, dependendo do aspecto da penetração que está sendo investigado.
+
 
 Para mais detalhes sobre o experimento e observações visuais, consulte o vídeo em [https://www.youtube.com/watch?v=PD1vkhFO4Dg](https://www.youtube.com/watch?v=PD1vkhFO4Dg).
 
