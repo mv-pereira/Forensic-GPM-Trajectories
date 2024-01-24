@@ -29,19 +29,64 @@ O código a seguir foi utilizado para ajustar uma curva aos dados fornecidos e e
 
 ```python
 import numpy as np
-from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
+# Define the data points: number of glass layers and corresponding velocities in m/s
 layers = np.array([0, 1, 2, 3, 4, 5, 6])
 velocities_mps = np.array([360.31, 308.46, 263.75, 167.64, 72.87, 53.64, 22.35])
 
+# Define a function for the nonlinear relationship (let's try a polynomial)
+# This is a simple quadratic function: f(x) = ax^2 + bx + c
 def poly_relation(x, a, b, c):
     return a*x**2 + b*x + c
 
+# Fit the polynomial function to the data
 popt, pcov = curve_fit(poly_relation, layers, velocities_mps)
+
+# Generate a smooth curve for plotting
+x_smooth = np.linspace(layers.min(), layers.max(), 100)
+y_smooth = poly_relation(x_smooth, *popt)
+
+# Plot the original data points
+plt.scatter(layers, velocities_mps, color='blue', label='Data points')
+
+# Plot the fitted curve
+plt.plot(x_smooth, y_smooth, color='red', linestyle='-', linewidth=2, label='Fitted curve')
+
+# Adding titles and labels
+plt.title('Nonlinear Relationship Between Glass Layers and Projectile Velocity')
+plt.xlabel('Number of Glass Layers')
+plt.ylabel('Velocity (m/s)')
+plt.legend()
+plt.grid(True)
+
+# Show the plot
+plt.show()
+
+# Print the coefficients of the polynomial
+popt
 ```
 
-Ajustamos os dados a uma função do tipo \( v = ax^2 + bx + c \), onde \( v \) é a velocidade do projétil e \( x \) é o número de camadas de vidro. Os coeficientes encontrados foram \( a = 2.77 \), \( b = -77.86 \), e \( c = 375.98 \).
+A relação não linear entre o número de camadas de vidro e a velocidade do projétil foi modelada usando uma função polinomial quadrática da forma:
+
+v=a⋅x2+b⋅x+cv=a⋅x2+b⋅x+c
+
+onde:
+
+    vv é a velocidade do projétil em metros por segundo,
+    xx é o número de camadas de vidro,
+    aa, bb, e cc são os coeficientes encontrados pelo ajuste da curva.
+
+Para os dados fornecidos, os coeficientes encontrados são:
+
+    aa = 2.77 (afeta a curvatura da relação),
+    bb = -77.86 (influencia a inclinação linear da relação),
+    cc = 375.98 (é a velocidade inicial do projétil sem nenhuma barreira de vidro).
+
+Aqui está o gráfico que mostra a relação não linear entre o número de camadas de vidro e a velocidade do projétil:
+
+Esta relação sugere que, à medida que o número de camadas de vidro aumenta, a velocidade do projétil diminui de forma não linear, com a diminuição da velocidade tornando-se mais pronunciada à medida que mais camadas são adicionadas. 
 
 ![Queda de velocidade](plot.png "Velocidade x Vidros")
 
