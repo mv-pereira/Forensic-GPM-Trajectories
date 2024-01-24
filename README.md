@@ -24,6 +24,7 @@ O programa requisita as seguintes informações para funcionamento:
     - http://pt.windfinder.com
     - http://www.climatempo.com.br
 - **Latitude** e **Longitude** decimal da impactação (em °);
+- **Espessura** do vitral impactado (em mm), **0** se não houver;
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
 - **Twist rate** do Projétil;
