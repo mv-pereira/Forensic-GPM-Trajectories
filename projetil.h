@@ -37,6 +37,7 @@ struct coriolis {
 struct prjt {
     double x, y, z;
     double vx, vy, vz;
+    double v;
     double taxa_de_subida, rumo; // Inclinação e inclinação lateral instantânea
     double latitude, longitude;
     double sg;
@@ -79,6 +80,7 @@ struct impactacao {
     double altura;
     double phi;
     double azimute;
+    double espessura_vitral;
 };
 
 // Protótipos de funções
@@ -110,7 +112,7 @@ double miller_stability_formula (const double mass, const double twist, const do
 // Calcula a aceleração da gravidade com base na latitude.
 double calcularg(double latitude);
 // Atualiza o estado do projétil com base nas condições atuais e no disparo.
-void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro, double d_spin);
+void atualizarProjetil(struct prjt *projetil, struct impactacao *impacto, struct vento *w, double g, double azimuteTiro, double t, double *v_stop);
 bool correcaoTheta(struct prjt *projetil, struct disparo *tiro, const double impacto_phi);
 bool correcaoAzimute(struct prjt *projetil, struct disparo *tiro, const double impacto_azimute);
 bool correcaoAltura(struct prjt *projetil, struct disparo *tiro, const double impacto_altura);
@@ -119,6 +121,6 @@ void inicializarProjetilEW(double *t, struct prjt *projetil, const struct dispar
 // Prepara o disparo com base nas informações do projétil, impactação, vento e edificação.
 void inicializarTiro(const struct prjt *projetil, const struct impactacao *impacto, struct disparo *tiro, const struct vento *w, const struct edificacao *edificio, enum origem_disparo origem);
 // Calcula o movimento do projétil e retorna informações relevantes sobre a trajetória.
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco);
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco, double *v_stop);
 
 #endif // PROJETIL_H

@@ -273,7 +273,7 @@ double calcularg(double latitude){
 }
 
 
-void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double azimuteTiro, double t) {
+void atualizarProjetil(struct prjt *projetil, struct impactacao *impacto, struct vento *w, double g, double azimuteTiro, double t, double *v_stop) {
     //Constante de arrasto/ro. Note que a massa já entra na constante. Densidade do ar será calculado nas funcoes de vx,vy,vz...
     //kappa - Variável da qual depende o arrasto. Há o cálculo inicial de tal kappa sem densidade e a cada altura (projetil.y) é calculada a densidade do ar.
     double kappaSdensidade = (projetil->propriedades.coef_arrasto/projetil->propriedades.massa)*(projetil->propriedades.diametro/2); //Ordem alterada de c*a/(2.0*m) para evitar Underflow.
@@ -292,6 +292,14 @@ void atualizarProjetil(struct prjt *projetil, struct vento *w, double g, double 
     projetil->vx += runge_kutta(&w_vx, projetil, w, H, kappa, g, t) * H;
     projetil->vy += runge_kutta(&w_vy, projetil, w, H, kappa, g, t) * H;
     projetil->vz += runge_kutta(&w_vz, projetil, w, H, kappa, g, t) * H;
+
+    projetil->v = sqrt(pow(projetil->vx,2.0)+pow(projetil->vy,2.0)+pow(projetil->vz,2.0));
+    if (v_stop){
+        if(projetil->v < *v_stop){
+            impacto->phi = projetil->taxa_de_subida;
+            *v_stop = -1;
+        }
+    }
 
     projetil->taxa_de_subida = atan2(projetil->vy, projetil->vx);
     projetil->rumo = azimuteTiro + atan2(projetil->vz, projetil->vx);
@@ -396,7 +404,7 @@ void inicializarTiro(const struct prjt *projetil, const struct impactacao *impac
 
 
 //linha 233
-double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco){
+double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impacto, struct disparo *tiro, struct vento *w, struct edificacao *edificio, bool calcular_Edf, double *downrangeMax, const double distanciaPredio_Impacataco, double *v_stop){
  
     FILE *arquivo;
     arquivo = fopen("data","w");
@@ -433,7 +441,14 @@ double movimentoProjetil(int *n, struct prjt *projetil, struct impactacao *impac
         while ( (impacto->phi<0) ?   (fabs(projetil->y-impacto->altura)>PARADA_ALTURA || projetil->taxa_de_subida > 0) :   (projetil->y < impacto->altura) ){
 
             t += H;
-            atualizarProjetil(projetil, w, calcularg(projetil->latitude), tiro->azimute, t);
+
+            atualizarProjetil(projetil, impacto, w, calcularg(projetil->latitude), tiro->azimute, t, v_stop);
+            if(*v_stop == -1){
+                inicializarTiro(projetil, impacto, tiro, w, edificio, Nivel_do_Mar);
+                inicializarProjetilEW(&t, projetil, tiro, w, tiro->altura);
+                *v_stop = 0;
+            }
+            
             if (ultimarodada) {
                 fprintf(arquivo, "%.3lf\t%.12lf, %.12lf\t %lf m\n", t, tiro->latitude + distLat (projetil, tiro), tiro->longitude + distLong (projetil, impacto, tiro), projetil->y);
                 fflush(arquivo);

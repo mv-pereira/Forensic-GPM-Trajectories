@@ -58,6 +58,8 @@ int compare(const void *a, const void *b, void *arg);
 double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, double lat3, double long3, double *latProx, double *longProx);
 
 
+double v_before(double vf, double espessura);
+
 int main(){
     setlocale(LC_ALL, "Portuguese"); //Utilizando caracteres e acentuação da língua portuguesa.
 
@@ -143,9 +145,17 @@ int main(){
     calcularDistancias(&edificacoes, &impacto);
     ordenarEdificacoes(&edificacoes);
 
-
-    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0]);
+    double v_stop = 0;
+    // Sem anteparo
+    t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0], &v_stop);
     inicializarTiro(&projetil, &impacto, &tiro, &w, &edificio, Nivel_do_Mar);
+
+    // Com anteparo
+    //double espessura_vidro = 3.0;
+    v_stop = v_before(projetil.v, impacto.espessura_vitral);
+    if (v_stop){
+        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[0], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[0], &v_stop);
+    }
 
     printf("Sem edificações e considerando o arrasto, os cálculos terminaram com os seguintes valores:"
             "\nTempo de deslocamento total do projétil: %.1f segundos."
@@ -181,7 +191,7 @@ int main(){
         edificacoes.distPredioImpact[i],
         distancia_edf_linhatiro);
         printf("------------------------------------------------------------------------------------------------------------\n");        
-        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i]);
+        t = movimentoProjetil(&n, &projetil, &impacto, &tiro, &w, &edificacoes.edificios[i], calcular_Edf, &downrangeMax, edificacoes.distPredioImpact[i], &v_stop);
         
         if (tiro.origem == Edificacao) {
             printf ("O projétil provavelmente partiu desta edificação");
@@ -229,8 +239,7 @@ int main(){
     printf("\n\n------------------------------------------------------------------------------------------------------------\n");
     printf("O projétil partiu, aproximadamente, das coordenadas (N/S, L/O): %lf, %lf, a uma altura de %.2lf m, partindo %s.\n", (180/M_PI)*latitudeMaisProxima, (180/M_PI)*longitudeMaisProxima/*(180/M_PI)*tiro.latitude, (180/M_PI)*tiro.longitude*/, tiro.altura, (tiro.origem == Nivel_do_Mar ? "ao nível do mar" : "de uma edificação" ) ); //latitude_disparo e longitude_disparo foram calculados ao fim do segundo laço.
  
-    velocidade_final = sqrt (pow(projetil.vx,2)+pow(projetil.vy,2)+pow(projetil.vz,2)); //Módulo nas três componentes.
-    printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,velocidade_final,0.5*projetil.propriedades.massa*pow(velocidade_final,2));
+    printf("\nO projétil levou cerca de %.1f segundos do momento do disparo à impactação.\nPossuía velocidade final de %.2f m/s e energia cinética de %.2f J.\n",t,projetil.v,0.5*projetil.propriedades.massa*pow(velocidade_final,2));
     printf("O disparo foi efetuado com o cano apontado, aproximadamente, a %.0lf m acima do alvo, ou %.2lfº acima da impactação.\n", tan(tiro.theta)*projetil.x-impacto.altura, (180/M_PI)*(tiro.theta - atan2(impacto.altura, projetil.x)));
     printf("------------------------------------------------------------------------------------------------------------\n");    
 /************************************************
@@ -294,6 +303,9 @@ void lerDadosDoArquivo(char *nomeArquivo, struct impactacao *impacto, struct dis
     fscanf(file, "%*[^:]: %lf", &impacto->longitude);
     printf("Longitude do Impacto: %lf graus;\n", impacto->longitude);
     impacto->longitude = impacto->longitude*M_PI/180;
+
+    fscanf(file, "%*[^:]: %lf", &impacto->espessura_vitral);
+    printf("Espessura do vitral impactado: %lf mm;\n", impacto->espessura_vitral);
 
     tiro->azimute = impacto->azimute;
     // Primeira estimativa da latitude e longitude do projétil é igualá-la ao da impactação
@@ -556,4 +568,12 @@ void pontoDprojecaoDeCemAB(double xa, double ya, double xb, double yb, double xc
 double pontoIntermediarioEDist(double lat1, double long1, double lat2, double long2, double lat_edf, double long_edf, double *latProx, double *longProx) {
     pontoDprojecaoDeCemAB(long1, lat1, long2, lat2, long_edf, lat_edf, longProx, latProx);
     return haversine(*latProx, *longProx, lat_edf, long_edf);
+}
+
+// Estimativa de velocidade antes de impactação do projétil.
+double v_before(double vf, double espessura){
+    double v_loss;
+    v_loss = 0.84*pow(espessura,2) + 3.45*espessura + 0.36;
+    printf("A velocidade final considerando a angulação medida vale: %.2f.\nNo entanto a velocidade antes da impactação no vitral é estimada em: %.2f.\n", vf, vf+v_loss);
+    return vf+v_loss;
 }
