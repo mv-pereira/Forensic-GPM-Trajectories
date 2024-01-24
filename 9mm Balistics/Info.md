@@ -46,31 +46,6 @@ Ajustamos os dados a uma função do tipo \( v = ax^2 + bx + c \), onde \( v \) 
 ### Observações
 
 1. O coeficiente \( c \) representa a velocidade inicial do projétil sem nenhuma barreira de vidro. Valores menores de \( c \) poderiam ser usados para representar projéteis de menor velocidade.
-2. Se o vidro for mais grosso, é provável que os coeficientes \( b \) ou \( a \) aumentem, pois o vidro mais espesso provavelmente causaria uma desaceleração maior no projétil.
-
-## Segunda Relação: Modelo Linear
-
-Examinamos a perda de velocidade após o projétil passar por cada camada de vidro, dada a velocidade antes do impacto, usando uma função linear.
-
-### Método
-
-O código a seguir foi empregado para ajustar uma linha reta aos pontos de perda de velocidade:
-
-```python
-velocity_loss = np.diff(velocities_mps) * -1
-velocity_before_impact = velocities_mps[:-1]
-
-def linear_relation(x, m, b):
-    return m * x + b
-
-popt_linear, pcov_linear = curve_fit(linear_relation, velocity_before_impact, velocity_loss)
-```
-
-A relação linear encontrada foi Δv = 0.096 * v_antes + 36.67, onde Δv é a perda de velocidade e v_antes é a velocidade antes do impacto.
-
-### Observações
-
-- A discrepância entre os pontos medidos e a reta ajustada sugere que o modelo linear pode não ser o mais adequado para descrever a relação entre a velocidade antes do impacto e a perda de velocidade, indicando a necessidade de explorar modelos mais complexos.
 
 ## Conclusão
 
