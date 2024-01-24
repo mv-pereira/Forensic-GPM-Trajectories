@@ -43,6 +43,8 @@ popt, pcov = curve_fit(poly_relation, layers, velocities_mps)
 
 Ajustamos os dados a uma função do tipo \( v = ax^2 + bx + c \), onde \( v \) é a velocidade do projétil e \( x \) é o número de camadas de vidro. Os coeficientes encontrados foram \( a = 2.77 \), \( b = -77.86 \), e \( c = 375.98 \).
 
+![Queda de velocidade](plot.png "Velocidade x Vidros")
+
 ### Observações
 
 1. O coeficiente \( c \) representa a velocidade inicial do projétil sem nenhuma barreira de vidro. Valores menores de \( c \) poderiam ser usados para representar projéteis de menor velocidade.
