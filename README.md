@@ -25,7 +25,7 @@ O programa requisita as seguintes informações para funcionamento:
     - http://www.climatempo.com.br
 - **Latitude** e **Longitude** decimal da impactação (em °);
 - **Espessura** do vitral impactado (em mm), **0** se não houver;
-  - Perda de energia no vitral realizado a partir de ajuste quadrático. Conferir [Duck Duck Go](https://duckduckgo.com).
+  - Perda de energia no vitral realizado a partir de ajuste quadrático. Conferir [Duck Duck Go](9mm Balistics/Redução de Velocidade.ipynb).
 - **Azimute** estimado do disparo;
   - Geralmente próximo ao Azimute da impactação;
 - **Twist rate** do Projétil;
