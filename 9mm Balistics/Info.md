@@ -65,8 +65,8 @@ def linear_relation(x, m, b):
 
 popt_linear, pcov_linear = curve_fit(linear_relation, velocity_before_impact, velocity_loss)
 ```
-A relação linear encontrada foi \( \Delta v = 0.096v_{\text{antes}} + 36.67 \), onde \( \Delta v \) é a perda de velocidade e \( v_{\text{antes}} \) é a velocidade antes do impacto.
 
+A relação linear encontrada foi Δv = 0.096 * v_antes + 36.67, onde Δv é a perda de velocidade e v_antes é a velocidade antes do impacto.
 
 ### Observações
 
