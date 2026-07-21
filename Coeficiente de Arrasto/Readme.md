@@ -1,4 +1,3 @@
-````markdown
 # Estimador de Curvas de Arrasto Gx
 
 Programa em C para estimar qual curva de arrasto de referência representa melhor o comportamento de um projétil a partir de velocidades conhecidas em diferentes distâncias.
@@ -158,7 +157,3 @@ Quando um fabricante informa, por exemplo:
 
 ```text
 BC G1 = 0,250
-````
-
-```
-```
