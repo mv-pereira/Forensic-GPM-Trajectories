@@ -200,3 +200,7 @@ em que:
 - $BC_{G1}$ é o coeficiente balístico na convenção G1.
 
 O resultado segue a convenção normalmente utilizada para valores comerciais de coeficiente balístico G1.
+
+## Curvas de arrasto
+
+![Curvas de coeficiente de arrasto em função do número de Mach](curvas_cd_mach_todas.png)
