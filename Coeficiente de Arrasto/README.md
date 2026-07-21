@@ -140,7 +140,7 @@ O erro é expresso em metros por segundo.
 
 ## Cálculo do coeficiente balístico a partir do fator G1
 
-Embora o programa informe a melhor curva a ser utilizada, caso o usuário decida comparar o resultado prático do programa com o Coeficiente Balístico informado pelo fabricante, é possível estimar a partir da curva G1, utiliza-se a densidade seccional do projétil e o fator de forma `i_G1` fornecido pelo programa:
+Embora o programa informe a melhor curva a ser utilizada, caso o usuário decida comparar o resultado prático do programa com o Coeficiente Balístico informado pelo fabricante, é possível estimar a partir da curva G1, utiliza-se a densidade seccional do projétil e o fator de forma $i_G1$ fornecido pelo programa:
 
 $$
 BC_{G1} = \frac{SD}{i_{G1}}
@@ -196,7 +196,7 @@ em que:
 
 - $m_g$ é a massa do projétil em gramas;
 - $d_mm$ é o diâmetro do projétil em milímetros;
-- $i_G1$ é o fator correspondente à curva G1;
-- $BC_G1$ é o coeficiente balístico na convenção G1.
+- $i_{G1}$ é o fator correspondente à curva G1;
+- $BC_{G1}$ é o coeficiente balístico na convenção G1.
 
 O resultado segue a convenção normalmente utilizada para valores comerciais de coeficiente balístico G1.
