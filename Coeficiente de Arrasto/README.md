@@ -138,14 +138,65 @@ A curva escolhida é aquela que apresenta o menor valor de $E_{\mathrm{RMS}}$.
 
 O erro é expresso em metros por segundo.
 
-## Coeficiente balístico e curva G1
+## Cálculo do coeficiente balístico a partir do fator G1
 
-O coeficiente balístico não é, isoladamente, uma propriedade aerodinâmica universal do projétil. Seu valor depende da curva de arrasto de referência utilizada.
+Para estimar o coeficiente balístico referido à curva G1, utiliza-se a densidade seccional do projétil e o fator de forma `i_G1` fornecido pelo programa:
 
-A curva G1 é a referência mais frequentemente apresentada por fabricantes de munição. Ela representa um projétil padrão com características geométricas específicas, tradicionalmente associado a uma forma de base plana e ogiva relativamente curta.
+$$
+BC_{G1} = \frac{SD}{i_{G1}}
+$$
 
-Quando um fabricante informa, por exemplo:
+Na convenção tradicional, a densidade seccional utiliza massa em libras e diâmetro em polegadas. Quando os dados estão em gramas e milímetros, aplicam-se os seguintes fatores de conversão:
 
-```text
-BC G1 = 0,250
-```
+$$
+m_{\mathrm{lb}} = \frac{m_{\mathrm{g}}}{453{,}59237}
+$$
+
+$$
+d_{\mathrm{in}} = \frac{d_{\mathrm{mm}}}{25{,}4}
+$$
+
+Substituindo essas conversões na fórmula da densidade seccional:
+
+$$
+SD =
+\frac{
+m_{\mathrm{g}} / 453{,}59237
+}{
+\left(
+d_{\mathrm{mm}} / 25{,}4
+\right)^2
+}
+$$
+
+De forma simplificada:
+
+$$
+SD =
+1{,}42233433
+\frac{
+m_{\mathrm{g}}
+}{
+d_{\mathrm{mm}}^2
+}
+$$
+
+Assim, o coeficiente balístico G1 pode ser estimado diretamente por:
+
+$$
+BC_{G1} =
+\frac{
+1{,}42233433 \, m_{\mathrm{g}}
+}{
+d_{\mathrm{mm}}^2 \, i_{G1}
+}
+$$
+
+em que:
+
+- `m_g` é a massa do projétil em gramas;
+- `d_mm` é o diâmetro do projétil em milímetros;
+- `i_G1` é o fator correspondente à curva G1;
+- `BC_G1` é o coeficiente balístico na convenção G1.
+
+O resultado segue a convenção normalmente utilizada para valores comerciais de coeficiente balístico G1.
