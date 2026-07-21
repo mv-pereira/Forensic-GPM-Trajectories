@@ -188,15 +188,15 @@ BC_{G1} =
 \frac{
 1{,}42233433 \, m_{\mathrm{g}}
 }{
-d_{\mathrm{mm}}^2 \, i_{G1}
+d_{\mathrm{mm}}^2 \ i_{G1}
 }
 $$
 
 em que:
 
-- `m_g` é a massa do projétil em gramas;
-- `d_mm` é o diâmetro do projétil em milímetros;
-- `i_G1` é o fator correspondente à curva G1;
-- `BC_G1` é o coeficiente balístico na convenção G1.
+- $m_g$ é a massa do projétil em gramas;
+- $d_mm$ é o diâmetro do projétil em milímetros;
+- $i_G1$ é o fator correspondente à curva G1;
+- $BC_G1$ é o coeficiente balístico na convenção G1.
 
 O resultado segue a convenção normalmente utilizada para valores comerciais de coeficiente balístico G1.
