@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFF7D8" />
+    <title>Flashcards de Sueco</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/images/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Sueco</p>
+          <h1>Flashcards</h1>
+        </div>
+        <div class="header-actions">
+          <button id="newWordsToggleButton" class="theme-toggle-button" type="button"> Palavras novas </button>
+          <button id="themeToggleButton" class="theme-toggle-button" type="button"> Tema escuro </button>
+        </div>
+      </header>
+      <section id="setupScreen" class="setup-screen" aria-label="Configuração da sessão">
+        <div class="setup-card">
+          <h2>Configurar estudo</h2>
+          <details class="checkbox-filter">
+            <summary>Tipo de palavra</summary>
+            <div id="typeFilterGroup" class="checkbox-options"></div>
+            <p class="filter-hint">Nenhuma opção marcada = todos</p>
+          </details>
+          <details class="checkbox-filter">
+            <summary>Tema</summary>
+            <div id="themeFilterGroup" class="checkbox-options"></div>
+            <p class="filter-hint">Nenhuma opção marcada = todos</p>
+          </details>
+          <details class="checkbox-filter">
+            <summary>Origem</summary>
+            <div id="sourceFilterGroup" class="checkbox-options"></div>
+            <p class="filter-hint">Nenhuma opção marcada = todas</p>
+          </details>
+          <details id="chapterFilterLabel" class="checkbox-filter hidden">
+            <summary>Capítulo do livro</summary>
+            <div id="chapterFilterGroup" class="checkbox-options"></div>
+            <p class="filter-hint">Nenhuma opção marcada = todos</p>
+          </details>
+          <details id="sourceTitleFilterLabel" class="checkbox-filter hidden">
+            <summary>Música</summary>
+            <div id="sourceTitleFilterGroup" class="checkbox-options"></div>
+            <p class="filter-hint">Nenhuma opção marcada = todas</p>
+          </details>
+          <label for="directionSelect"> Direção <select id="directionSelect">
+              <option value="sv-pt">Sueco → Português</option>
+              <option value="pt-sv">Português → Sueco</option>
+              <option value="audio-pt">Áudio sueco → Português</option>
+              <option value="audio-sv">Áudio sueco → Escrever sueco</option>
+            </select>
+          </label>
+          <label id="answerModeLabel" for="answerModeSelect"> Modo <select id="answerModeSelect">
+              <option value="think">Pensar e virar</option>
+              <option value="write">Escrever em sueco</option>
+            </select>
+          </label>
+          <button id="startSessionButton" class="button button-primary" type="button"> Começar estudo </button>
+          <button id="wordsButton" class="button button-secondary" type="button"> Palavras </button>
+          <button id="grammarButton" class="button button-secondary" type="button"> Gramática </button>
+          <button id="exerciseButton" class="button button-secondary" type="button"> Exercícios </button>
+          <button id="wrongWordsButton" class="button button-secondary" type="button"> Revisar erros </button>
+          <button id="resetStatsButton" class="button button-secondary" type="button"> Zerar progresso </button>
+          <p id="setupMessage" class="setup-message"></p>
+          </div>
+      </section>
+      <section id="studyScreen" class="study-screen hidden" aria-label="Sessão de estudo">
+        <button id="backToSetupButton" class="back-button" type="button"> ← Configurações </button>
+<div id="newWordsDeckActions" class="new-words-deck-actions hidden">
+  <button
+    id="holdCurrentWordButton"
+    class="button button-secondary"
+    type="button"
+  >
+    Guardar palavra
+  </button>
+
+  <button
+    id="restoreHeldWordsButton"
+    class="button button-secondary"
+    type="button"
+    disabled
+  >
+    Recolocar (0)
+  </button>
+</div>
+        <section id="flashcard" class="card" aria-label="Flashcard atual" role="button" tabindex="0">
+          <div class="card-inner">
+            <div class="card-face card-front">
+              <button id="pronunciationButton" class="card-pronunciation-button hidden" type="button" aria-label="Ouvir pronúncia em sueco" title="Ouvir pronúncia"> 🔊 </button>
+              <div id="cardAudioWrap" class="card-audio-wrap hidden">
+                <button id="playAudioButton" class="audio-button" type="button"> Ouvir áudio </button>
+                <button id="showSwedishFromAudioButton" class="audio-secondary-button" type="button"> Mostrar sueco </button>
+                <p id="audioSwedishText" class="audio-swedish-text hidden"></p>
+                <audio id="cardAudio" preload="metadata"></audio>
+              </div>
+              <p id="questionLabel" class="card-label">Sueco</p>
+              <h2 id="questionText" class="question">Carregando...</h2>
+            </div>
+            <div class="card-face card-back">
+              <p id="answerLabel" class="card-label">Português</p>
+              <p id="answerText" class="answer"></p>
+              <p id="answerGrammarForm" class="answer-grammar-form hidden"></p>
+              <div id="writeResultBox" class="write-result-box hidden">
+                <p>Sua resposta:</p>
+                <strong id="userAnswerText"></strong>
+                <p id="comparisonFeedbackText" class="comparison-feedback"></p>
+              </div>
+              <p id="backHint" class="back-hint">Marque se você acertou ou errou.</p>
+            </div>
+          </div>
+        </section>
+        <section class="controls" aria-label="Controles do flashcard">
+          <div id="writeBox" class="write-box hidden">
+            <label for="answerInput">Escreva sua resposta</label>
+            <input id="answerInput" type="text" lang="sv" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" writingsuggestions="false" inputmode="text" enterkeyhint="done" placeholder="Digite aqui..." />
+            <button id="checkAnswerButton" class="button button-primary" type="button"> Comparar resposta </button>
+            <button id="nextWriteCardButton" class="button button-secondary hidden" type="button"> Próximo card </button>
+          </div>
+          <div id="resultButtons" class="result-buttons">
+            <button id="wrongButton" class="button button-wrong" type="button" disabled> Errei </button>
+            <button id="correctButton" class="button button-correct" type="button" disabled> Acertei </button>
+          </div>
+          <button id="finishSessionButton" class="button button-secondary" type="button"> Encerrar sessão </button>
+        </section>
+        <p id="message" class="message" role="status"></p>
+      </section>
+      <section id="grammarScreen" class="grammar-screen hidden" aria-label="Gramática">
+        <button id="backFromGrammarButton" class="back-button" type="button"> ← Voltar </button>
+        <div class="grammar-card">
+          <div class="grammar-heading">
+            <p class="eyebrow">Sueco</p>
+            <h2>Gramática</h2>
+            <p>Escolha o conteúdo que deseja consultar.</p>
+          </div>
+          <div class="grammar-menu">
+            <button id="pronunciationRulesButton" class="button button-secondary" type="button"> Regras de pronúncia </button>
+            <button id="pluralRulesButton" class="button button-secondary" type="button"> Plural dos substantivos </button>
+            <button id="verbFormsButton" class="button button-secondary" type="button"> Formas verbais </button>
+          </div>
+        </div>
+      </section>
+      <section id="pronunciationScreen" class="pronunciation-screen hidden" aria-label="Regras de pronúncia">
+        <button id="backFromPronunciationButton" class="back-button" type="button"> ← Voltar </button>
+        <div class="pronunciation-card">
+          <div class="pronunciation-heading">
+            <p class="eyebrow">Sueco</p>
+            <h2>Regras de pronúncia</h2>
+            <p> Resumo prático em português com exemplos do seu words.json. Toque em “Ouvir” para escutar uma palavra de exemplo. </p>
+          </div>
+          <div id="pronunciationRulesList" class="pronunciation-rules-list"></div>
+        </div>
+      </section>
+      <section id="pluralScreen" class="plural-screen hidden" aria-label="Plural dos substantivos em sueco">
+        <button id="backFromPluralButton" class="back-button" type="button"> ← Gramática </button>
+        <div class="plural-card">
+          <div class="plural-heading">
+            <p class="eyebrow">Gramática</p>
+            <h2>Plural dos substantivos</h2>
+            <p> As quatro formas apresentadas são: singular indefinido, singular definido, plural indefinido e plural definido. </p>
+          </div>
+          <div class="plural-rules-list">
+            <article class="plural-rule">
+              <h3>Grupo 1 — plural em -or</h3>
+              <p> Palavras <em>en</em> cujo singular indefinido termina em <strong>-a</strong>. Retira-se o <strong>-a</strong> e acrescenta-se <strong>-or</strong>. No plural definido, acrescenta-se <strong>-na</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en paprika</strong>
+                  <small>um pimentão</small>
+                </span>
+                <span>
+                  <strong>paprikan</strong>
+                  <small>o pimentão</small>
+                </span>
+                <span>
+                  <strong>paprikor</strong>
+                  <small>pimentões</small>
+                </span>
+                <span>
+                  <strong>paprikorna</strong>
+                  <small>os pimentões</small>
+                </span>
+              </div>
+            </article>
+            <article class="plural-rule">
+              <h3>Grupo 2 — plural em -ar</h3>
+              <p> Também são palavras <em>en</em>. Geralmente são palavras curtas terminadas em consoante ou <strong>-e</strong>, além de muitas palavras terminadas em <strong>-ing</strong>. Recebem <strong>-ar</strong> no plural e <strong>-na</strong> no plural definido. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en hund</strong>
+                  <small>um cachorro</small>
+                </span>
+                <span>
+                  <strong>hunden</strong>
+                  <small>o cachorro</small>
+                </span>
+                <span>
+                  <strong>hundar</strong>
+                  <small>cachorros</small>
+                </span>
+                <span>
+                  <strong>hundarna</strong>
+                  <small>os cachorros</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en bulle</strong>
+                  <small>um pãozinho</small>
+                </span>
+                <span>
+                  <strong>bullen</strong>
+                  <small>o pãozinho</small>
+                </span>
+                <span>
+                  <strong>bullar</strong>
+                  <small>pãezinhos</small>
+                </span>
+                <span>
+                  <strong>bullarna</strong>
+                  <small>os pãezinhos</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en tidning</strong>
+                  <small>um jornal</small>
+                </span>
+                <span>
+                  <strong>tidningen</strong>
+                  <small>o jornal</small>
+                </span>
+                <span>
+                  <strong>tidningar</strong>
+                  <small>jornais</small>
+                </span>
+                <span>
+                  <strong>tidningarna</strong>
+                  <small>os jornais</small>
+                </span>
+              </div>
+            </article>
+            <article class="plural-rule">
+              <h3>Grupo 3 — plural em -er</h3>
+              <p> Principalmente palavras <em>en</em> mais longas terminadas em consoante. Muitas são palavras de origem estrangeira. Recebem <strong>-er</strong> no plural e <strong>-na</strong> no plural definido. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en apelsin</strong>
+                  <small>uma laranja</small>
+                </span>
+                <span>
+                  <strong>apelsinen</strong>
+                  <small>a laranja</small>
+                </span>
+                <span>
+                  <strong>apelsiner</strong>
+                  <small>laranjas</small>
+                </span>
+                <span>
+                  <strong>apelsinerna</strong>
+                  <small>as laranjas</small>
+                </span>
+              </div>
+            </article>
+            <article class="plural-rule">
+              <h3>Grupo 4 — palavras ett terminadas em vogal</h3>
+              <p> Palavras <em>ett</em> terminadas em vogal normalmente recebem <strong>-n</strong> no plural indefinido e <strong>-a</strong> no plural definido. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ett äpple</strong>
+                  <small>uma maçã</small>
+                </span>
+                <span>
+                  <strong>äpplet</strong>
+                  <small>a maçã</small>
+                </span>
+                <span>
+                  <strong>äpplen</strong>
+                  <small>maçãs</small>
+                </span>
+                <span>
+                  <strong>äpplena</strong>
+                  <small>as maçãs</small>
+                </span>
+              </div>
+            </article>
+            <article class="plural-rule">
+              <h3>Grupo 5 — palavras ett terminadas em consoante</h3>
+              <p> Normalmente não recebem nenhuma terminação no plural indefinido. No plural definido, acrescenta-se <strong>-en</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ett päron</strong>
+                  <small>uma pera</small>
+                </span>
+                <span>
+                  <strong>päronet</strong>
+                  <small>a pera</small>
+                </span>
+                <span>
+                  <strong>päron</strong>
+                  <small>peras</small>
+                </span>
+                <span>
+                  <strong>päronen</strong>
+                  <small>as peras</small>
+                </span>
+              </div>
+            </article>
+            <article class="plural-rule plural-rule-special">
+              <h3>Casos especiais</h3>
+              <h4>1. Palavras terminadas em -are</h4>
+              <p> O plural indefinido geralmente é igual ao singular indefinido. No plural definido, acrescenta-se <strong>-na</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en lärare</strong>
+                  <small>um professor</small>
+                </span>
+                <span>
+                  <strong>läraren</strong>
+                  <small>o professor</small>
+                </span>
+                <span>
+                  <strong>lärare</strong>
+                  <small>professores</small>
+                </span>
+                <span>
+                  <strong>lärarna</strong>
+                  <small>os professores</small>
+                </span>
+              </div>
+              <h4>2. Palavras terminadas em -er</h4>
+              <p> Algumas palavras terminadas em <strong>-er</strong>, especialmente nomes de profissão ou de pessoa, mantêm a mesma forma no plural indefinido. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en musiker</strong>
+                  <small>um músico</small>
+                </span>
+                <span>
+                  <strong>musikern</strong>
+                  <small>o músico</small>
+                </span>
+                <span>
+                  <strong>musiker</strong>
+                  <small>músicos</small>
+                </span>
+                <span>
+                  <strong>musikerna</strong>
+                  <small>os músicos</small>
+                </span>
+              </div>
+              <h4>3. Queda de vogal</h4>
+              <p> Em algumas palavras, uma vogal interna desaparece quando o plural é formado. Isso acontece, por exemplo, em <strong>syster → systrar</strong> e <strong>nyckel → nycklar</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en syster</strong>
+                  <small>uma irmã</small>
+                </span>
+                <span>
+                  <strong>systern</strong>
+                  <small>a irmã</small>
+                </span>
+                <span>
+                  <strong>systrar</strong>
+                  <small>irmãs</small>
+                </span>
+                <span>
+                  <strong>systrarna</strong>
+                  <small>as irmãs</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en nyckel</strong>
+                  <small>uma chave</small>
+                </span>
+                <span>
+                  <strong>nyckeln</strong>
+                  <small>a chave</small>
+                </span>
+                <span>
+                  <strong>nycklar</strong>
+                  <small>chaves</small>
+                </span>
+                <span>
+                  <strong>nycklarna</strong>
+                  <small>as chaves</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en dotter</strong>
+                  <small>uma filha</small>
+                </span>
+                <span>
+                  <strong>dottern</strong>
+                  <small>a filha</small>
+                </span>
+                <span>
+                  <strong>döttrar</strong>
+                  <small>filhas</small>
+                </span>
+                <span>
+                  <strong>döttrarna</strong>
+                  <small>as filhas</small>
+                </span>
+              </div>
+              <h4>4. Mudança de vogal</h4>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ett land</strong>
+                  <small>um país</small>
+                </span>
+                <span>
+                  <strong>landet</strong>
+                  <small>o país</small>
+                </span>
+                <span>
+                  <strong>länder</strong>
+                  <small>países</small>
+                </span>
+                <span>
+                  <strong>länderna</strong>
+                  <small>os países</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en son</strong>
+                  <small>um filho</small>
+                </span>
+                <span>
+                  <strong>sonen</strong>
+                  <small>o filho</small>
+                </span>
+                <span>
+                  <strong>söner</strong>
+                  <small>filhos</small>
+                </span>
+                <span>
+                  <strong>sönerna</strong>
+                  <small>os filhos</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en bok</strong>
+                  <small>um livro</small>
+                </span>
+                <span>
+                  <strong>boken</strong>
+                  <small>o livro</small>
+                </span>
+                <span>
+                  <strong>böcker</strong>
+                  <small>livros</small>
+                </span>
+                <span>
+                  <strong>böckerna</strong>
+                  <small>os livros</small>
+                </span>
+              </div>
+              <h4>5. Formas especiais que vale memorizar</h4>
+              <p> Algumas palavras seguem padrões menos comuns. Como são frequentes, vale aprender o singular e o plural juntos. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en tå</strong>
+                  <small>um dedo do pé</small>
+                </span>
+                <span>
+                  <strong>tån</strong>
+                  <small>o dedo do pé</small>
+                </span>
+                <span>
+                  <strong>tår</strong>
+                  <small>dedos do pé</small>
+                </span>
+                <span>
+                  <strong>tårna</strong>
+                  <small>os dedos do pé</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>en sko</strong>
+                  <small>um sapato</small>
+                </span>
+                <span>
+                  <strong>skon</strong>
+                  <small>o sapato</small>
+                </span>
+                <span>
+                  <strong>skor</strong>
+                  <small>sapatos</small>
+                </span>
+                <span>
+                  <strong>skorna</strong>
+                  <small>os sapatos</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ett öga</strong>
+                  <small>um olho</small>
+                </span>
+                <span>
+                  <strong>ögat</strong>
+                  <small>o olho</small>
+                </span>
+                <span>
+                  <strong>ögon</strong>
+                  <small>olhos</small>
+                </span>
+                <span>
+                  <strong>ögonen</strong>
+                  <small>os olhos</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ett öra</strong>
+                  <small>uma orelha</small>
+                </span>
+                <span>
+                  <strong>örat</strong>
+                  <small>a orelha</small>
+                </span>
+                <span>
+                  <strong>öron</strong>
+                  <small>orelhas</small>
+                </span>
+                <span>
+                  <strong>öronen</strong>
+                  <small>as orelhas</small>
+                </span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="verbFormsScreen" class="plural-screen hidden" aria-label="Formas verbais em sueco">
+        <button id="backFromVerbFormsButton" class="back-button" type="button"> ← Gramática </button>
+        <div class="plural-card">
+          <div class="plural-heading">
+            <p class="eyebrow">Gramática</p>
+            <h2>Formas verbais</h2>
+            <p> Resumo das principais formas apresentadas aqui: infinitivo, imperativo, presente, pretérito e supino. O foco está especialmente na formação do pretérito e do supino. </p>
+          </div>
+          <div class="plural-rules-list">
+            <!-- PRETÉRITO -->
+            <article class="plural-rule">
+              <h3>Pretérito — preteritum</h3>
+              <p> O pretérito é usado para falar de acontecimentos passados. Em muitos verbos regulares, ele é formado a partir da forma do imperativo com as terminações <strong>-de</strong>, <strong>-te</strong> ou <strong>-dde</strong>. </p>
+              <h4>Grupo 1 — acrescenta -de</h4>
+              <p> Nos verbos do Grupo 1, o infinitivo e o imperativo terminam em <strong>-a</strong>. Acrescenta-se <strong>-de</strong> ao imperativo. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>träffa</strong>
+                  <small>infinitivo · encontrar</small>
+                </span>
+                <span>
+                  <strong>Träffa!</strong>
+                  <small>imperativo · Encontre!</small>
+                </span>
+                <span>
+                  <strong>träffar</strong>
+                  <small>presente · encontra</small>
+                </span>
+                <span>
+                  <strong>träffade</strong>
+                  <small>pretérito · encontrou</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>spela</strong>
+                  <small>infinitivo · tocar/jogar</small>
+                </span>
+                <span>
+                  <strong>Spela!</strong>
+                  <small>imperativo · Toque!/Jogue!</small>
+                </span>
+                <span>
+                  <strong>spelar</strong>
+                  <small>presente · toca/joga</small>
+                </span>
+                <span>
+                  <strong>spelade</strong>
+                  <small>pretérito · tocou/jogou</small>
+                </span>
+              </div>
+              <h4>Grupo 2a — acrescenta -de</h4>
+              <p> Muitos verbos do Grupo 2 têm infinitivo terminado em <strong>-a</strong>, mas o imperativo termina em consoante. No Grupo 2a, acrescenta-se <strong>-de</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ringa</strong>
+                  <small>infinitivo · ligar</small>
+                </span>
+                <span>
+                  <strong>Ring!</strong>
+                  <small>imperativo · Ligue!</small>
+                </span>
+                <span>
+                  <strong>ringer</strong>
+                  <small>presente · liga</small>
+                </span>
+                <span>
+                  <strong>ringde</strong>
+                  <small>pretérito · ligou</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>svänga</strong>
+                  <small>infinitivo · virar</small>
+                </span>
+                <span>
+                  <strong>Sväng!</strong>
+                  <small>imperativo · Vire!</small>
+                </span>
+                <span>
+                  <strong>svänger</strong>
+                  <small>presente · vira</small>
+                </span>
+                <span>
+                  <strong>svängde</strong>
+                  <small>pretérito · virou</small>
+                </span>
+              </div>
+              <h4>Grupo 2b — acrescenta -te</h4>
+              <p> O Grupo 2b é semelhante ao 2a, mas muitos desses verbos terminam em <strong>p, k, s</strong> ou <strong>t</strong> no imperativo. Acrescenta-se <strong>-te</strong>. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>åka</strong>
+                  <small>infinitivo · ir/viajar</small>
+                </span>
+                <span>
+                  <strong>Åk!</strong>
+                  <small>imperativo · Vá!</small>
+                </span>
+                <span>
+                  <strong>åker</strong>
+                  <small>presente · vai/viaja</small>
+                </span>
+                <span>
+                  <strong>åkte</strong>
+                  <small>pretérito · foi/viajou</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>köpa</strong>
+                  <small>infinitivo · comprar</small>
+                </span>
+                <span>
+                  <strong>Köp!</strong>
+                  <small>imperativo · Compre!</small>
+                </span>
+                <span>
+                  <strong>köper</strong>
+                  <small>presente · compra</small>
+                </span>
+                <span>
+                  <strong>köpte</strong>
+                  <small>pretérito · comprou</small>
+                </span>
+              </div>
+              <h4>Grupo 3 — acrescenta -dde</h4>
+              <p> O Grupo 3 contém alguns verbos curtos cujo infinitivo termina em outra vogal que não <strong>-a</strong>. Acrescenta-se <strong>-dde</strong> ao imperativo. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>må</strong>
+                  <small>infinitivo · sentir-se</small>
+                </span>
+                <span>
+                  <strong>Må!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>mår</strong>
+                  <small>presente · sente-se</small>
+                </span>
+                <span>
+                  <strong>mådde</strong>
+                  <small>pretérito · sentiu-se</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>tro</strong>
+                  <small>infinitivo · acreditar</small>
+                </span>
+                <span>
+                  <strong>Tro!</strong>
+                  <small>imperativo · Acredite!</small>
+                </span>
+                <span>
+                  <strong>tror</strong>
+                  <small>presente · acredita</small>
+                </span>
+                <span>
+                  <strong>trodde</strong>
+                  <small>pretérito · acreditou</small>
+                </span>
+              </div>
+            </article>
+            <!-- GRUPO 4 -->
+            <article class="plural-rule">
+              <h3>Grupo 4 — verbos irregulares</h3>
+              <p> Os verbos do Grupo 4 apresentam formas irregulares. Essas formas precisam ser aprendidas individualmente. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>vara</strong>
+                  <small>infinitivo · ser/estar</small>
+                </span>
+                <span>
+                  <strong>Var!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>är</strong>
+                  <small>presente · é/está</small>
+                </span>
+                <span>
+                  <strong>var</strong>
+                  <small>pretérito · era/estava</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>göra</strong>
+                  <small>infinitivo · fazer</small>
+                </span>
+                <span>
+                  <strong>Gör!</strong>
+                  <small>imperativo · Faça!</small>
+                </span>
+                <span>
+                  <strong>gör</strong>
+                  <small>presente · faz</small>
+                </span>
+                <span>
+                  <strong>gjorde</strong>
+                  <small>pretérito · fez</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ha</strong>
+                  <small>infinitivo · ter</small>
+                </span>
+                <span>
+                  <strong>Ha!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>har</strong>
+                  <small>presente · tem</small>
+                </span>
+                <span>
+                  <strong>hade</strong>
+                  <small>pretérito · tinha/teve</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>komma</strong>
+                  <small>infinitivo · vir</small>
+                </span>
+                <span>
+                  <strong>Kom!</strong>
+                  <small>imperativo · Venha!</small>
+                </span>
+                <span>
+                  <strong>kommer</strong>
+                  <small>presente · vem</small>
+                </span>
+                <span>
+                  <strong>kom</strong>
+                  <small>pretérito · veio</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>äta</strong>
+                  <small>infinitivo · comer</small>
+                </span>
+                <span>
+                  <strong>Ät!</strong>
+                  <small>imperativo · Coma!</small>
+                </span>
+                <span>
+                  <strong>äter</strong>
+                  <small>presente · come</small>
+                </span>
+                <span>
+                  <strong>åt</strong>
+                  <small>pretérito · comeu</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>springa</strong>
+                  <small>infinitivo · correr</small>
+                </span>
+                <span>
+                  <strong>Spring!</strong>
+                  <small>imperativo · Corra!</small>
+                </span>
+                <span>
+                  <strong>springer</strong>
+                  <small>presente · corre</small>
+                </span>
+                <span>
+                  <strong>sprang</strong>
+                  <small>pretérito · correu</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ta</strong>
+                  <small>infinitivo · pegar/levar</small>
+                </span>
+                <span>
+                  <strong>Ta!</strong>
+                  <small>imperativo · Pegue!</small>
+                </span>
+                <span>
+                  <strong>tar</strong>
+                  <small>presente · pega/leva</small>
+                </span>
+                <span>
+                  <strong>tog</strong>
+                  <small>pretérito · pegou/levou</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>gå</strong>
+                  <small>infinitivo · ir</small>
+                </span>
+                <span>
+                  <strong>Gå!</strong>
+                  <small>imperativo · Vá!</small>
+                </span>
+                <span>
+                  <strong>går</strong>
+                  <small>presente · vai</small>
+                </span>
+                <span>
+                  <strong>gick</strong>
+                  <small>pretérito · foi</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>skriva</strong>
+                  <small>infinitivo · escrever</small>
+                </span>
+                <span>
+                  <strong>Skriv!</strong>
+                  <small>imperativo · Escreva!</small>
+                </span>
+                <span>
+                  <strong>skriver</strong>
+                  <small>presente · escreve</small>
+                </span>
+                <span>
+                  <strong>skrev</strong>
+                  <small>pretérito · escreveu</small>
+                </span>
+              </div>
+            </article>
+            <!-- VERBOS AUXILIARES NO PASSADO -->
+            <article class="plural-rule">
+              <h3>Verbos auxiliares e modais no pretérito</h3>
+              <p> Muitos verbos auxiliares possuem formas próprias no pretérito. Algumas delas são bastante frequentes e vale memorizá-las. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>vilja</strong>
+                  <small>querer</small>
+                </span>
+                <span>
+                  <strong>vill</strong>
+                  <small>presente</small>
+                </span>
+                <span>
+                  <strong>ville</strong>
+                  <small>pretérito</small>
+                </span>
+                <span>
+                  <strong>ville börja</strong>
+                  <small>queria começar</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>kunna</strong>
+                  <small>poder / ser capaz de</small>
+                </span>
+                <span>
+                  <strong>kan</strong>
+                  <small>presente</small>
+                </span>
+                <span>
+                  <strong>kunde</strong>
+                  <small>pretérito</small>
+                </span>
+                <span>
+                  <strong>kunde prata</strong>
+                  <small>podia falar</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ska</strong>
+                  <small>forma do presente</small>
+                </span>
+                <span>
+                  <strong>skulle</strong>
+                  <small>pretérito</small>
+                </span>
+                <span>
+                  <strong>bör</strong>
+                  <small>deve / deveria</small>
+                </span>
+                <span>
+                  <strong>borde</strong>
+                  <small>pretérito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>få</strong>
+                  <small>poder / ter permissão</small>
+                </span>
+                <span>
+                  <strong>får</strong>
+                  <small>presente</small>
+                </span>
+                <span>
+                  <strong>fick</strong>
+                  <small>pretérito</small>
+                </span>
+                <span>
+                  <strong>fick inte</strong>
+                  <small>não pôde / não teve permissão</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>behöva</strong>
+                  <small>precisar</small>
+                </span>
+                <span>
+                  <strong>behöver</strong>
+                  <small>presente</small>
+                </span>
+                <span>
+                  <strong>behövde</strong>
+                  <small>pretérito</small>
+                </span>
+                <span>
+                  <strong>behövde inte</strong>
+                  <small>não precisava</small>
+                </span>
+              </div>
+              <p>
+                <strong>måste</strong> não possui uma forma própria de pretérito. Para expressar “teve que / precisava”, usa-se <strong>var tvungen att</strong>.
+              </p>
+            </article>
+            <!-- SUPINO -->
+            <article class="plural-rule">
+              <h3>Supino — supinum</h3>
+              <p> O presente perfeito é formado com o verbo <strong>har</strong> no presente + o <strong>supino</strong> do verbo principal. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>Jag</strong>
+                  <small>sujeito</small>
+                </span>
+                <span>
+                  <strong>har</strong>
+                  <small>verbo auxiliar</small>
+                </span>
+                <span>
+                  <strong>träffat</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>en kompis</strong>
+                  <small>um amigo</small>
+                </span>
+              </div>
+              <p> Fórmula básica: <strong>har + supinum</strong>. O supino frequentemente termina em <strong>-t</strong>. </p>
+              <h4>Grupo 1 — acrescenta -t</h4>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>träffa</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Träffa!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>träffat</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har träffat</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>spela</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Spela!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>spelat</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har spelat</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <h4>Grupos 2a e 2b — acrescenta -t</h4>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ringa</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Ring!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>ringt</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har ringt</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>svänga</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Sväng!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>svängt</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har svängt</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>åka</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Åk!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>åkt</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har åkt</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>köpa</strong>
+                  <small>infinitivo</small>
+                </span>
+                <span>
+                  <strong>Köp!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>köpt</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har köpt</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <h4>Grupo 3 — acrescenta -tt</h4>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>bo</strong>
+                  <small>infinitivo · morar</small>
+                </span>
+                <span>
+                  <strong>Bo!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>bott</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har bott</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>tro</strong>
+                  <small>infinitivo · acreditar</small>
+                </span>
+                <span>
+                  <strong>Tro!</strong>
+                  <small>imperativo</small>
+                </span>
+                <span>
+                  <strong>trott</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har trott</strong>
+                  <small>presente perfeito</small>
+                </span>
+              </div>
+            </article>
+            <!-- SUPINO IRREGULAR -->
+            <article class="plural-rule">
+              <h3>Supino dos verbos irregulares</h3>
+              <p> Assim como no pretérito, os verbos do Grupo 4 possuem formas que precisam ser memorizadas. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>vara</strong>
+                  <small>ser/estar</small>
+                </span>
+                <span>
+                  <strong>varit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har varit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>Har du varit där?</strong>
+                  <small>Você esteve lá?</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>göra</strong>
+                  <small>fazer</small>
+                </span>
+                <span>
+                  <strong>gjort</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har gjort</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>Vad har ni gjort?</strong>
+                  <small>O que vocês fizeram?</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ha</strong>
+                  <small>ter</small>
+                </span>
+                <span>
+                  <strong>haft</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har haft</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>Jag har inte haft tid.</strong>
+                  <small>Não tive tempo.</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>komma</strong>
+                  <small>vir</small>
+                </span>
+                <span>
+                  <strong>kommit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har kommit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har kommit hem</strong>
+                  <small>chegou em casa</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>dricka</strong>
+                  <small>beber</small>
+                </span>
+                <span>
+                  <strong>druckit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har druckit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har druckit kaffe</strong>
+                  <small>bebeu café</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>äta</strong>
+                  <small>comer</small>
+                </span>
+                <span>
+                  <strong>ätit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har ätit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har ätit på restaurang</strong>
+                  <small>comeu em um restaurante</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>springa</strong>
+                  <small>correr</small>
+                </span>
+                <span>
+                  <strong>sprungit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har sprungit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har sprungit 25 km</strong>
+                  <small>correu 25 km</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>ta</strong>
+                  <small>pegar/levar</small>
+                </span>
+                <span>
+                  <strong>tagit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har tagit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har tagit en buss</strong>
+                  <small>pegou um ônibus</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>lägga</strong>
+                  <small>colocar/deitar</small>
+                </span>
+                <span>
+                  <strong>lagt</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har lagt</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har lagt sig</strong>
+                  <small>foi se deitar</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>gå</strong>
+                  <small>ir</small>
+                </span>
+                <span>
+                  <strong>gått</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har gått</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har gått på bio</strong>
+                  <small>foi ao cinema</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>skriva</strong>
+                  <small>escrever</small>
+                </span>
+                <span>
+                  <strong>skrivit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>har skrivit</strong>
+                  <small>presente perfeito</small>
+                </span>
+                <span>
+                  <strong>har skrivit ett mejl</strong>
+                  <small>escreveu um e-mail</small>
+                </span>
+              </div>
+            </article>
+            <!-- AUXILIARES NO PERFEITO -->
+            <article class="plural-rule">
+              <h3>Verbos auxiliares no presente perfeito</h3>
+              <p> A maioria desses verbos possui supino. <strong>ska</strong> e <strong>bör</strong>, porém, não possuem uma forma de supino usada dessa maneira. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>vilja → velat</strong>
+                  <small>querer</small>
+                </span>
+                <span>
+                  <strong>kunna → kunnat</strong>
+                  <small>poder / ser capaz</small>
+                </span>
+                <span>
+                  <strong>få → fått</strong>
+                  <small>poder / ter permissão</small>
+                </span>
+                <span>
+                  <strong>behöva → behövt</strong>
+                  <small>precisar</small>
+                </span>
+              </div>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>bruka → brukat</strong>
+                  <small>costumar</small>
+                </span>
+                <span>
+                  <strong>måste</strong>
+                  <small>não possui supino próprio</small>
+                </span>
+                <span>
+                  <strong>varit tvungen att</strong>
+                  <small>teve que / foi obrigado a</small>
+                </span>
+                <span>
+                  <strong>har varit tvungen att</strong>
+                  <small>teve que / precisou</small>
+                </span>
+              </div>
+            </article>
+            <!-- DICA -->
+            <article class="plural-rule">
+              <h3>Dica — perguntas no presente perfeito</h3>
+              <p> Em perguntas, o sujeito aparece entre <strong>har</strong> e o supino. </p>
+              <div class="plural-example-grid">
+                <span>
+                  <strong>Har</strong>
+                  <small>auxiliar</small>
+                </span>
+                <span>
+                  <strong>du</strong>
+                  <small>sujeito</small>
+                </span>
+                <span>
+                  <strong>varit</strong>
+                  <small>supino</small>
+                </span>
+                <span>
+                  <strong>i Kiruna?</strong>
+                  <small>em Kiruna?</small>
+                </span>
+              </div>
+              <p>
+                <strong>Har du varit i Kiruna?</strong>
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="exerciseScreen" class="exercise-screen hidden" aria-label="Exercícios">
+        <button id="backFromExerciseButton" class="back-button" type="button"> ← Voltar </button>
+        <div class="exercise-card">
+          <div class="exercise-heading">
+            <p class="eyebrow">Prática</p>
+            <h2>Exercícios</h2>
+            <p>Cole um exercício no formato definido e o app montará as questões e a prática oral automaticamente.</p>
+          </div>
+          <div id="exerciseImportPanel" class="exercise-import-panel">
+            <label class="exercise-import-label" for="exerciseSourceInput"> Cole o exercício aqui </label>
+            <textarea id="exerciseSourceInput" class="exercise-source-input" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="[EXERCICIO]&#10;TITULO: ...&#10;&#10;[TEXTO]&#10;...&#10;&#10;[QUESTAO]&#10;TIPO: ...&#10;...&#10;&#10;[FIM]"></textarea>
+            <button id="generateExerciseButton" class="button button-primary" type="button"> Gerar exercício </button>
+            <p id="exerciseImportMessage" class="exercise-import-message" role="status"></p>
+          </div>
+          <div id="exerciseRenderedPanel" class="exercise-rendered hidden">
+            <div class="exercise-rendered-heading">
+              <p class="eyebrow">Exercício</p>
+              <h2 id="exerciseTitle"></h2>
+            </div>
+            <div id="exerciseResultSummary" class="exercise-result-summary hidden"></div>
+            <div id="exerciseBlocks" class="exercise-blocks"></div>
+            <button id="finishExerciseButton" class="button button-primary" type="button"> Finalizar exercício </button>
+            <button id="copyExerciseErrorsButton" class="button button-primary hidden" type="button"> Copiar meus erros </button>
+            <button id="newExerciseButton" class="button button-secondary hidden" type="button"> Colar outro exercício </button>
+          </div>
+        </div>
+      </section>
+      <section id="wordsScreen" class="words-screen hidden" aria-label="Palavras filtradas">
+        <button id="backFromWordsButton" class="back-button" type="button"> ← Voltar </button>
+        <div class="words-card">
+          <div class="words-heading">
+            <p class="eyebrow">Dicionário</p>
+            <h2 id="wordsScreenTitle">Palavras</h2>
+            <p id="wordsScreenDescription"> Lista gerada de acordo com os filtros escolhidos na configuração. </p>
+          </div>
+          <div class="words-toolbar">
+            <button id="wordsDirectionButton" class="theme-toggle-button" type="button"> Sueco → Português </button>
+            <p id="wordsCount" class="words-count"></p>
+          </div>
+          <div id="wordsList" class="words-list"></div>
+        </div>
+      </section>
+      <section id="summaryScreen" class="summary-screen hidden" aria-label="Resumo da sessão">
+        <div class="summary-card">
+          <h2>Resumo da sessão</h2>
+          <div class="summary-grid">
+            <div>
+              <span>Cards respondidos</span>
+              <strong id="summaryTotal">0</strong>
+            </div>
+            <div>
+              <span>Acertos</span>
+              <strong id="summaryCorrect">0</strong>
+            </div>
+            <div>
+              <span>Erros</span>
+              <strong id="summaryWrong">0</strong>
+            </div>
+            <div>
+              <span>Taxa de acerto</span>
+              <strong id="summaryCorrectRate">0%</strong>
+            </div>
+            <div>
+              <span>Tempo</span>
+              <strong id="summaryTime">00:00</strong>
+            </div>
+          </div>
+          <h3>Mais erradas nesta sessão</h3>
+          <ol id="summaryWrongList" class="summary-list"></ol>
+          <div class="summary-actions">
+            <button id="repeatSessionButton" class="button button-primary" type="button"> Repetir sessão </button>
+            <button id="newSessionButton" class="button button-secondary" type="button"> Nova configuração </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
